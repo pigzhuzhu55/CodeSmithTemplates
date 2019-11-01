@@ -1,0 +1,64 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="Greatqn Templates V1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="Demo" Description="The namespace to use for this class" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+
+using <%= NameSpace %>.IDal;
+
+namespace <%= NameSpace %>.DalFactory
+{
+	/// <summary>
+	/// File: <%= GetClassName(SourceTable) %>.cs 数据层工厂
+	/// </summary>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// <para>Version: "V1.0"</para>
+	/// <para>Copyright: "<%= Copyright %>"</para>
+	/// </remarks>
+	public class <%= GetClassName(SourceTable) %>
+	{
+        /// <summary>
+        /// 生成对应的数据读写类
+        /// </summary>
+        /// <param name="assemblyName">程序集标识</param>
+        /// <param name="cnnString">连接字符串</param>
+        /// <returns>I<%= GetEntClassName(SourceTable) %>DR的实例</returns>
+        /// <exception cref="ex">对应的程序集不存时，会产生对象为空的异常</exception>
+        /// <remarks>
+		/// <para>Author: "<%= DevelopersName %>"</para>
+		/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+        /// </remarks>
+        public static I<%= GetEntClassName(SourceTable) %>DR Create(string assemblyName, string cnnString)
+       {
+           string classPath = assemblyName + ".<%= GetEntClassName(SourceTable) %>DR";
+           string key = classPath + cnnString;
+           I<%= GetEntClassName(SourceTable) %>DR objType = Utility.GetCache(key) as I<%= GetEntClassName(SourceTable) %>DR;
+           if (objType == null)
+           {
+               objType = (I<%= GetEntClassName(SourceTable) %>DR)Utility.CreateObject(assemblyName, classPath);
+               objType.SetCnnString(cnnString);
+               Utility.SetCache(key, objType);
+           }
+           return objType;
+       }
+	}
+}
+<script runat="template">
+public string GetClassName(TableSchema table)
+{
+	return GetEntClassName(table) + "Dal";
+}
+</script>
+<!-- #include file="script.inc" -->

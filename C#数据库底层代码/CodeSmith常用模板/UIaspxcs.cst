@@ -1,0 +1,89 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="Greatqn Templates V1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="Greatqn" Description="The namespace to use for this class" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+
+<%@ Property Name="IncludeInsert" Type="System.Boolean" Default="True" Category="Options" Description="If true insert statements will be generated." %>
+<%@ Property Name="IncludeUpdate" Type="System.Boolean" Default="True" Category="Options" Description="If true update statements will be generated." %>
+<%@ Property Name="IncludeDelete" Type="System.Boolean" Default="True" Category="Options" Description="If true delete statements will be generated." %>
+<%@ Property Name="IncludeGet" Type="System.Boolean" Default="True" Category="Options" Description="If true get statements will be generated." %>
+<%@ Property Name="IncludeGetList" Type="System.Boolean" Default="True" Category="Options" Description="If true getlist statements will be generated." %>
+
+<%@ Property Name="InsertPrefix" Type="System.String" Default="Add" Category="Style" Description="Prefix to use for all generated INSERT stored procedures." %>
+<%@ Property Name="UpdatePrefix" Type="System.String" Default="Set" Category="Style" Description="Prefix to use for all generated UPDATE stored procedures." %>
+<%@ Property Name="DeletePrefix" Type="System.String" Default="Del" Category="Style" Description="Prefix to use for all generated DELETE stored procedures." %>
+<%@ Property Name="SelectPrefix" Type="System.String" Default="Get" Category="Style" Description="Prefix to use for all generated SELECT stored procedures." %>
+<%@ Property Name="SelectAllPrefix" Type="System.String" Default="Get" Category="Style" Description="Prefix to use for all generated SELECT stored procedures." %>
+
+<%@ Property Name="InsertSuffix" Type="System.String" Default="" Category="Style" Optional="true" Description="Suffix to use for all generated INSERT stored procedures." %>
+<%@ Property Name="UpdateSuffix" Type="System.String" Default="" Category="Style" Optional="true" Description="Suffix to use for all generated UPDATE stored procedures." %>
+<%@ Property Name="DeleteSuffix" Type="System.String" Default="" Category="Style" Optional="true" Description="Suffix to use for all generated DELETE stored procedures." %>
+<%@ Property Name="SelectSuffix" Type="System.String" Default="By" Category="Style" Optional="true" Description="Suffix to use for all generated SELECT stored procedures." %>
+<%@ Property Name="SelectAllSuffix" Type="System.String" Default="" Category="Style" Optional="true" Description="Suffix to use for all generated SELECT stored procedures." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+// File: <%= GetClassName(SourceTable) %>.aspx.cs
+// <%=DateTime.Now.ToShortDateString() %>: <%=DevelopersName %>    Original Version
+// 
+// ===================================================================
+using System;
+using System.Data;
+using System.Configuration;
+using System.Collections;
+using System.Collections.Generic;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Web.UI.HtmlControls;
+using <%= NameSpace %>.Ent;
+using <%= NameSpace %>.Biz;
+//using <%= NameSpace %>.Comm;
+
+public partial class <%= GetClassName(SourceTable) %> : System.Web.UI.Page
+{
+    protected void Page_Load(object sender, EventArgs e)
+    {
+ 		if (!Page.IsPostBack)
+        {
+            this.LoadInfo();
+        }
+    }
+	private void LoadInfo()
+    {
+        BizHelper helper = new BizHelper();
+        IList<<%= NameSpace %>.Ent.<%= GetEntClassName(SourceTable) %>> list = helper.<%= SelectAllPrefix %><%= GetEntClassName(SourceTable) %><%= SelectAllSuffix %>();
+        gridView1.DataSource = list;
+        gridView1.DataBind();
+    }
+	    
+	protected void gridView1_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName == "del")
+        {
+            int id = int.Parse(e.CommandArgument.ToString());
+            BizHelper helper = new BizHelper();
+            int result = helper.<%= DeletePrefix %><%= GetEntClassName(SourceTable) %><%= DeleteSuffix %>(id);
+            if (result >0)
+            {
+                this.LoadInfo();
+            }
+        }
+    }
+}
+<script runat="template">
+public string GetClassName(TableSchema table)
+{
+	return  GetEntClassName(table) + "List";
+}
+</script>
+<!-- #include file="script.inc" -->

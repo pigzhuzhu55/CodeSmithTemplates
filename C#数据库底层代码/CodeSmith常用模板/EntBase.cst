@@ -1,0 +1,74 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="Greatqn Templates V1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="Greatqn" Description="The namespace to use for this class" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace <%= NameSpace %>.Ent.Base
+{
+	/// <summary>
+	/// File: <%= GetClassName(SourceTable) %>.cs 数据实体基类
+	/// </summary>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// <para>Version: "V1.0"</para>
+	/// <para>Copyright: "<%= Copyright %>"</para>
+	/// </remarks>
+	[Serializable]
+	public class <%= GetClassName(SourceTable) %>
+	{
+		#region Fields
+		<% foreach (ColumnSchema column in SourceTable.Columns) { %>
+		<%= GetMemberVariableDeclarationStatement(column) %>
+		<% } %>
+		#endregion
+		
+		#region Contructors
+		public <%= GetClassName(SourceTable) %>()
+		{
+		}
+		
+		public <%= GetClassName(SourceTable) %>
+		(
+			<%= GetConstructorParameters(SourceTable) %>
+		)
+		{
+			<%= GetAssignValue(SourceTable) %>
+		}
+		#endregion
+		
+		#region Public Properties
+		
+		<% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+		/// <summary>
+		/// <%= FilterString(SourceTable.Columns[i].Description)%>
+		/// </summary>
+		public <%= GetCSharpVariableType(SourceTable.Columns[i]) %> <%= SourceTable.Columns[i].Name %>
+		{
+			get {return <%= GetMemberVariableName(SourceTable.Columns[i]) %>;}
+			set {<%= GetMemberVariableName(SourceTable.Columns[i]) %> = value;}
+		}
+		<% if (i < SourceTable.Columns.Count - 1) Response.Write("\r\n"); %>		
+		<% } %>
+		#endregion
+	}
+}
+<script runat="template">
+public string GetClassName(TableSchema table)
+{
+	return GetEntClassName(table) + "Base";
+}
+</script>
+<!-- #include file="script.inc" -->

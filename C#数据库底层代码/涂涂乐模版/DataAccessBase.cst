@@ -1,0 +1,671 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="涂涂乐 v1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="ZqwPlatform" Description="The namespace to use for this class" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Text;
+using BabyGuardian.Common.Data;
+using <%= NameSpace %>.Models;
+
+namespace <%= NameSpace %>.DataAccess.Base
+{
+	/// <summary>
+	/// File: <%= GetClassName(SourceTable) %>Base.cs 数据访问类
+	/// </summary>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToString("yyyy-MM-dd") %>"</para>
+	/// <para>Version: "V1.0"</para>
+	/// <para>Copyright: "<%= Copyright %>"</para>
+	/// </remarks>
+	public class <%= GetClassName(SourceTable) %>Base: RepositoryBase
+	{
+        #region  构造函数
+        public <%= GetClassName(SourceTable) %>Base(IConnectionProvider connectionProvider)
+            : base(connectionProvider)
+        {
+        }
+        
+        public <%= GetClassName(SourceTable) %>Base(string connectSetion)
+            : base(connectSetion)
+        {
+        }
+        
+        public <%= GetClassName(SourceTable) %>Base()
+        {
+        }
+        #endregion
+        
+        <%
+              //所有非标识列
+              ColumnSchemaCollection _columns = new ColumnSchemaCollection();
+              //所有非主键非标识列
+              ColumnSchemaCollection _nonPrimaryKeyColumns = new ColumnSchemaCollection();
+              //主键列。目前之考虑一个主键，不考虑联合主键，且要求主键一定在第一列
+              ColumnSchema _firstColumn=null;
+              
+              //是否含有标识列
+              bool _hasIdentity = false;
+              for (int i = 0; i < SourceTable.Columns.Count; i++) { 
+                bool isIdentity = SourceTable.Columns[i].ExtendedProperties["CS_IsIdentity"].Value.ToString()=="True";
+                if(isIdentity){
+                  _hasIdentity = true;
+                  continue;
+                }
+                else
+                {
+                    _columns.Add(SourceTable.Columns[i]);
+                }
+             }
+              
+             for (int i = 0; i < SourceTable.NonPrimaryKeyColumns.Count; i++) { 
+               bool isIdentity = SourceTable.NonPrimaryKeyColumns[i].ExtendedProperties["CS_IsIdentity"].Value.ToString()=="True";
+               if(isIdentity){
+                  _hasIdentity = true;
+                  continue;
+                }
+                else
+                {
+                    _nonPrimaryKeyColumns.Add(SourceTable.NonPrimaryKeyColumns[i]);
+                }
+             }
+             
+             _firstColumn = SourceTable.Columns[0];
+        %>
+        
+        #region  常用方法
+        
+        /// <summary>
+        /// 增加一条数据
+        //  如有标识列，则返回标示值,否则返回null
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <returns></returns>
+        public object Add(<%= GetModelName(SourceTable)%> entity)
+        {
+            StringBuilder cmdText = new StringBuilder();
+            cmdText.Append("INSERT INTO <%= SourceTable.Name%>(");
+            <% for (int i = 0; i < _columns.Count; i++) { %>
+            cmdText.Append("<%= _columns[i].Name+((i<_columns.Count-1)?",":")") %>");
+            <% }%>
+            cmdText.Append(" VALUES (");
+            <% for (int i = 0; i < _columns.Count; i++) { %>
+            cmdText.Append("@<%= _columns[i].Name+((i<_columns.Count-1)?",":")") %>");
+            <% }%>
+            <%if(_hasIdentity){ %>
+            cmdText.Append(";select @@IDENTITY;");
+            <%} %>
+            SqlParameter[] parameters = 
+        	{
+             <% for (int i = 0; i < _columns.Count; i++) { %>
+                new SqlParameter("@<%= _columns[i].Name%>", <%=GetParamSqlDbType(_columns[i])%>) {Value=entity.<%=GetPascalCaseName(_columns[i].Name)%>},   
+            <% }%>
+            };
+            return SqlHelper.ExecuteScalar(WriteConnectionString, CommandType.Text, cmdText.ToString(), parameters);
+        }
+        
+        /// <summary>
+        /// 更新一条数据
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <returns></returns>
+        public bool Modify(<%= GetModelName(SourceTable)%> entity)
+        {
+            StringBuilder cmdText = new StringBuilder();
+            cmdText.Append("UPDATE <%= SourceTable.Name%> SET ");
+            <% for (int i = 0; i < _nonPrimaryKeyColumns.Count; i++) { %>
+            cmdText.Append("<%= _nonPrimaryKeyColumns[i].Name%> = @<%= _nonPrimaryKeyColumns[i].Name+((i<_nonPrimaryKeyColumns.Count-1)?",":"")%>");
+            <% }%>
+            cmdText.Append(" WHERE <%= _firstColumn.Name%> = @<%= _firstColumn.Name%>");
+            
+            SqlParameter[] parameters = 
+			{
+             <% for (int i = 0; i < _nonPrimaryKeyColumns.Count; i++) { %>
+                new SqlParameter("@<%= _nonPrimaryKeyColumns[i].Name%>", <%=GetParamSqlDbType(_nonPrimaryKeyColumns[i])%>) {Value=entity.<%=GetPascalCaseName(_nonPrimaryKeyColumns[i].Name)%>},   
+            <% }%>
+                new SqlParameter("@<%= _firstColumn.Name%>", <%=GetParamSqlDbType(_firstColumn)%>) {Value=entity.<%=GetPascalCaseName(_firstColumn.Name)%>}, 
+            };
+            
+            int  rows = SqlHelper.ExecuteNonQuery(WriteConnectionString, CommandType.Text, cmdText.ToString(), parameters);
+			return rows > 0;
+        }
+        
+        /// <summary>
+		/// 删除一条数据
+		/// </summary>
+		/// <param name="id">主键</param>
+		/// <returns></returns>
+		public bool Del(<%= GetFirstColumnType(SourceTable) %> id)
+		{
+            StringBuilder cmdText = new StringBuilder();
+			cmdText.Append("DELETE FROM <%= SourceTable.Name%> ");
+			cmdText.Append(" WHERE <%= _firstColumn.Name%> = @<%= _firstColumn.Name%>");
+            SqlParameter[] parameters = 
+			{
+				  new SqlParameter("@<%= _firstColumn.Name%>", <%=GetParamSqlDbType(_firstColumn)%>) {Value=id}, 
+            };
+            int  rows = SqlHelper.ExecuteNonQuery(WriteConnectionString, CommandType.Text, cmdText.ToString(), parameters);
+			return rows > 0;
+        }
+        
+        /// <summary>
+		/// 删除一些数据
+		/// </summary>
+		/// <param name="whereSql">条件</param>
+		/// <returns></returns>
+		public bool DelWhere(string whereSql)
+		{
+            StringBuilder cmdText = new StringBuilder();
+			cmdText.Append("DELETE FROM <%= SourceTable.Name%> ");
+          	if(!string.IsNullOrEmpty(whereSql))
+            {
+                cmdText.Append("WHERE " + whereSql);
+            }
+            else
+            {
+                return false;
+            }
+            int  rows = SqlHelper.ExecuteNonQuery(WriteConnectionString, CommandType.Text, cmdText.ToString());
+			return rows > 0;
+        }
+        
+        /// <summary>
+		/// 得到一个对象实体
+		/// </summary>
+		/// <param name="id">主键</param>
+		/// <returns>实体</returns>
+        public <%= GetModelName(SourceTable)%> Get(<%= GetFirstColumnType(SourceTable) %> id)
+        {
+            StringBuilder cmdText=new StringBuilder();
+            cmdText.Append("SELECT ");
+             <% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+            cmdText.Append("<%= SourceTable.Columns[i].Name+((i<SourceTable.Columns.Count-1)?",":"") %>");
+            <% }%>
+            cmdText.Append(" FROM <%= SourceTable.Name%>  WITH(NOLOCK) ");
+            cmdText.Append(" WHERE <%= _firstColumn.Name%> = @<%= _firstColumn.Name%>");
+            SqlParameter[] parameters = 
+			{
+				  new SqlParameter("@<%= _firstColumn.Name%>", <%=GetParamSqlDbType(_firstColumn)%>) {Value=id}, 
+            };
+            
+            <%= GetModelName(SourceTable)%> entity = null;
+            using (var dataReader = SqlHelper.ExecuteReader(ReadConnectionString, CommandType.Text, cmdText.ToString(), parameters))
+            {
+                while (dataReader.Read())
+                {
+                    entity = FromIDataReader(dataReader);
+                }
+            }
+            return entity;
+        }
+        
+        /// <summary>
+		/// 通过条件获取实体列表
+		/// </summary>
+		/// <param name="whereSql">条件</param>
+		/// <returns>实体列表</returns>
+        public List<<%= GetModelName(SourceTable)%>> GetList(string whereSql)
+        {
+            StringBuilder cmdText=new StringBuilder();
+            cmdText.Append("SELECT ");
+             <% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+            cmdText.Append("<%= SourceTable.Columns[i].Name+((i<SourceTable.Columns.Count-1)?",":"") %>");
+            <% }%>
+            cmdText.Append(" FROM <%= SourceTable.Name%>  WITH(NOLOCK) ");
+            if(!string.IsNullOrEmpty(whereSql))
+            {
+                cmdText.Append("WHERE " + whereSql);
+            }
+            
+            List<<%= GetModelName(SourceTable)%>> list = new List<<%= GetModelName(SourceTable)%>>();
+            using (var dataReader = SqlHelper.ExecuteReader(ReadConnectionString, CommandType.Text, cmdText.ToString()))
+            {
+                while (dataReader.Read())
+                {
+                    <%= GetModelName(SourceTable)%> entity = FromIDataReader(dataReader);
+                    list.Add(entity);
+                }
+            }
+            return list;
+        }
+        
+        /// <summary>
+		/// 通过条件获记录数
+		/// </summary>
+		/// <param name="whereSql">条件</param>
+	    /// <param name="distinctName"></param>
+		/// <returns>实体列表</returns>
+        public int GetCnt(string whereSql,string distinctName=null)
+        {
+            StringBuilder cmdText=new StringBuilder();
+            if(String.IsNullOrEmpty(distinctName))
+            cmdText.Append("SELECT count(1)");
+            else
+            cmdText.Append($"SELECT count(distinct({distinctName}))");
+            cmdText.Append(" FROM <%= SourceTable.Name%> WITH(NOLOCK) ");
+            if(!string.IsNullOrEmpty(whereSql))
+            {
+                cmdText.Append("WHERE " + whereSql);
+            }
+            
+            return   Convert.ToInt32(SqlHelper.ExecuteScalar(ReadConnectionString, CommandType.Text,cmdText.ToString()));
+        }
+        
+        /// <summary>
+        /// 获得数据列表 带分页
+        /// </summary>
+        /// <param name="searchCondition">条件</param>
+        /// <param name="orderExpression">排序字段</param>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">每页大小</param>
+        /// <param name="recordCount">返回总条数</param>
+        /// <returns></returns>
+        public List<<%= GetModelName(SourceTable)%>> GetListByProc(string searchCondition, string orderExpression,int pageIndex, int pageSize, out int recordCount)
+        {
+            recordCount = 0;
+
+            SqlParameter[] parameters = new SqlParameter[] 
+			{
+				SqlParamHelper.MakeParam("@RecordNum",SqlDbType.Int,4, ParameterDirection.InputOutput, recordCount),
+				SqlParamHelper.MakeInParam("@SelectList",SqlDbType.VarChar,2000,"<%= GetColumnsString(SourceTable)%>"),
+				SqlParamHelper.MakeInParam("@TableSource",SqlDbType.VarChar,100,"<%= SourceTable.Name%> with(nolock)"),
+                SqlParamHelper.MakeInParam("@PrimaryKeyField", SqlDbType.VarChar, 255, "<%= _firstColumn.Name%>"),
+				SqlParamHelper.MakeInParam("@SearchCondition",SqlDbType.VarChar,2000, searchCondition),
+				SqlParamHelper.MakeInParam("@OrderExpression",SqlDbType.VarChar,1000, orderExpression),
+				SqlParamHelper.MakeInParam("@PageSize",SqlDbType.Int,4,pageSize),
+				SqlParamHelper.MakeInParam("@PageIndex",SqlDbType.Int,4,pageIndex)
+			};
+            
+            List<<%= GetModelName(SourceTable)%>> list = new List<<%= GetModelName(SourceTable)%>>();
+            using (IDataReader dataReader = SqlHelper.ExecuteReader(ReadConnectionString, CommandType.StoredProcedure, "PR_GetDataByPageIndex", parameters))
+            {
+                while (dataReader.Read())
+                {
+                    <%= GetModelName(SourceTable)%> entity = FromIDataReader(dataReader);
+                    list.Add(entity);
+                }
+            }
+            recordCount = Convert.ToInt32(parameters[0].Value);
+            return list;
+        }
+        
+        /// <summary>
+        /// 绑定单行记录到实体
+        /// </summary>
+        /// <param name="dr"></param>
+        /// <returns></returns>
+        public <%= GetModelName(SourceTable)%> FromIDataReader(IDataRecord dr)
+        {
+            <%= GetModelName(SourceTable)%> obj = new <%= GetModelName(SourceTable)%>();
+            try {
+			    <% for (int i=0; i < SourceTable.Columns.Count; ++i) { %>
+				<%Response.Write("\t\t\t\t");BuildPopulateValue(SourceTable.Columns[i]);Response.WriteLine("");%>
+			    <%}%>
+			}
+			catch(Exception ex)
+			{
+				throw new Exception("从DataReader中读取数据失败，可能与相关的字段不存在有关！请检查！||"+ex.Message+"||"+ex.Source);
+			}
+			return obj;
+        }
+        
+        #endregion
+        
+        #region  性能方法
+        
+        /// <summary>
+		/// 增加一条数据
+		/// </summary>
+		/// <param name="entity">实体</param>
+        /// <param name="fields">待插入的字段</param>
+		/// <returns></returns>
+        public object Add(<%= GetModelName(SourceTable)%> entity,HashSet<string> fields)
+		{
+            StringBuilder cmdText = new StringBuilder();
+            cmdText.Append("INSERT INTO <%= SourceTable.Name%>(");
+            <% for (int i = 0; i < _nonPrimaryKeyColumns.Count; i++) { %>
+            if (fields.Contains("<%= GetPascalCaseName(_nonPrimaryKeyColumns[i].Name) %>")) {cmdText.Append("<%= _nonPrimaryKeyColumns[i].Name %>,");}
+            <% }%>
+            cmdText.Remove(cmdText.Length - 1, 1);
+            cmdText.Append(") VALUES (");
+            <% for (int i = 0; i < _nonPrimaryKeyColumns.Count; i++) { %>
+            if (fields.Contains("<%= GetPascalCaseName(_nonPrimaryKeyColumns[i].Name) %>")) {cmdText.Append("@<%= _nonPrimaryKeyColumns[i].Name %>,");}
+            <% }%>
+            cmdText.Remove(cmdText.Length - 1, 1);
+            cmdText.Append(")");
+            <%if(_hasIdentity){ %>
+            cmdText.Append(";select @@IDENTITY;");
+            <%} %>
+            
+            List<SqlParameter> parameters = new List<SqlParameter>();
+             <% for (int i = 0; i < _nonPrimaryKeyColumns.Count; i++) { %>
+            if (fields.Contains("<%= GetPascalCaseName(_nonPrimaryKeyColumns[i].Name) %>")) {parameters.Add(new SqlParameter("@<%= _nonPrimaryKeyColumns[i].Name%>", <%=GetParamSqlDbType(_nonPrimaryKeyColumns[i])%>) {Value=entity.<%=GetPascalCaseName(_nonPrimaryKeyColumns[i].Name)%>});}
+            <% }%>
+            return SqlHelper.ExecuteScalar(WriteConnectionString, CommandType.Text, cmdText.ToString(), parameters.ToArray());
+        }
+        
+        /// <summary>
+		/// 更新一条数据
+		/// </summary>
+		/// <param name="entity">实体</param>
+		/// <param name="fields">待更新的字段</param>
+		/// <returns></returns>
+        public bool Modify(<%= GetModelName(SourceTable)%> entity,HashSet<string> fields)
+		{
+            StringBuilder cmdText = new StringBuilder();
+            cmdText.Append("UPDATE <%= SourceTable.Name%> SET ");
+            <% for (int i = 0; i < _nonPrimaryKeyColumns.Count; i++) { %>
+            if (fields.Contains("<%= GetPascalCaseName(_nonPrimaryKeyColumns[i].Name) %>")) {cmdText.Append("<%= _nonPrimaryKeyColumns[i].Name%> = @<%= _nonPrimaryKeyColumns[i].Name%>,");}
+            <% }%>
+            cmdText.Remove(cmdText.Length - 1, 1);
+            cmdText.Append(" WHERE <%= _firstColumn.Name%> = @<%= _firstColumn.Name%>");
+            
+            List<SqlParameter> parameters = new List<SqlParameter>();
+             <% for (int i = 0; i < _nonPrimaryKeyColumns.Count; i++) { %>
+            if (fields.Contains("<%= GetPascalCaseName(_nonPrimaryKeyColumns[i].Name) %>")) {parameters.Add(new SqlParameter("@<%= _nonPrimaryKeyColumns[i].Name%>", <%=GetParamSqlDbType(_nonPrimaryKeyColumns[i])%>) {Value=entity.<%=GetPascalCaseName(_nonPrimaryKeyColumns[i].Name)%>});}
+            <% }%>
+            parameters.Add(new SqlParameter("@<%= _firstColumn.Name%>", <%=GetParamSqlDbType(_firstColumn)%>) {Value=entity.<%=GetPascalCaseName(_firstColumn.Name)%>});
+           
+            int  rows = SqlHelper.ExecuteNonQuery(WriteConnectionString, CommandType.Text, cmdText.ToString(), parameters.ToArray());
+			return rows > 0;
+        }
+        
+        
+        /// <summary>
+		/// 更新一些数据
+		/// </summary>
+		/// <param name="entity">实体</param>
+		/// <param name="fields">待更新的字段</param>
+	    /// <param name="whereSql"></param>
+		/// <returns></returns>
+        public bool ModifyWhere(<%= GetModelName(SourceTable)%> entity,HashSet<string> fields,string whereSql)
+		{
+            StringBuilder cmdText = new StringBuilder();
+            cmdText.Append("UPDATE <%= SourceTable.Name%> SET ");
+            <% for (int i = 0; i < _nonPrimaryKeyColumns.Count; i++) { %>
+            if (fields.Contains("<%= GetPascalCaseName(_nonPrimaryKeyColumns[i].Name) %>")) {cmdText.Append("<%= _nonPrimaryKeyColumns[i].Name%> = @<%= _nonPrimaryKeyColumns[i].Name%>,");}
+            <% }%>
+            cmdText.Remove(cmdText.Length - 1, 1);
+            
+            if(!string.IsNullOrEmpty(whereSql))
+            {
+                cmdText.Append(" WHERE " + whereSql);
+            }
+            else
+            {
+                return false;
+            }
+            
+            List<SqlParameter> parameters = new List<SqlParameter>();
+             <% for (int i = 0; i < _nonPrimaryKeyColumns.Count; i++) { %>
+            if (fields.Contains("<%= GetPascalCaseName(_nonPrimaryKeyColumns[i].Name) %>")) {parameters.Add(new SqlParameter("@<%= _nonPrimaryKeyColumns[i].Name%>", <%=GetParamSqlDbType(_nonPrimaryKeyColumns[i])%>) {Value=entity.<%=GetPascalCaseName(_nonPrimaryKeyColumns[i].Name)%>});}
+            <% }%>
+            
+            int  rows = SqlHelper.ExecuteNonQuery(WriteConnectionString, CommandType.Text, cmdText.ToString(), parameters.ToArray());
+			return rows > 0;
+        }
+        
+        /// <summary>
+		/// 得到一个对象实体
+		/// </summary>
+		/// <param name="id">主键</param>
+		/// <param name="fields">待查找的字段</param>
+		/// <returns>实体</returns>
+        public <%= GetModelName(SourceTable)%> Get(<%= GetFirstColumnType(SourceTable) %> id,HashSet<string> fields)
+        {
+            StringBuilder cmdText=new StringBuilder();
+            cmdText.Append("SELECT ");
+             <% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+            if (fields.Contains("<%= GetPascalCaseName(SourceTable.Columns[i].Name) %>")) {cmdText.Append("<%= SourceTable.Columns[i].Name %>,");}
+            <% }%>
+            cmdText.Remove(cmdText.Length - 1, 1);
+            cmdText.Append(" FROM <%= SourceTable.Name%>  WITH(NOLOCK) ");
+            cmdText.Append(" WHERE <%= _firstColumn.Name%> = @<%= _firstColumn.Name%>");
+            SqlParameter[] parameters = 
+			{
+				  new SqlParameter("@<%= _firstColumn.Name%>", <%=GetParamSqlDbType(_firstColumn)%>) {Value=id}, 
+            };
+            
+            <%= GetModelName(SourceTable)%> entity = null;
+            using (var dataReader = SqlHelper.ExecuteReader(ReadConnectionString, CommandType.Text, cmdText.ToString(), parameters))
+            {
+                while (dataReader.Read())
+                {
+                    entity = FromIDataReader(dataReader,fields);
+                }
+            }
+            return entity;
+        }
+        
+        
+        /// <summary>
+		/// 得到一个对象实体
+		/// </summary>
+		/// <param name="whereSql">条件</param>
+		/// <param name="fields">待查找的字段</param>
+		/// <returns>实体列表</returns>
+        public <%= GetModelName(SourceTable)%> GetWhereOne(string whereSql,HashSet<string> fields)
+        {
+            StringBuilder cmdText=new StringBuilder();
+            cmdText.Append("SELECT ");
+             <% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+            if (fields.Contains("<%= GetPascalCaseName(SourceTable.Columns[i].Name) %>")){cmdText.Append("<%= SourceTable.Columns[i].Name %>,");}
+            <% }%>
+            cmdText.Remove(cmdText.Length - 1, 1);
+            cmdText.Append(" FROM <%= SourceTable.Name%> ");
+            if(!string.IsNullOrEmpty(whereSql))
+            {
+                cmdText.Append("WHERE " + whereSql);
+            }
+            
+            <%= GetModelName(SourceTable)%> entity = null;
+            using (var dataReader = SqlHelper.ExecuteReader(ReadConnectionString, CommandType.Text, cmdText.ToString()))
+            {
+                while (dataReader.Read())
+                {
+                    entity = FromIDataReader(dataReader,fields);
+                }
+            }
+            return entity;
+        }
+        
+        /// <summary>
+		/// 通过条件获取实体列表
+		/// </summary>
+		/// <param name="whereSql">条件</param>
+		/// <param name="fields">待查找的字段</param>
+		/// <returns>实体列表</returns>
+        public List<<%= GetModelName(SourceTable)%>> GetList(string whereSql,HashSet<string> fields)
+        {
+            StringBuilder cmdText=new StringBuilder();
+            cmdText.Append("SELECT ");
+             <% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+            if (fields.Contains("<%= GetPascalCaseName(SourceTable.Columns[i].Name) %>")){cmdText.Append("<%= SourceTable.Columns[i].Name %>,");}
+            <% }%>
+            cmdText.Remove(cmdText.Length - 1, 1);
+            cmdText.Append(" FROM <%= SourceTable.Name%>  WITH(NOLOCK) ");
+            if(!string.IsNullOrEmpty(whereSql))
+            {
+                cmdText.Append("WHERE " + whereSql);
+            }
+            
+            List<<%= GetModelName(SourceTable)%>> list = new List<<%= GetModelName(SourceTable)%>>();
+            using (var dataReader = SqlHelper.ExecuteReader(ReadConnectionString, CommandType.Text, cmdText.ToString()))
+            {
+                while (dataReader.Read())
+                {
+                    <%= GetModelName(SourceTable)%> entity = FromIDataReader(dataReader,fields);
+                    list.Add(entity);
+                }
+            }
+            return list;
+        }
+        
+        /// <summary>
+		/// 通过条件获取实体列表
+		/// </summary>
+		/// <param name="whereSql">条件</param>
+		/// <param name="fields">待查找的字段</param>
+	    /// <param name="orderBy"></param>
+		/// <returns>实体列表</returns>
+        public List<<%= GetModelName(SourceTable)%>> GetList(string whereSql,HashSet<string> fields,string orderBy)
+        {
+            StringBuilder cmdText=new StringBuilder();
+            cmdText.Append("SELECT ");
+             <% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+            if (fields.Contains("<%= GetPascalCaseName(SourceTable.Columns[i].Name) %>")){cmdText.Append("<%= SourceTable.Columns[i].Name %>,");}
+            <% }%>
+            cmdText.Remove(cmdText.Length - 1, 1);
+            cmdText.Append(" FROM <%= SourceTable.Name%>  WITH(NOLOCK) ");
+            if(!string.IsNullOrEmpty(whereSql))
+            {
+                cmdText.Append("WHERE " + whereSql);
+            }
+            if(!string.IsNullOrEmpty(orderBy))
+            {
+                cmdText.Append(" " + orderBy);
+            }
+            
+            List<<%= GetModelName(SourceTable)%>> list = new List<<%= GetModelName(SourceTable)%>>();
+            using (var dataReader = SqlHelper.ExecuteReader(ReadConnectionString, CommandType.Text, cmdText.ToString()))
+            {
+                while (dataReader.Read())
+                {
+                    <%= GetModelName(SourceTable)%> entity = FromIDataReader(dataReader,fields);
+                    list.Add(entity);
+                }
+            }
+            return list;
+        }
+        
+        /// <summary>
+		/// 通过条件获取实体列表
+		/// </summary>
+		/// <param name="whereSql">条件</param>
+		/// <param name="fields">待查找的字段</param>
+	    /// <param name="orderBy"></param>
+		/// <returns>实体列表</returns>
+        public List<<%= GetModelName(SourceTable)%>> GetList(string whereSql,HashSet<string> fields,int size,string orderBy)
+        {
+            StringBuilder cmdText=new StringBuilder();
+            cmdText.Append($"SELECT top {size} ");
+             <% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+            if (fields.Contains("<%= GetPascalCaseName(SourceTable.Columns[i].Name) %>")){cmdText.Append("<%= SourceTable.Columns[i].Name %>,");}
+            <% }%>
+            cmdText.Remove(cmdText.Length - 1, 1);
+            cmdText.Append(" FROM <%= SourceTable.Name%>  WITH(NOLOCK) ");
+            if(!string.IsNullOrEmpty(whereSql))
+            {
+                cmdText.Append("WHERE " + whereSql);
+            }
+            if(!string.IsNullOrEmpty(orderBy))
+            {
+                cmdText.Append(" " + orderBy);
+            }
+            
+            List<<%= GetModelName(SourceTable)%>> list = new List<<%= GetModelName(SourceTable)%>>();
+            using (var dataReader = SqlHelper.ExecuteReader(ReadConnectionString, CommandType.Text, cmdText.ToString()))
+            {
+                while (dataReader.Read())
+                {
+                    <%= GetModelName(SourceTable)%> entity = FromIDataReader(dataReader,fields);
+                    list.Add(entity);
+                }
+            }
+            return list;
+        }
+        
+        /// <summary>
+        /// 获得数据列表 带分页
+        /// </summary>
+		/// <param name="fields">待查找的字段</param>
+        /// <param name="searchCondition">条件</param>
+        /// <param name="orderExpression">排序字段</param>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">每页大小</param>
+        /// <param name="recordCount">返回总条数</param>
+        /// <returns></returns>
+        public List<<%= GetModelName(SourceTable)%>> GetListByProc(HashSet<string> fields,string searchCondition, string orderExpression,int pageIndex, int pageSize, out int recordCount)
+        {
+            recordCount = 0;
+
+            SqlParameter[] parameters = new SqlParameter[] 
+			{
+				SqlParamHelper.MakeParam("@RecordNum",SqlDbType.Int,4, ParameterDirection.InputOutput, recordCount),
+				SqlParamHelper.MakeInParam("@SelectList",SqlDbType.VarChar,2000,string.Join(",", fields)),
+				SqlParamHelper.MakeInParam("@TableSource",SqlDbType.VarChar,100,"<%= SourceTable.Name%> with(nolock)"),
+                SqlParamHelper.MakeInParam("@PrimaryKeyField", SqlDbType.VarChar, 255, "<%= _firstColumn.Name%>"),
+				SqlParamHelper.MakeInParam("@SearchCondition",SqlDbType.VarChar,2000, searchCondition),
+				SqlParamHelper.MakeInParam("@OrderExpression",SqlDbType.VarChar,1000, orderExpression),
+				SqlParamHelper.MakeInParam("@PageSize",SqlDbType.Int,4,pageSize),
+				SqlParamHelper.MakeInParam("@PageIndex",SqlDbType.Int,4,pageIndex)
+			};
+            
+            List<<%= GetModelName(SourceTable)%>> list = new List<<%= GetModelName(SourceTable)%>>();
+            using (IDataReader dataReader = SqlHelper.ExecuteReader(ReadConnectionString, CommandType.StoredProcedure, "PR_GetDataByPageIndex", parameters))
+            {
+                while (dataReader.Read())
+                {
+                    <%= GetModelName(SourceTable)%> entity = FromIDataReader(dataReader,fields);
+                    list.Add(entity);
+                }
+            }
+            recordCount = Convert.ToInt32(parameters[0].Value);
+            return list;
+        }
+        
+        /// <summary>
+        /// 绑定单行记录到实体
+        /// </summary>
+        /// <param name="dr"></param>
+		/// <param name="fields">待查找的字段</param>
+        /// <returns></returns>
+        public <%= GetModelName(SourceTable)%> FromIDataReader(IDataRecord dr,HashSet<string> fields)
+        {
+            <%= GetModelName(SourceTable)%> obj = new <%= GetModelName(SourceTable)%>();
+            try {
+			    <% for (int i=0; i < SourceTable.Columns.Count; ++i) { %>
+				if (fields.Contains("<%= GetPascalCaseName(SourceTable.Columns[i].Name) %>")){<%BuildPopulateValue(SourceTable.Columns[i]);%>}
+			    <%}%>
+			}
+			catch(Exception ex)
+			{
+				throw new Exception("从DataReader中读取数据失败，可能与相关的字段不存在有关！请检查！||"+ex.Message+"||"+ex.Source);
+			}
+			return obj;
+        }
+        
+        #endregion
+        
+        
+    }
+    
+    
+}
+<script runat="template">
+
+            
+             
+public string GetClassName(TableSchema table)
+{
+	return GetEntClassName(table)+"Repository";
+}
+
+public string GetModelName(TableSchema table)
+{
+    return GetEntClassName(table);
+}
+</script>
+<!-- #include file="script.inc" -->

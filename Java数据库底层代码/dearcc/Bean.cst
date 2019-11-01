@@ -1,0 +1,61 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+/**
+*Name: <%=SourceTable.Name%>
+*Author: Caicai
+*Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
+*Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+*/ 
+package com.wolf.dearcc.pojo;
+
+import lombok.Data;
+import tk.mybatis.mapper.annotation.KeySql;
+import javax.persistence.*;
+import java.io.Serializable;
+ 
+ 
+@Data
+@Table(name = "<%=SourceTable.Name%>")
+public class <%= GetClassName(SourceTable) %> implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+	<% for (int i = 0; i < SourceTable.Columns.Count; i++) { 
+    bool isIdentity = SourceTable.Columns[i].ExtendedProperties["CS_IsIdentity"].Value.ToString()=="True";
+    bool isPk = SourceTable.Columns[i].IsPrimaryKeyMember;
+    %>
+    <% if (!String.IsNullOrEmpty(SourceTable.Columns[i].Description)){%>
+    /**
+    *<%= FilterString(SourceTable.Columns[i].Description)%>
+    */
+    <%}%>
+    <% if (isPk){%>
+    @Id
+    <%}%>
+    <% if (isIdentity){%>
+    @KeySql(useGeneratedKeys = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY,generator = "JDBC")
+    <%}%>
+    <% if(i==0){%>
+    @Column(name = "<%= SourceTable.Columns[i].Name %>",insertable = false,updatable = false)
+    <% } else {%>
+    @Column(name = "<%= SourceTable.Columns[i].Name %>")
+    <% } %> 
+    <%if(SourceTable.Columns[i].DataType==DbType.Date||SourceTable.Columns[i].DataType==DbType.DateTime){%>
+    <%}%>
+    private <%= GetCSharpVariableType(SourceTable.Columns[i]) %> <%= GetCamelCaseName(SourceTable.Columns[i].Name) %>;
+    <% if (i < SourceTable.Columns.Count - 1) Response.Write("\r\n"); %>
+    <%}%>
+    
+    public static class ${
+    <% for (int i = 0; i < SourceTable.Columns.Count; i++) {%>
+        public static String <%=GetCamelCaseName(SourceTable.Columns[i].Name)%>="<%=GetCamelCaseName(SourceTable.Columns[i].Name)%>";
+    <%}%>
+    }
+}
+ 
+<!-- #include file="script.inc" -->

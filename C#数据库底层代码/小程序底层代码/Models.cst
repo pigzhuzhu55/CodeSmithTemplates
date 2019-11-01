@@ -1,0 +1,44 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="小程序底层代码 v1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="SmallProgram.DataAccess" Description="The namespace to use for this class" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Text;
+using ProtoBuf;
+using <%= NameSpace %>.Models.Base;
+
+namespace <%= NameSpace %>.Models
+{
+	/// <summary>
+	/// File: <%= GetClassName(SourceTable) %>.cs 数据实体基类
+	/// </summary>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToString("yyyy-MM-dd") %>"</para>
+	/// <para>Version: "V1.0"</para>
+	/// <para>Copyright: "<%= Copyright %>"</para>
+	/// </remarks>
+    [DataContract,ProtoContract]
+	public class <%= GetClassName(SourceTable) %>:<%= GetClassName(SourceTable) %>Base
+	{
+		
+	}
+}
+<script runat="template">
+public string GetClassName(TableSchema table)
+{
+	return GetEntClassName(table);
+}
+</script>
+<!-- #include file="script.inc" -->

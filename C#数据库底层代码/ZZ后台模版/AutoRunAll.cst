@@ -1,0 +1,33 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+
+<%@ Register Name="AutoRunOne" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\C#数据库底层代码\ZZ后台模版\AutoRunOne.cst" MergeProperties="False" ExcludeProperties="" %>
+
+<%@ Template Language="C#" TargetLanguage="Text" %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="Cly v1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="Cly.Entitys" Description="The namespace to use for this class" %>
+<%@ Property Name="Db" Type="SchemaExplorer.DatabaseSchema" DeepLoad="True" Optional="False"  Category="Context" Description="选择数据库.." %>
+<%@ Property Name="OutPutModelDest" Type="String" Default="F:\STUDY\study\code\mycode\ZZ\Cly.Entitys"%>
+ 
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Import Namespace="SchemaExplorer" %>
+
+
+
+<%
+
+CodeTemplate codeTemplate1=new AutoRunOne();
+codeTemplate1.SetProperty("DevelopersName",DevelopersName);
+codeTemplate1.SetProperty("NameSpace",NameSpace);
+codeTemplate1.SetProperty("OutPutModelDest",OutPutModelDest);
+
+foreach(TableSchema tb in Db.Tables){
+    codeTemplate1.SetProperty("SourceTable",tb);
+    codeTemplate1.RenderToString();
+}
+
+%>

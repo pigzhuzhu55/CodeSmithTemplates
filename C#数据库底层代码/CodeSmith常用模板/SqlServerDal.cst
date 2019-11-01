@@ -1,0 +1,54 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="True" Description="Template description here." ResponseEncoding="utf-8" %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="Greatqn Templates V1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="Greatqn" Description="The namespace to use for this class" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using System.Text;
+using System.Collections;
+using System.Collections.Generic;
+using <%= NameSpace %>.Ent;
+using <%= NameSpace %>.SqlServerDal.Base;
+using <%= NameSpace %>.IDal;
+
+namespace <%= NameSpace %>.SqlServerDal
+{
+	/// <summary>
+	/// File: <%= GetClassName(SourceTable) %>.cs 数据层接口的实现
+	/// </summary>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// <para>Version: "V1.0"</para>
+	/// <para>Copyright: "<%= Copyright %>"</para>
+	/// </remarks>
+	public class <%= GetClassName(SourceTable) %>:<%= GetClassName(SourceTable) %>Base,I<%= GetEntClassName(SourceTable) %>DR
+	{
+	    /// <summary>
+        /// 设置数据层连接字符串
+        /// </summary>
+	    public void SetCnnString(string cnnString)
+        {
+            base.ConnectionString = cnnString;
+        }
+		
+		//TODO  添加自定义的方法
+	}
+}
+<script runat="template">
+public string GetClassName(TableSchema table)
+{
+	return GetEntClassName(table)+ "DR";
+}
+</script>
+<!-- #include file="script.inc" -->

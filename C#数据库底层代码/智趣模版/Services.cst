@@ -1,0 +1,132 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="BabyGuardian v1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="BabyGuardian" Description="The namespace to use for this class" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+using System;
+using System.Data;
+using System.Collections.Generic;
+using <%= NameSpace %>.Models;
+using <%= NameSpace %>.Common.Data;
+using <%= NameSpace %>.Common.Generic;
+using <%= NameSpace %>.DataAccess;
+
+namespace <%= NameSpace %>.Services
+{
+	/// <summary>
+	/// File: <%= GetClassName(SourceTable) %>.cs 业务逻辑类
+	/// </summary>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToString("yyyy-MM-dd") %>"</para>
+	/// <para>Version: "V1.0"</para>
+	/// <para>Copyright: "<%= Copyright %>"</para>
+	/// </remarks>
+	public class <%= GetClassName(SourceTable) %>
+	{
+        static ConnectionProvider connectionProvider = CustomConfigHelper.GetConnectionProvider("DefaultResourceConnectionProvider");
+        <%= GetDataAccessName(SourceTable) %> da = new <%= GetDataAccessName(SourceTable) %>(connectionProvider);
+       
+        public static <%= GetClassName(SourceTable) %> GetIntance()
+	    {
+	        return Singleton<<%= GetClassName(SourceTable) %>>.GetIntance();
+	    }
+        #region  常用方法
+        
+        /// <summary>
+		/// 增加一条数据
+		/// </summary>
+		/// <param name="entity">实体</param>
+		/// <returns></returns>
+        public object Add(<%= GetModelName(SourceTable)%> entity)
+		{
+            return da.Add(entity);
+        }
+        
+        /// <summary>
+		/// 更新一条数据
+		/// </summary>
+		/// <param name="entity">实体</param>
+		/// <returns></returns>
+        public bool Modify(<%= GetModelName(SourceTable)%> entity)
+		{
+             return da.Modify(entity);
+        }
+        
+        /// <summary>
+		/// 删除一条数据
+		/// </summary>
+		/// <param name="id">主键</param>
+		/// <returns></returns>
+		public bool Del(<%= GetPrimaryKeyType(SourceTable) %> id)
+		{
+             return da.Del(id);
+        }
+        
+        /// <summary>
+		/// 得到一个对象实体
+		/// </summary>
+		/// <param name="id">主键</param>
+		/// <returns>实体</returns>
+        public <%= GetModelName(SourceTable)%> Get(<%= GetPrimaryKeyType(SourceTable) %> id)
+        {
+            return da.Get(id);
+        }
+        
+        /// <summary>
+		/// 通过条件获取实体列表
+		/// </summary>
+		/// <param name="whereSql">条件</param>
+		/// <returns>实体列表</returns>
+        public List<<%= GetModelName(SourceTable)%>> GetList(string whereSql)
+        {
+            return da.GetList(whereSql);
+        }
+        
+        /// <summary>
+        /// 获得数据列表 带分页
+        /// </summary>
+        /// <param name="searchCondition">条件</param>
+        /// <param name="orderExpression">排序字段</param>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">每页大小</param>
+        /// <param name="recordCount">返回总条数</param>
+        /// <returns></returns>
+        public List<<%= GetModelName(SourceTable)%>> GetListByProc(string searchCondition, string orderExpression,int pageIndex, int pageSize, out int recordCount)
+        {
+            return da.GetListByProc(searchCondition,orderExpression,pageIndex,pageSize,out recordCount);
+        }
+        
+        #endregion
+        
+        #region  扩展方法
+        
+        #endregion
+        
+    }
+    
+    
+}
+<script runat="template">
+public string GetClassName(TableSchema table)
+{
+	return GetEntClassName(table)+"Services";
+}
+public string GetDataAccessName(TableSchema table)
+{
+	return GetEntClassName(table)+"Repository";
+}
+public string GetModelName(TableSchema table)
+{
+    return GetEntClassName(table);
+}
+</script>
+<!-- #include file="script.inc" -->

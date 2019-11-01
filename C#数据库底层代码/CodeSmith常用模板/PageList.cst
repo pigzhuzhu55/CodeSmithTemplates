@@ -1,0 +1,37 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+<%@ Property Name="Tables" Type="SchemaExplorer.TableSchemaCollection" Category="Source" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %> 
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head runat="server">
+    <title> 网站地图 </title>
+</head>
+<body>
+<%
+for (int i = 0; i < Tables.Count; i++)
+{
+	Response.WriteLine(string.Format("<a href=\"{0}List.aspx\">ListPage {0}</a><br>",GetClassName(Tables[i])));
+	Response.WriteLine(string.Format("<a href=\"{0}Edit.aspx\">EditPage {0}</a><br>",GetClassName(Tables[i])));
+}
+%>
+</body>
+</html>
+<script runat="template">
+public string GetClassName(TableSchema table)
+{
+	return GetEntClassName(table);
+}
+</script>
+<!-- #include file="script.inc" -->

@@ -1,0 +1,201 @@
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" Description="Object Class." %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Object Table." %>
+<%@ Property Name="ModelsNamespace" Default="MyBookShop.Models" Type="System.String" Category="Context" Description="namespace" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="System.Text.RegularExpressions" %>
+<%@ Import Namespace="SchemaExplorer" %>
+using System;
+using System.Collections.Generic;
+using System.Text;
+namespace <%= ModelsNamespace %>
+{
+	#region <%= SourceTable.Name %>
+	/// <summary>
+	/// This object represents the properties and methods of a <%= GetClassName(SourceTable) %>.
+	/// </summary>
+	[Serializable()]
+	public class <%= GetClassName(SourceTable) %>
+	{
+		protected <%= GetPrimaryKeyType(SourceTable) %> id;
+		<% foreach (ColumnSchema column in SourceTable.NonPrimaryKeyColumns) { %>
+		<%= GetVariableDeclarationStatement(column) %>
+		<% } %>
+	
+	
+		public <%= GetClassName(SourceTable) %>()
+		{
+		}
+		
+		#region Public Properties
+		public <%= GetPrimaryKeyType(SourceTable) %> Id
+		{
+			get {return id;}
+		}
+		
+		<% for (int i = 0; i < SourceTable.NonPrimaryKeyColumns.Count; i++) { %>
+		<%= GetPropertieDeclaration(SourceTable.NonPrimaryKeyColumns[i]) %> 
+		{
+			get {return <%= GetVariableName(GetColumnName(SourceTable.NonPrimaryKeyColumns[i])) %>;}
+			set {<%= GetVariableName(GetColumnName(SourceTable.NonPrimaryKeyColumns[i])) %> = value;}
+		}
+		<% if (i < SourceTable.NonPrimaryKeyColumns.Count - 1) Response.Write("\r\n"); %>		
+		<% } %>
+		#endregion
+		
+	
+	}
+	#endregion
+}
+<script runat="template">
+public string GetClassName(TableSchema table)
+{
+	return MakeSingle(table.Name);
+}
+public override string GetFileName()
+{
+	return GetClassName(this.SourceTable) + ".cs";
+}
+public string GetCamelCaseName(string value)
+{
+	return value.Substring(0, 1).ToLower() + value.Substring(1);
+}
+public string GetPrimaryKeyType(TableSchema table)
+{
+	if (table.PrimaryKey != null)
+	{
+		if (table.PrimaryKey.MemberColumns.Count == 1)
+		{
+			return GetCSharpVariableType(table.PrimaryKey.MemberColumns[0]);
+		}
+		else
+		{
+			throw new ApplicationException("This template will not work on primary keys with more than one member column.");
+		}
+	}
+	else
+	{
+		throw new ApplicationException("This template will only work on tables with a primary key.");
+	}
+}
+public string GetCSharpVariableType(ColumnSchema column)
+{
+	switch (column.DataType)
+	{
+		case DbType.AnsiString: return "string";
+		case DbType.AnsiStringFixedLength: return "string";
+		case DbType.Binary: return "byte[]";
+		case DbType.Boolean: return "bool";
+		case DbType.Byte: return "byte";
+		case DbType.Currency: return "decimal";
+		case DbType.Date: return "DateTime";
+		case DbType.DateTime: return "DateTime";
+		case DbType.Decimal: return "decimal";
+		case DbType.Double: return "double";
+		case DbType.Guid: return "Guid";
+		case DbType.Int16: return "short";
+		case DbType.Int32: return "int";
+		case DbType.Int64: return "long";
+		case DbType.Object: return "object";
+		case DbType.SByte: return "sbyte";
+		case DbType.Single: return "float";
+		case DbType.String: return "string";
+		case DbType.StringFixedLength: return "string";
+		case DbType.Time: return "TimeSpan";
+		case DbType.UInt16: return "ushort";
+		case DbType.UInt32: return "uint";
+		case DbType.UInt64: return "ulong";
+		case DbType.VarNumeric: return "decimal";
+		default:
+		{
+			return "__UNKNOWN__" + column.NativeType;
+		}
+	}
+}
+public string GetVariableName(string name)
+{
+	return GetCamelCaseName(name);
+}
+public string GetColumnName(ColumnSchema column)
+{
+	if(column.IsForeignKeyMember)
+	{
+		return column.Name.Substring(0, column.Name.Length - 2);
+	}
+	return column.Name;
+}
+
+public string GetVariableDeclarationStatement(ColumnSchema column)
+{
+	string statement = "protected ";
+	if(column.IsForeignKeyMember)
+	{
+		statement +=column.Name.Substring(0, column.Name.Length - 2)+" "+GetCamelCaseName(column.Name.Substring(0, column.Name.Length - 2));
+	}
+	else
+	{
+		statement += GetCSharpVariableType(column) + " " + GetVariableName(GetColumnName(column));
+	}
+		
+	string defaultValue = GetVariableDefaultValue(column);
+	if (defaultValue != "")
+	{
+		statement += " = " + defaultValue;
+	}	
+	statement += ";";	
+	return statement;
+}
+
+
+public string GetPropertieDeclaration(ColumnSchema column)
+{
+	string statement = "public ";
+	if(column.IsForeignKeyMember)
+	{
+		statement +=column.Name.Substring(0, column.Name.Length - 2)+" "+column.Name.Substring(0, column.Name.Length - 2);
+	}
+	else
+	{
+		statement += GetCSharpVariableType(column) + " " + column.Name;
+	}
+	return statement;
+}
+public string GetVariableDefaultValue(ColumnSchema column)
+{
+	switch (column.DataType)
+	{
+		case DbType.Guid:
+		{
+			return "Guid.Empty";
+		}
+		case DbType.AnsiString:
+		case DbType.AnsiStringFixedLength:
+		case DbType.String:
+		case DbType.StringFixedLength:
+		{
+			return "String.Empty";
+		}
+		default:
+		{
+			return "";
+		}
+	}
+}
+public string MakeSingle(string name)
+{
+	Regex plural1 = new Regex("(?<keep>[^aeiou])ies$");
+	Regex plural2 = new Regex("(?<keep>[aeiou]y)s$");
+	Regex plural3 = new Regex("(?<keep>[sxzh])es$");
+	Regex plural4 = new Regex("(?<keep>[^sxzhyu])s$");
+
+	if(plural1.IsMatch(name))
+		return plural1.Replace(name, "${keep}y");
+	else if(plural2.IsMatch(name))
+		return plural2.Replace(name, "${keep}");
+	else if(plural3.IsMatch(name))
+		return plural3.Replace(name, "${keep}");
+	else if(plural4.IsMatch(name))
+		return plural4.Replace(name, "${keep}");
+
+	return name;
+}
+</script>

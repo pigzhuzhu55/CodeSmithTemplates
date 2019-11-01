@@ -1,0 +1,141 @@
+﻿<%-- 
+作者:黄聪
+网址:http://www.cnblogs.com/huangcong
+--%>
+<%@ CodeTemplate Inherits="CodeTemplate" Language="C#" TargetLanguage="Text" Description="NetTiers main template." Debug="True" ResponseEncoding="UTF-8"%>
+
+
+<%-- 注册实体层模板 --%>
+<%@ Register Name="EntityTemplate" Template="Models.cst" MergeProperties="Flase" ExcludeProperties=""%>
+<%-- 注册数据访问层模板 --%>
+<%@ Register Name="DataAccessTemplate" Template="DataAccess.cst" MergeProperties="Flase" ExcludeProperties=""%>
+<%-- 注册业务逻辑层模板 --%>
+<%@ Register Name="ServicesTemplate" Template="Services.cst" MergeProperties="Flase" ExcludeProperties=""%>
+
+<%-- 数据库 --%>
+<%@ Property Name="SourceDatabase" Type="SchemaExplorer.DatabaseSchema" DeepLoad="True" Optional="False" Category="01. Getting Started - Required" Description="Database that the tables views, and stored procedures should be based on. IMPORTANT!!! If SourceTables and SourceViews are left blank, the Entire Database will then be generated."%>
+
+
+<%
+//创建实体层Entity类
+this.GenerateEntityClasses();
+
+Debug.WriteLine("OK");
+%>
+
+<script runat="template">
+    //生成实体Entity类
+    private void GenerateEntityClasses()
+    {
+        CodeTemplate Template =new EntityTemplate();
+        foreach(TableSchema table in this.SourceDatabase.Tables)
+        {
+            string FileDirectory = ModelsDirectory +"\\"+ GetModelClassName(table) +".cs";
+            //生成模板
+            Template.SetProperty("SourceTable",table);
+            //文件输出
+            Template.RenderToFile(FileDirectory,true);
+            Debug.WriteLine(FileDirectory +" 创建成功.");
+        }
+        
+        Template =new DataAccessTemplate();
+        foreach(TableSchema table in this.SourceDatabase.Tables)
+        {
+            string FileDirectory = DataAccessDirectory +"\\"+ GetDataAccessClassName(table) +".cs";
+            //生成模板
+            Template.SetProperty("SourceTable",table);
+            //文件输出
+            Template.RenderToFile(FileDirectory,true);
+            Debug.WriteLine(FileDirectory +" 创建成功.");
+        }
+        
+        Template =new ServicesTemplate();
+        foreach(TableSchema table in this.SourceDatabase.Tables)
+        {
+            string FileDirectory = ServicesDirectory +"\\"+ GetServicesClassName(table) +".cs";
+            //生成模板
+            Template.SetProperty("SourceTable",table);
+            //文件输出
+            Template.RenderToFile(FileDirectory,true);
+            Debug.WriteLine(FileDirectory +" 创建成功.");
+        }
+    }
+   
+</script>
+
+
+<script runat="template">
+    //解决方案输出路径
+    private string _ModelsDirectory = String.Empty;
+    private string _DataAccessDirectory = String.Empty;
+    private string _ServicesDirectory = String.Empty;
+    
+    [Editor(typeof(System.Windows.Forms.Design.FolderNameEditor), typeof(System.Drawing.Design.UITypeEditor))] 
+    [Optional, NotChecked]
+    [DefaultValue(@"E:\智趣公司\项目源文件\新框架项目\projects\服务端\BabyGuardian.Models")]
+    public string ModelsDirectory 
+    { 
+        get
+        {
+            return _ModelsDirectory;
+        }
+        set
+        {
+            if (value.EndsWith("\\")) value = value.Substring(0, value.Length -1);
+            _ModelsDirectory = value;
+        } 
+    }
+    
+    [Editor(typeof(System.Windows.Forms.Design.FolderNameEditor), typeof(System.Drawing.Design.UITypeEditor))] 
+    [Optional, NotChecked]
+    [DefaultValue(@"E:\智趣公司\项目源文件\新框架项目\projects\服务端\BabyGuardian.DataAccess")]
+    public string DataAccessDirectory 
+    { 
+        get
+        {
+            return _DataAccessDirectory;
+        }
+        set
+        {
+            if (value.EndsWith("\\")) value = value.Substring(0, value.Length -1);
+            _DataAccessDirectory = value;
+        } 
+    }
+    
+    [Editor(typeof(System.Windows.Forms.Design.FolderNameEditor), typeof(System.Drawing.Design.UITypeEditor))] 
+    [Optional, NotChecked]
+    [DefaultValue(@"E:\智趣公司\项目源文件\新框架项目\projects\服务端\BabyGuardian.Services")]
+    public string ServicesDirectory 
+    { 
+        get
+        {
+            return _ServicesDirectory;
+        }
+        set
+        {
+            if (value.EndsWith("\\")) value = value.Substring(0, value.Length -1);
+            _ServicesDirectory = value;
+        } 
+    }
+</script>
+<script runat="template">
+public string GetModelClassName(TableSchema table)
+{
+	return GetEntClassName(table);
+}
+public string GetDataAccessClassName(TableSchema table)
+{
+	return GetEntClassName(table)+"Repository";
+}
+public string GetServicesClassName(TableSchema table)
+{
+	return GetEntClassName(table)+"Services";
+}
+
+public string GetClassName(TableSchema table)
+{
+	return GetEntClassName(table);
+}
+
+</script>
+<!-- #include file="script.inc" -->

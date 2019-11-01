@@ -1,0 +1,94 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="Iqeq.Mall v1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="Iqeq.Mall" Description="The namespace to use for this class" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+
+
+        <%
+              //所有非标识列
+              ColumnSchemaCollection _columns = new ColumnSchemaCollection();
+              //所有非主键非标识列
+              ColumnSchemaCollection _nonPrimaryKeyColumns = new ColumnSchemaCollection();
+              //主键列。目前之考虑一个主键，不考虑联合主键，且要求主键一定在第一列
+              ColumnSchema _firstColumn=null;
+              
+              //是否含有标识列
+              bool _hasIdentity = false;
+              for (int i = 0; i < SourceTable.Columns.Count; i++) { 
+                bool isIdentity = SourceTable.Columns[i].ExtendedProperties["CS_IsIdentity"].Value.ToString()=="True";
+                if(isIdentity){
+                  _hasIdentity = true;
+                  continue;
+                }
+                else
+                {
+                    _columns.Add(SourceTable.Columns[i]);
+                }
+             }
+              
+             for (int i = 0; i < SourceTable.NonPrimaryKeyColumns.Count; i++) { 
+               bool isIdentity = SourceTable.NonPrimaryKeyColumns[i].ExtendedProperties["CS_IsIdentity"].Value.ToString()=="True";
+               if(isIdentity){
+                  _hasIdentity = true;
+                  continue;
+                }
+                else
+                {
+                    _nonPrimaryKeyColumns.Add(SourceTable.NonPrimaryKeyColumns[i]);
+                }
+             }
+             
+             _firstColumn = SourceTable.Columns[0];
+        %>
+
+        /// <summary>
+		/// 得到一个对象实体
+		/// </summary>
+		/// <param name="id">主键</param>
+		/// <param name="fields">待查找的字段</param>
+		/// <returns>实体</returns>
+        public <%= GetModelName(SourceTable)%> Get(<%= GetFirstColumnType(SourceTable) %> id,HashSet<string> fields)
+        {
+            StringBuilder cmdText=new StringBuilder();
+            cmdText.Append("SELECT ");
+             <% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+            if (fields.Contains("<%= GetPascalCaseName(SourceTable.Columns[i].Name) %>")) {cmdText.Append("<%= SourceTable.Columns[i].Name %>,");}
+            <% }%>
+            cmdText.Remove(cmdText.Length - 1, 1);
+            cmdText.Append(" FROM <%= SourceTable.Name%> ");
+            cmdText.Append(" WHERE <%= _firstColumn.Name%> = @<%= _firstColumn.Name%>");
+            SqlParameter[] parameters = 
+			{
+				  new SqlParameter("@<%= _firstColumn.Name%>", <%=GetParamSqlDbType(_firstColumn)%>) {Value=id}, 
+            };
+            
+            <%= GetModelName(SourceTable)%> entity = null;
+            using (var dataReader = SqlHelper.ExecuteReader(ReadConnectionString, CommandType.Text, cmdText.ToString(), parameters))
+            {
+                while (dataReader.Read())
+                {
+                    entity = FromIDataReader(dataReader,fields);
+                }
+            }
+            return entity;
+        }
+ 
+ <script runat="template">
+
+            
+             
+public string GetClassName(TableSchema table)
+{
+	return GetEntClassName(table)+"Repository";
+}
+
+public string GetModelName(TableSchema table)
+{
+    return GetEntClassName(table);
+}
+</script>
+<!-- #include file="script.inc" -->

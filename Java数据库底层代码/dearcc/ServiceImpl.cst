@@ -1,0 +1,28 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+/**
+*Name: <%=SourceTable.Name%>
+*Author: Caicai
+*Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
+*Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+*/ 
+package com.wolf.dearcc.service.impl;
+
+import com.wolf.dearcc.dao.mapper.source1.<%= GetClassName(SourceTable) %>Mapper;
+import com.wolf.dearcc.pojo.<%= GetClassName(SourceTable) %>;
+import com.wolf.dearcc.service.<%= GetClassName(SourceTable) %>Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class <%= GetClassName(SourceTable) %>ServiceImpl extends BaseServiceImpl<<%= GetClassName(SourceTable) %>,Integer> implements <%= GetClassName(SourceTable) %>Service {
+    @Autowired
+    private <%= GetClassName(SourceTable) %>Mapper myMapper;
+
+
+}
+<!-- #include file="script.inc" -->

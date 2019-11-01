@@ -1,0 +1,71 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+
+<%@ Property Name="Copyright" Type="String" Category="Context" Default="Your Copyright"  %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="Greatqn Templates V1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="ConnectString" Type="String" Category="Context" Default="MyConnectstring" Description="The ConnectString to use for this class" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="Demo" Description="The namespace to use for this class" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Reflection;
+
+namespace <%= NameSpace %>.DalFactory
+{
+	/// <summary>
+	/// File: 数据层工厂的辅助工具
+	/// </summary>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// <para>Version: "V1.0"</para>
+	/// <para>Copyright: "<%= Copyright %>"</para>
+	/// </remarks>
+	public class Utility
+    {
+        public static object CreateObject(string path, string CacheKey)
+        {
+            object objType = null;
+            try
+            {
+                objType = Assembly.Load(path).CreateInstance(CacheKey);
+            }
+            catch { }
+            return objType;
+        }
+        private static AssDictionary<string, object> _AssList = new AssDictionary<string, object>();
+        internal static AssDictionary<string, object> AssList
+        {
+            get { return _AssList; }
+            set { _AssList = value; }
+        }
+        public static void SetCache(string key,object value)
+        {
+            lock (AssList.LockObj) {
+                AssList[key] = value;
+            }
+        }
+
+        public static object GetCache(string key)
+        {
+            lock (AssList.LockObj)
+            {
+                return AssList.ContainsKey(key) ? AssList[key] : null;
+            }
+        }
+    }
+    internal class AssDictionary<TKey, TValue> : Dictionary<TKey, TValue>
+    {
+        internal object LockObj = new object();
+    }
+}

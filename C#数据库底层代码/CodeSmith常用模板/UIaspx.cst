@@ -1,0 +1,52 @@
+﻿<%---- 
+Name: 模型列表
+Author: greatqn
+Description: 
+----%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Html" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="Greatqn Templates V1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="Greatqn" Description="The namespace to use for this class" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+
+<%%@ Page Language="C#" AutoEventWireup="true" CodeFile="<%=GetEntClassName(SourceTable)%>List.aspx.cs" Inherits="<%=GetEntClassName(SourceTable)%>List" %%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head runat="server">
+    <title> <%= SourceTable.Name %> 列表页</title>
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div>
+    <a href="<%=GetEntClassName(SourceTable)%>Edit.aspx">Add <%=GetEntClassName(SourceTable)%></a>
+    </div>
+	<asp:GridView ID="gridView1" runat="server" AutoGenerateColumns="False" BackColor="#DDDDDD" CellPadding="5" CellSpacing="1" GridLines="None" Width="100%" OnRowCommand="gridView1_RowCommand"  >
+                  <Columns>
+                    <% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+					<% BuildBoundField(SourceTable.Columns[i]); %>
+					<% } %>
+                      <asp:TemplateField HeaderText="操作">
+                      <ItemTemplate>
+                      <a href='<%=GetEntClassName(SourceTable)%>Edit.aspx?d=<%%#Eval("<%=GetPrimaryKeyName(SourceTable)%>")%%>'>编辑</a> 
+                          <asp:LinkButton ID="lbDelete" CommandName="del" CommandArgument='<%%#Eval("<%=GetPrimaryKeyName(SourceTable)%>")%%>' runat="server" OnClientClick="if(window.confirm('删除吗')) return true;return false;">删除</asp:LinkButton>
+                      </ItemTemplate>
+                          <ItemStyle BackColor="White" HorizontalAlign="Center" Width="150px" />
+                      </asp:TemplateField>
+                  </Columns>
+                  <HeaderStyle BackColor="#F4F3F2" />
+              </asp:GridView>
+    </form>
+</body>
+</html>
+<script runat="template">
+public string GetClassName(TableSchema table)
+{
+	return  GetEntClassName(table) + "List";
+}
+</script>
+<!-- #include file="script.inc" -->

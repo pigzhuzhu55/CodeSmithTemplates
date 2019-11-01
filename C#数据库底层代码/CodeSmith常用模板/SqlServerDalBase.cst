@@ -1,0 +1,303 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="Greatqn Templates V1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="Greatqn" Description="The namespace to use for this class" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+
+<%@ Property Name="IncludeInsert" Type="System.Boolean" Default="True" Category="Options" Description="If true insert statements will be generated." %>
+<%@ Property Name="IncludeUpdate" Type="System.Boolean" Default="True" Category="Options" Description="If true update statements will be generated." %>
+<%@ Property Name="IncludeDelete" Type="System.Boolean" Default="True" Category="Options" Description="If true delete statements will be generated." %>
+<%@ Property Name="IncludeGet" Type="System.Boolean" Default="True" Category="Options" Description="If true get statements will be generated." %>
+<%@ Property Name="IncludeGetList" Type="System.Boolean" Default="True" Category="Options" Description="If true getlist statements will be generated." %>
+
+<%@ Property Name="InsertPrefix" Type="System.String" Default="Add_" Category="Style" Description="Prefix to use for all generated INSERT stored procedures." %>
+<%@ Property Name="UpdatePrefix" Type="System.String" Default="Set_" Category="Style" Description="Prefix to use for all generated UPDATE stored procedures." %>
+<%@ Property Name="DeletePrefix" Type="System.String" Default="Del_" Category="Style" Description="Prefix to use for all generated DELETE stored procedures." %>
+<%@ Property Name="SelectPrefix" Type="System.String" Default="Get_" Category="Style" Description="Prefix to use for all generated SELECT stored procedures." %>
+<%@ Property Name="SelectAllPrefix" Type="System.String" Default="Get_" Category="Style" Description="Prefix to use for all generated SELECT stored procedures." %>
+
+<%@ Property Name="InsertSuffix" Type="System.String" Default="" Category="Style" Optional="true" Description="Suffix to use for all generated INSERT stored procedures." %>
+<%@ Property Name="UpdateSuffix" Type="System.String" Default="" Category="Style" Optional="true" Description="Suffix to use for all generated UPDATE stored procedures." %>
+<%@ Property Name="DeleteSuffix" Type="System.String" Default="" Category="Style" Optional="true" Description="Suffix to use for all generated DELETE stored procedures." %>
+<%@ Property Name="SelectSuffix" Type="System.String" Default="_By_" Category="Style" Optional="true" Description="Suffix to use for all generated SELECT stored procedures." %>
+<%@ Property Name="SelectAllSuffix" Type="System.String" Default="" Category="Style" Optional="true" Description="Suffix to use for all generated SELECT stored procedures." %>
+
+<%@ Property Name="InsertFun" Type="System.String" Default="Add" Category="Style" Description="Prefix to use for all generated INSERT stored procedures." %>
+<%@ Property Name="UpdateFun" Type="System.String" Default="Set" Category="Style" Description="Prefix to use for all generated UPDATE stored procedures." %>
+<%@ Property Name="DeleteFun" Type="System.String" Default="Del" Category="Style" Description="Prefix to use for all generated DELETE stored procedures." %>
+<%@ Property Name="SelectFun" Type="System.String" Default="GetBy" Category="Style" Description="Prefix to use for all generated SELECT stored procedures." %>
+<%@ Property Name="SelectAllFun" Type="System.String" Default="Get" Category="Style" Description="Prefix to use for all generated SELECT stored procedures." %>
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using <%= NameSpace %>.Ent;
+//using <%= NameSpace %>.SqlServerDal.Base;
+
+namespace <%= NameSpace %>.SqlServerDal.Base
+{
+	/// <summary>
+	/// File: <%= GetClassName(SourceTable) %>.cs 数据层接口的基本实现
+	/// </summary>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// <para>Version: "V1.0"</para>
+	/// <para>Copyright: "<%= Copyright %>"</para>
+	/// </remarks>
+	public class <%= GetClassName(SourceTable) %>
+	{
+        private string _ConnectionString;
+        /// <summary>
+        /// 数据层连接字符串
+        /// </summary>
+        public string ConnectionString
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_ConnectionString))
+                    return string.Empty;
+                else
+                    return _ConnectionString;
+            }
+            set
+            {
+                _ConnectionString = value;
+            }
+        }
+		protected <%= GetClassName(SourceTable) %>()
+		{
+		}
+		
+	/// <summary>
+	/// 通过主键删除 <%= GetEntClassName(SourceTable) %>
+	/// </summary>
+<%= GetPrimaryKeyParameters_Param(SourceTable) %>	/// <returns>1成功,-1失败</returns>
+	/// <exception cref="ex">异常信息</exception>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// </remarks>
+		public virtual int <%= DeleteFun %>(<%= GetPrimaryKeyParameters(SourceTable) %> )
+		{
+			int result = 0;
+			string sql = "<%= DeletePrefix %><%= SourceTable.Name %><%= DeleteSuffix %>";
+			using (System.Data.SqlClient.SqlConnection connection = new System.Data.SqlClient.SqlConnection(ConnectionString))
+			{
+				System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(sql, connection);
+				command.CommandType = System.Data.CommandType.StoredProcedure;
+				//command.CommandTimeout = 0;
+				<% for (int i = 0; i < SourceTable.PrimaryKey.MemberColumns.Count; i++) { %>
+				
+				<% BuildSqlParameter(SourceTable.PrimaryKey.MemberColumns[i],false); %>
+				<% } %>
+
+				System.Data.SqlClient.SqlParameter parareturnValueParam = command.Parameters.Add("@returnValueParam", System.Data.SqlDbType.Int);
+				parareturnValueParam.Direction = System.Data.ParameterDirection.ReturnValue;
+				parareturnValueParam.IsNullable = true;
+
+				connection.Open();
+				command.ExecuteNonQuery();
+
+				//sql执行的返回值
+				result = int.Parse(parareturnValueParam.Value.ToString());
+
+				command.Dispose();
+				connection.Close();
+			}
+			return result;
+		}
+		
+	/// <summary>
+	/// 通过主键获取 <%= GetEntClassName(SourceTable) %>
+	/// </summary>
+<%= GetPrimaryKeyParameters_Param(SourceTable) %>	/// <returns><%= GetEntClassName(SourceTable) %>实体</returns>
+	/// <exception cref="ex">异常信息</exception>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// </remarks>
+		public virtual <%= GetEntClassName(SourceTable) %> <%= SelectFun %><%=GetPrimaryKeyName(SourceTable)%>(<%= GetPrimaryKeyParameters(SourceTable) %>)
+		{
+			<%= GetEntClassName(SourceTable) %> result = null;
+			string sql = "<%= SelectPrefix %><%= SourceTable.Name %><%= SelectSuffix %><%=GetPrimaryKeyName(SourceTable)%>";
+			using (System.Data.SqlClient.SqlConnection connection = new System.Data.SqlClient.SqlConnection(ConnectionString))
+			{
+				System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(sql, connection);
+				command.CommandType = System.Data.CommandType.StoredProcedure;
+				//command.CommandTimeout = 0;
+				<% for (int i = 0; i < SourceTable.PrimaryKey.MemberColumns.Count; i++) { %>
+				
+				<% BuildSqlParameter(SourceTable.PrimaryKey.MemberColumns[i],false); %>
+				<% } %>
+
+				connection.Open();
+				using (SqlDataReader dr = command.ExecuteReader())
+				{
+					if (dr.Read())
+					{
+						result = new <%= GetEntClassName(SourceTable) %>();
+						result = Populate<%= GetEntClassName(SourceTable) %>FromIDataReader(dr);
+					}
+					dr.Close();
+				}
+				
+				command.Dispose();
+				connection.Close();
+			}
+			return result;
+		}
+	/// <summary>
+	/// 获取所有 <%= GetEntClassName(SourceTable) %>
+	/// </summary>
+	/// <returns>IList <%= GetEntClassName(SourceTable) %> 列表</returns>
+	/// <exception cref="ex">异常信息</exception>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// </remarks>
+		public virtual IList<<%= GetEntClassName(SourceTable) %>> <%= SelectAllFun %>()
+		{
+			List<<%= GetEntClassName(SourceTable) %>> result = new List<<%= GetEntClassName(SourceTable) %>>();
+			string sql = "<%= SelectAllPrefix %><%= SourceTable.Name %><%= SelectAllSuffix %>";
+			using (System.Data.SqlClient.SqlConnection connection = new System.Data.SqlClient.SqlConnection(ConnectionString))
+			{
+				System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(sql, connection);
+				command.CommandType = System.Data.CommandType.StoredProcedure;
+				//command.CommandTimeout = 0;
+
+				connection.Open();
+				using (SqlDataReader dr = command.ExecuteReader())
+				{
+					while (dr.Read())
+					{
+						<%= GetEntClassName(SourceTable) %> obj = new <%= GetEntClassName(SourceTable) %>();
+						obj = Populate<%= GetEntClassName(SourceTable) %>FromIDataReader(dr);
+						result.Add(obj);
+					}
+					dr.Close();
+				}
+				command.Dispose();
+				connection.Close();
+			}
+			return result;
+		}
+	/// <summary>
+	/// 添加一条 <%= GetEntClassName(SourceTable) %>
+	/// </summary>
+	/// <param name="ent"><%= GetEntClassName(SourceTable) %>实体</param>
+	/// <returns>1成功,-1失败　主键从实体里返回</returns>
+	/// <exception cref="ex">异常信息</exception>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// </remarks>
+		public virtual int <%= InsertFun %>(<%= GetEntClassName(SourceTable) %> ent)
+		{
+			int result = 0;
+			string sql = "<%= InsertPrefix %><%= SourceTable.Name %><%= InsertSuffix %>";
+			using (System.Data.SqlClient.SqlConnection connection = new System.Data.SqlClient.SqlConnection(ConnectionString))
+			{
+				System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(sql, connection);
+				command.CommandType = System.Data.CommandType.StoredProcedure;
+				//command.CommandTimeout = 0;
+				<% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+				
+				<% BuildSqlParameter(SourceTable.Columns[i],true,SourceTable.Columns[i].IsPrimaryKeyMember); %>
+				<% } %>
+				
+				connection.Open();
+				command.ExecuteNonQuery();
+				<% for (int i = 0; i < SourceTable.PrimaryKey.MemberColumns.Count; i++) { %>
+				
+				ent.<%= SourceTable.PrimaryKey.MemberColumns[i].Name %> = (<%=GetCSharpVariableType(SourceTable.PrimaryKey.MemberColumns[i])%>)<%=GetSqlParameterName(SourceTable.PrimaryKey.MemberColumns[i])%>.Value;
+				<% } %>
+				result = 1;
+				command.Dispose();
+				connection.Close();
+			}
+			return result;
+		}
+	/// <summary>
+	/// 更新一条 <%= GetEntClassName(SourceTable) %>
+	/// </summary>
+	/// <param name="ent"><%= GetEntClassName(SourceTable) %>实体</param>
+	/// <returns>1成功,-1失败</returns>
+	/// <exception cref="ex">异常信息</exception>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// </remarks>
+		public virtual int <%= UpdateFun %>(<%= GetEntClassName(SourceTable) %> ent)
+		{
+			int result = 0;
+			string sql = "<%= UpdatePrefix %><%= SourceTable.Name %><%= UpdateSuffix %>";
+			using (System.Data.SqlClient.SqlConnection connection = new System.Data.SqlClient.SqlConnection(ConnectionString))
+			{
+				System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(sql, connection);
+				command.CommandType = System.Data.CommandType.StoredProcedure;
+				//command.CommandTimeout = 0;
+				<% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+				
+				<% BuildSqlParameter(SourceTable.Columns[i],true,false); %>
+				<% } %>
+				
+				System.Data.SqlClient.SqlParameter parareturnValueParam = command.Parameters.Add("@returnValueParam", System.Data.SqlDbType.Int);
+				parareturnValueParam.Direction = System.Data.ParameterDirection.ReturnValue;
+				parareturnValueParam.IsNullable = true;
+				
+				connection.Open();
+				command.ExecuteNonQuery();
+				
+				//sql执行的返回值
+				result = int.Parse(parareturnValueParam.Value.ToString());
+				
+				command.Dispose();
+				connection.Close();
+			}
+			return result;
+		}
+
+	/// <summary>
+	/// 从IDataReader中读取数据，组装成实体
+	/// </summary>
+	/// <param name="dr">数据读取接口</param>
+	/// <returns><%= GetEntClassName(SourceTable) %>实体</returns>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// </remarks>
+		public virtual <%= GetEntClassName(SourceTable) %> Populate<%= GetEntClassName(SourceTable) %>FromIDataReader(IDataReader dr)
+		{
+			<%= GetEntClassName(SourceTable) %> obj = new <%= GetEntClassName(SourceTable) %>();
+			try {
+			<% for (int i=0; i < SourceTable.Columns.Count; ++i) { %>
+				<%BuildPopulateValue(SourceTable.Columns[i]);%>
+			<%}%>
+			}
+			catch(Exception ex)
+			{
+				throw new Exception("从DataReader中读取数据失败，可能与相关的字段不存在有关！请检查！||"+ex.Message+"||"+ex.Source);
+			}
+			return obj;
+		}
+	}
+}<script runat="template">
+#region script
+public string GetClassName(TableSchema table)
+{
+	return GetEntClassName(table)+ "DRBase";
+}
+#endregion script
+</script>
+<!-- #include file="script.inc" -->

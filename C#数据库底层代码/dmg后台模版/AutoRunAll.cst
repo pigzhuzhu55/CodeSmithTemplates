@@ -1,0 +1,37 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+
+<%@ Register Name="AutoRunOne" Template="D:\Program Files (x86)\CodeSmithv6.5\Templates\Templates\IQEQ\C#数据库底层代码\dmg后台模版\AutoRunOne.cst" MergeProperties="False" ExcludeProperties="" %>
+
+<%@ Template Language="C#" TargetLanguage="Text" %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="后台模版 v1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="SysAdmin.DataAccess" Description="The namespace to use for this class" %>
+<%@ Property Name="Db" Type="SchemaExplorer.DatabaseSchema" DeepLoad="True" Optional="False"  Category="Context" Description="选择数据库.." %>
+<%@ Property Name="OutPutModelDest" Type="String" Default="D:\工作目录\dmger\管理系统\SysAdmin.DataAccess\Models"%>
+<%@ Property Name="OutPutAccessDest" Type="String" Default="D:\工作目录\dmger\管理系统\SysAdmin.DataAccess\Repository" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Import Namespace="SchemaExplorer" %>
+
+
+
+<%
+
+CodeTemplate codeTemplate1=new AutoRunOne();
+codeTemplate1.SetProperty("DevelopersName",DevelopersName);
+codeTemplate1.SetProperty("NameSpace",NameSpace);
+codeTemplate1.SetProperty("OutPutModelDest",OutPutModelDest);
+codeTemplate1.SetProperty("OutPutAccessDest",OutPutAccessDest);
+
+
+foreach(TableSchema tb in Db.Tables){
+    codeTemplate1.SetProperty("SourceTable",tb);
+    codeTemplate1.RenderToString();
+}
+
+%>

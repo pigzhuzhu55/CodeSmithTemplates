@@ -1,0 +1,81 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+
+<%@ Property Name="Copyright" Type="String" Category="Context" Default="Your Copyright"  %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="Greatqn Templates V1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="Greatqn" Description="The namespace to use for this class" %>
+<%@ Property Name="ConnectString" Type="String" Category="Context" Default="MyConnectstring" Description="The ConnectString to use for this class" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Configuration;
+
+namespace <%= NameSpace %>.Biz
+{
+	/// <summary>
+	/// File: Config.cs 参数配置类
+	/// </summary>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// <para>Version: "V1.0"</para>
+	/// <para>Copyright: "<%= Copyright %>"</para>
+	/// </remarks>
+	public class Config : ConfigurationSection
+    {
+        #region 单例
+
+        private static class ConfigHolder
+        {
+			//TODO:修改成本项目的配置节点
+            public static readonly Config Instance = (Config)System.Configuration.ConfigurationManager.GetSection(
+            "<%= NameSpace %>.Biz.Config");
+        }
+
+        public static Config Instance()
+        {
+            return ConfigHolder.Instance;
+        }
+
+        #endregion
+
+        public string <%= ConnectString %>
+        {
+            get
+            {
+                return ConfigurationManager.ConnectionStrings["<%= ConnectString %>"].ConnectionString;
+            }
+        }
+
+        /// <summary>
+        /// SqlServer 程序集
+        /// </summary>
+        [ConfigurationProperty("Dal", DefaultValue = "<%= NameSpace %>.SqlServerDal")]
+        public string Dal
+        {
+            get { return this["Dal"].ToString(); }
+            set { this["Dal"] = value; }
+        }
+
+        /// <summary>
+        /// 分页大小
+        /// </summary>
+        [ConfigurationProperty("PageSize", DefaultValue = 2)]
+        public int PageSize
+        {
+            get { return (int)this["PageSize"]; }
+            set { this["PageSize"] = value; }
+        }
+
+    }
+}

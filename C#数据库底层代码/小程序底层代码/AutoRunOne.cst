@@ -1,0 +1,67 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+
+<%@ Register Name="DataAccessBase" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\C#数据库底层代码\小程序底层代码\DataAccessBase.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="ModelsBase" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\C#数据库底层代码\小程序底层代码\ModelsBase.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="DataAccess" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\C#数据库底层代码\小程序底层代码\DataAccess.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Models" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\C#数据库底层代码\小程序底层代码\Models.cst" MergeProperties="False" ExcludeProperties="" %>
+
+<%@ Template Language="C#" TargetLanguage="Text" %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="小程序底层代码 v1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="SmallProgram.DataAccess" Description="The namespace to use for this class" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Property Name="OutPutModelDest" Type="String" Default="D:\工作目录\svn\api\projects\小程序服务端\SmallProgram.DataAccess\Models"%>
+<%@ Property Name="OutPutAccessDest" Type="String" Default="D:\工作目录\svn\api\projects\小程序服务端\SmallProgram.DataAccess\Repository" %>
+ 
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Import Namespace="SchemaExplorer" %>
+ 
+<%
+CodeTemplate codeTemplate1=new ModelsBase();
+codeTemplate1.SetProperty("DevelopersName",DevelopersName);
+codeTemplate1.SetProperty("NameSpace",NameSpace);
+codeTemplate1.SetProperty("SourceTable",SourceTable);
+codeTemplate1.RenderToFile(OutPutModelDest+@"\Base\"+GetEntClassName(SourceTable)+"Base.cs",true);
+
+CodeTemplate codeTemplate2=new DataAccessBase();
+codeTemplate2.SetProperty("DevelopersName",DevelopersName);
+codeTemplate2.SetProperty("NameSpace",NameSpace);
+codeTemplate2.SetProperty("SourceTable",SourceTable);
+codeTemplate2.RenderToFile(OutPutAccessDest+@"\Base\"+GetEntClassName(SourceTable)+"RepositoryBase"+".cs",true);
+
+try{
+CodeTemplate codeTemplate3=new Models();
+codeTemplate3.SetProperty("DevelopersName",DevelopersName);
+codeTemplate3.SetProperty("NameSpace",NameSpace);
+codeTemplate3.SetProperty("SourceTable",SourceTable);
+codeTemplate3.RenderToFile(OutPutModelDest+@"\"+GetEntClassName(SourceTable)+".cs",false);
+}
+catch{
+}
+try{
+CodeTemplate codeTemplate4=new DataAccess();
+codeTemplate4.SetProperty("DevelopersName",DevelopersName);
+codeTemplate4.SetProperty("NameSpace",NameSpace);
+codeTemplate4.SetProperty("SourceTable",SourceTable);
+codeTemplate4.RenderToFile(OutPutAccessDest+@"\"+GetEntClassName(SourceTable)+"Repository"+".cs",false);}
+catch{
+}
+
+%>
+<script runat="template">
+
+public string GetClassName(TableSchema table)
+{
+	return GetEntClassName(table);
+}
+
+public string GetModelName(TableSchema table)
+{
+    return GetEntClassName(table);
+}
+</script>
+<!-- #include file="script.inc" -->

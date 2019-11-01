@@ -1,0 +1,27 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+/**
+*Name: <%=SourceTable.Name%>
+*Author: Caicai
+*Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
+*Description: <%= Copyright %>
+*/ 
+package com.iqeq.elderlylive.service;
+
+import com.iqeq.elderlylive.entity.<%= GetClassName(SourceTable) %>Bean;
+import com.iqeq.elderlylive.mapper.source1.<%= GetClassName(SourceTable) %>Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class <%= GetClassName(SourceTable) %>Service extends BaseService<<%= GetClassName(SourceTable) %>Bean,Integer> {
+    @Autowired
+    private <%= GetClassName(SourceTable) %>Mapper <%=GetVarName(SourceTable)%>Mapper;
+
+
+}
+<!-- #include file="script.inc" -->

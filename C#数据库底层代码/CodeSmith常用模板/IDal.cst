@@ -1,0 +1,109 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="Greatqn Templates V1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="Greatqn" Description="The namespace to use for this class" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+
+<%@ Property Name="InsertFun" Type="System.String" Default="Add" Category="Style" Description="Prefix to use for all generated INSERT stored procedures." %>
+<%@ Property Name="UpdateFun" Type="System.String" Default="Set" Category="Style" Description="Prefix to use for all generated UPDATE stored procedures." %>
+<%@ Property Name="DeleteFun" Type="System.String" Default="Del" Category="Style" Description="Prefix to use for all generated DELETE stored procedures." %>
+<%@ Property Name="SelectFun" Type="System.String" Default="GetBy" Category="Style" Description="Prefix to use for all generated SELECT stored procedures." %>
+<%@ Property Name="SelectAllFun" Type="System.String" Default="Get" Category="Style" Description="Prefix to use for all generated SELECT stored procedures." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+using System;
+using System.Collections.Generic;
+using <%= NameSpace %>.Ent;
+
+namespace <%= NameSpace %>.IDal
+{
+	/// <summary>
+	/// File: <%= GetClassName(SourceTable) %>.cs 数据层接口
+	/// </summary>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// <para>Version: "V1.0"</para>
+	/// <para>Copyright: "<%= Copyright %>"</para>
+	/// </remarks>
+	public interface <%= GetClassName(SourceTable) %>
+	{
+        /// <summary>
+        /// 设置数据层连接字符串
+        /// </summary>
+        void SetCnnString(string cnnString);
+		
+	/// <summary>
+	/// 通过主键删除 <%= GetEntClassName(SourceTable) %>
+	/// </summary>
+<%= GetPrimaryKeyParameters_Param(SourceTable) %>	/// <returns>1成功,-1失败</returns>
+	/// <exception cref="ex">异常信息</exception>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// </remarks>
+		int <%= DeleteFun %>(<%= GetPrimaryKeyParameters(SourceTable) %> );
+		
+	/// <summary>
+	/// 通过主键获取 <%= GetEntClassName(SourceTable) %>
+	/// </summary>
+<%= GetPrimaryKeyParameters_Param(SourceTable) %>	/// <returns><%= GetEntClassName(SourceTable) %>实体</returns>
+	/// <exception cref="ex">异常信息</exception>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// </remarks>
+		<%= GetEntClassName(SourceTable) %> <%= SelectFun %><%=GetPrimaryKeyName(SourceTable)%>(<%= GetPrimaryKeyParameters(SourceTable) %>);
+		
+	/// <summary>
+	/// 获取所有 <%= GetEntClassName(SourceTable) %>
+	/// </summary>
+	/// <returns>IList <%= GetEntClassName(SourceTable) %> 列表</returns>
+	/// <exception cref="ex">异常信息</exception>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// </remarks>
+		IList<<%= GetEntClassName(SourceTable) %>> <%= SelectAllFun %>();
+		
+	/// <summary>
+	/// 添加一条 <%= GetEntClassName(SourceTable) %>
+	/// </summary>
+	/// <param name="ent"><%= GetEntClassName(SourceTable) %>实体</param>
+	/// <returns>1成功,-1失败　主键从实体里返回</returns>
+	/// <exception cref="ex">异常信息</exception>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// </remarks>
+		int <%= InsertFun %>(<%= GetEntClassName(SourceTable) %> ent);
+		
+	/// <summary>
+	/// 更新一条 <%= GetEntClassName(SourceTable) %>
+	/// </summary>
+	/// <param name="ent"><%= GetEntClassName(SourceTable) %>实体</param>
+	/// <returns>1成功,-1失败</returns>
+	/// <exception cref="ex">异常信息</exception>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// </remarks>
+		int <%= UpdateFun %>(<%= GetEntClassName(SourceTable) %> ent);
+		
+	}
+}
+<script runat="template">
+public string GetClassName(TableSchema table)
+{
+	return "I" + GetEntClassName(table) + "DR";
+}
+</script>
+<!-- #include file="script.inc" -->

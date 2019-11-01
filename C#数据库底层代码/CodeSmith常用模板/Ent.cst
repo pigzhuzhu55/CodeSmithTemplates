@@ -1,0 +1,108 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="Greatqn Templates V1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="Greatqn" Description="The namespace to use for this class" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+using System;
+using System.Text;
+//using System.Data;
+//using System.Data.SqlClient;
+using <%= NameSpace %>.Ent.Base;
+namespace <%= NameSpace %>.Ent
+{
+	/// <summary>
+	/// File: <%= GetClassName(SourceTable) %>.cs 数据实体类
+	/// </summary>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// <para>Version: "V1.0"</para>
+	/// <para>Copyright: "<%= Copyright %>"</para>
+	/// </remarks>
+	[Serializable]
+	public class <%= GetClassName(SourceTable) %>:<%= GetClassName(SourceTable) %>Base,IComparable
+	{
+		#region IComparable 
+        /// <summary>
+        /// 比较两个实体的大小
+        /// </summary>
+        /// <param name="obj">另一个实体</param>
+        /// <returns>-1小于,0相等,1大于</returns>
+		/// <remarks>
+		/// <para>Author: "<%= DevelopersName %>"</para>
+		/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+		/// </remarks>
+		public int CompareTo(object obj)
+		{
+			<%= GetClassName(SourceTable) %> ent  = obj as <%= GetClassName(SourceTable) %>;
+			if (ent == null) return -1;
+			if(ent.<%=GetPrimaryKeyName(SourceTable)%> == this.<%=GetPrimaryKeyName(SourceTable)%>)
+			{
+				return 0;
+			}
+            else if(ent.<%=GetPrimaryKeyName(SourceTable)%> > this.<%=GetPrimaryKeyName(SourceTable)%>)
+            {
+                return -1;
+            }
+            else
+            {
+                return 1;
+            }
+		}
+		
+        /// <summary>
+        /// 比较两个实体是否相等
+        /// </summary>
+        /// <param name="obj">另一个实体</param>
+        /// <returns>true相等,false不相等</returns>
+		/// <remarks>
+		/// <para>Author: "<%= DevelopersName %>"</para>
+		/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+		/// </remarks>
+		public override bool Equals(object obj)
+		{
+			<%= GetClassName(SourceTable) %> ent  = obj as <%= GetClassName(SourceTable) %>;
+			if (ent == null) return false;
+			if(ent.<%=GetPrimaryKeyName(SourceTable)%> == this.<%=GetPrimaryKeyName(SourceTable)%>)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		
+		public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+		
+		public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+			sb.Append("\r\n" + base.ToString());
+			<% foreach (ColumnSchema column in SourceTable.Columns) { %>
+			sb.Append("\r\n<%=FilterString(column.Description)%> <%=column.Name%> =");
+			sb.Append(this.<%=column.Name%>);
+			<%}%>
+			return sb.ToString();
+        }
+		#endregion
+	}
+}
+<script runat="template">
+public string GetClassName(TableSchema table)
+{
+	return GetEntClassName(table);
+}
+</script>
+<!-- #include file="script.inc" -->

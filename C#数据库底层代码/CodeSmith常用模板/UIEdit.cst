@@ -1,0 +1,51 @@
+﻿<%-- 
+Name:编辑页
+Author:greatqn
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Html" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="Greatqn Templates V1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="Greatqn" Description="The namespace to use for this class" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+
+<%%@ Page Language="C#" AutoEventWireup="true" CodeFile="<%=GetEntClassName(SourceTable)%>Edit.aspx.cs" Inherits="<%=GetEntClassName(SourceTable)%>Edit" %%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head runat="server">
+    <title> <%= SourceTable.Name %> 编辑页</title>
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div>
+        <table width="100%" border="0" cellspacing="1" cellpadding="5">
+ 			<% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+			<tr>
+                <td valign="top">Text <%=SourceTable.Columns[i].Name%>:</td>
+                <td valign="top" class="txt_12">
+				<% BuildTextField(SourceTable.Columns[i]); %>
+				</td>
+            </tr>
+			<% } %>
+            <tr>
+                <td width="140">
+                    &nbsp;</td>
+                <td><asp:Button ID="btnOK" runat="server" Text="确定" Width="169px" OnClick="btnOK_Click" /></td>
+            </tr>
+        </table>
+    </div>
+    </form>
+</body>
+</html>
+<script runat="template">
+public string GetClassName(TableSchema table)
+{
+	return  GetEntClassName(table) + "Edit";
+}
+</script>
+<!-- #include file="script.inc" -->

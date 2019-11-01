@@ -1,0 +1,74 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="小程序底层代码 v1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="SmallProgram.DataAccess" Description="The namespace to use for this class" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Text;
+using BabyGuardian.Common.Data;
+using <%= NameSpace %>.Models;
+using <%= NameSpace %>.Repository.Base;
+
+namespace <%= NameSpace %>.Repository
+{
+	/// <summary>
+	/// File: <%= GetClassName(SourceTable) %>.cs 数据访问类
+	/// </summary>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToString("yyyy-MM-dd") %>"</para>
+	/// <para>Version: "V1.0"</para>
+	/// <para>Copyright: "<%= Copyright %>"</para>
+	/// </remarks>
+	public class <%= GetClassName(SourceTable) %>: <%= GetClassName(SourceTable) %>Base
+	{
+        #region  构造函数
+        public <%= GetClassName(SourceTable) %>(IConnectionProvider connectionProvider)
+            : base(connectionProvider)
+        {
+        }
+        
+        public <%= GetClassName(SourceTable) %>(string connectSetion)
+            : base(connectSetion)
+        {
+        }
+        
+        public <%= GetClassName(SourceTable) %>()
+        {
+        }
+        #endregion
+        
+        #region  扩展方法
+        
+        #endregion
+        
+    }
+    
+    
+}
+<script runat="template">
+
+            
+             
+public string GetClassName(TableSchema table)
+{
+	return GetEntClassName(table)+"Repository";
+}
+
+public string GetModelName(TableSchema table)
+{
+    return GetEntClassName(table);
+}
+</script>
+<!-- #include file="script.inc" -->

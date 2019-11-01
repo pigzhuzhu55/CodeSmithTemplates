@@ -1,0 +1,102 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="DataContext v1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="DataContext" Description="The namespace to use for this class" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Text;
+
+namespace <%= NameSpace %>.Models
+{
+	/// <summary>
+	/// File: <%= GetClassName(SourceTable) %>.cs 数据实体基类
+	/// </summary>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToString("yyyy-MM-dd") %>"</para>
+	/// <para>Version: "V1.0"</para>
+	/// <para>Copyright: "<%= Copyright %>"</para>
+	/// </remarks>
+    [DataContract]
+	public class <%= GetClassName(SourceTable) %>
+	{
+		#region Public Properties
+		<% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+		/// <summary>
+		/// <%= FilterString(SourceTable.Columns[i].Description)%>
+		/// </summary>
+		public <%= GetCSharpVariableType(SourceTable.Columns[i]) %> <%= GetPascalCaseName(SourceTable.Columns[i].Name) %>{get;set;}
+		<% if (i < SourceTable.Columns.Count - 1) Response.Write("\r\n"); %>		
+		<% } %>
+		#endregion
+        
+		#region Contructors
+		public <%= GetClassName(SourceTable) %>()
+		{
+		}
+		#endregion
+        
+          public <%= GetClassName(SourceTable)%>(HttpContextBase context, bool IsAdd)
+        {
+            if (IsAdd)
+            {
+                CreateUserID = SessionHelper.Get("UserID").ObjToIntNull();
+                CreateDate = DateTime.Now;
+            }
+            else
+            {
+                <%= GetPascalCaseName(SourceTable.PrimaryKey.MemberColumns[0].Name) %> = context.Request["<%= GetPascalCaseName(SourceTable.PrimaryKey.MemberColumns[0].Name) %>"].<%= GetCSharpVariableMethod(SourceTable.PrimaryKey.MemberColumns[0]) %>;
+            }
+            <% for (int i = 0; i < SourceTable.NonPrimaryKeyColumns.Count; i++) { %>
+            <%= GetPascalCaseName(SourceTable.NonPrimaryKeyColumns[i].Name) %> = context.Request["<%= GetPascalCaseName(SourceTable.NonPrimaryKeyColumns[i].Name) %>"].<%= GetCSharpVariableMethod(SourceTable.NonPrimaryKeyColumns[i]) %>;
+            <% }%>
+
+        }
+        
+          public static <%=SourceTable.Name%> ToEntity(<%= GetClassName(SourceTable)%> item)
+        {
+            <%=SourceTable.Name%> tbl = new <%=SourceTable.Name%>();
+            <% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+            tbl.<%= SourceTable.Columns[i].Name %> = item.<%= GetPascalCaseName(SourceTable.Columns[i].Name) %>;
+            <% }%>
+            return tbl;
+        }
+        
+         public static <%= GetClassName(SourceTable)%> ToViewModel(<%=SourceTable.Name%> tbl)
+        {
+            <%= GetClassName(SourceTable)%> item = new <%= GetClassName(SourceTable)%>();
+            <% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+            item.<%= GetPascalCaseName(SourceTable.Columns[i].Name) %> = tbl.<%= SourceTable.Columns[i].Name %>;
+            <% }%>
+            return item;
+        }
+      
+           public static IEnumerable<<%= GetClassName(SourceTable)%>> ToListViewModel(IEnumerable<<%=SourceTable.Name%>> arrs)
+        {
+            List<<%= GetClassName(SourceTable)%>> list = new List<<%= GetClassName(SourceTable)%>>();
+            foreach (<%=SourceTable.Name%> item in arrs)
+            {
+                list.Add(ToViewModel(item));
+            }
+            return list;
+        }
+        
+	}
+}
+<script runat="template">
+public string GetClassName(TableSchema table)
+{
+	return GetViewClassName(table);
+}
+</script>
+<!-- #include file="script.inc" -->

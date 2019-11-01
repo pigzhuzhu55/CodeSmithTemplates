@@ -1,0 +1,195 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>
+<%@ Property Name="Tables" Type="SchemaExplorer.TableSchemaCollection" Category="Source" %>
+
+<%@ Property Name="IncludeInsert" Type="System.Boolean" Default="True" Category="Options" Description="If true insert statements will be generated." %>
+<%@ Property Name="IncludeUpdate" Type="System.Boolean" Default="True" Category="Options" Description="If true update statements will be generated." %>
+<%@ Property Name="IncludeDelete" Type="System.Boolean" Default="True" Category="Options" Description="If true delete statements will be generated." %>
+<%@ Property Name="IncludeGet" Type="System.Boolean" Default="True" Category="Options" Description="If true get statements will be generated." %>
+<%@ Property Name="IncludeGetList" Type="System.Boolean" Default="True" Category="Options" Description="If true getlist statements will be generated." %>
+
+<%@ Property Name="InsertPrefix" Type="System.String" Default="Add" Category="Style" Description="Prefix to use for all generated INSERT stored procedures." %>
+<%@ Property Name="UpdatePrefix" Type="System.String" Default="Set" Category="Style" Description="Prefix to use for all generated UPDATE stored procedures." %>
+<%@ Property Name="DeletePrefix" Type="System.String" Default="Del" Category="Style" Description="Prefix to use for all generated DELETE stored procedures." %>
+<%@ Property Name="SelectPrefix" Type="System.String" Default="Get" Category="Style" Description="Prefix to use for all generated SELECT stored procedures." %>
+<%@ Property Name="SelectAllPrefix" Type="System.String" Default="Get" Category="Style" Description="Prefix to use for all generated SELECT stored procedures." %>
+
+<%@ Property Name="InsertSuffix" Type="System.String" Default="" Category="Style" Optional="true" Description="Suffix to use for all generated INSERT stored procedures." %>
+<%@ Property Name="UpdateSuffix" Type="System.String" Default="" Category="Style" Optional="true" Description="Suffix to use for all generated UPDATE stored procedures." %>
+<%@ Property Name="DeleteSuffix" Type="System.String" Default="" Category="Style" Optional="true" Description="Suffix to use for all generated DELETE stored procedures." %>
+<%@ Property Name="SelectSuffix" Type="System.String" Default="By" Category="Style" Optional="true" Description="Suffix to use for all generated SELECT stored procedures." %>
+<%@ Property Name="SelectAllSuffix" Type="System.String" Default="" Category="Style" Optional="true" Description="Suffix to use for all generated SELECT stored procedures." %>
+
+<%@ Property Name="InsertFun" Type="System.String" Default="Add" Category="Style" Description="Prefix to use for all generated INSERT stored procedures." %>
+<%@ Property Name="UpdateFun" Type="System.String" Default="Set" Category="Style" Description="Prefix to use for all generated UPDATE stored procedures." %>
+<%@ Property Name="DeleteFun" Type="System.String" Default="Del" Category="Style" Description="Prefix to use for all generated DELETE stored procedures." %>
+<%@ Property Name="SelectFun" Type="System.String" Default="GetBy" Category="Style" Description="Prefix to use for all generated SELECT stored procedures." %>
+<%@ Property Name="SelectAllFun" Type="System.String" Default="Get" Category="Style" Description="Prefix to use for all generated SELECT stored procedures." %>
+
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="Greatqn Templates V1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="ConnectString" Type="String" Category="Context" Default="MyConnectstring" Description="The ConnectString to use for this class" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="Demo" Description="The namespace to use for this class" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+using System;
+using System.Collections.Generic;
+using System.Text;
+using <%= NameSpace %>.Ent;
+using <%= NameSpace %>.IDal;
+using <%= NameSpace %>.DalFactory;
+using log4net;
+
+namespace <%= NameSpace %>.Biz
+{
+	/// <summary>
+	/// File: BizHelper.cs 调用DAL的方法
+	/// </summary>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// <para>Version: "V1.0"</para>
+	/// <para>Copyright: "<%= Copyright %>"</para>
+	/// </remarks>
+	public class BizHelper
+    {
+	static ILog log = LogManager.GetLogger(typeof(BizHelper));
+	
+	<% foreach(SchemaExplorer.TableSchema SourceTable in Tables){%>
+	#region begin <%= SourceTable.Name %> 
+    
+
+	/// <summary>
+	/// 通过主键删除 <%= GetEntClassName(SourceTable) %>
+	/// </summary>
+<%= GetPrimaryKeyParameters_Param(SourceTable) %>	/// <returns>1成功,-1失败,0异常</returns>
+	/// <exception cref="ex">异常信息</exception>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// </remarks>
+	public int <%= DeletePrefix %><%= GetEntClassName(SourceTable) %><%= DeleteSuffix %>(<%= GetPrimaryKeyParameters(SourceTable) %> )
+	{
+		try
+        {
+          I<%= GetEntClassName(SourceTable) %>DR dal = <%= GetEntClassName(SourceTable) %>Dal.Create(Config.Instance().Dal,Config.Instance().<%= ConnectString %>);
+    	  return dal.<%= DeleteFun %>(<%= GetPrimaryKeyParametervalue(SourceTable) %>);
+        }
+        catch (Exception ex)
+        {
+            log.Error("<%= DeletePrefix %><%= GetEntClassName(SourceTable) %><%= DeleteSuffix %> err:",ex);
+            return 0;
+        }
+	}
+	
+	/// <summary>
+	/// 通过主键获取 <%= GetEntClassName(SourceTable) %>
+	/// </summary>
+<%= GetPrimaryKeyParameters_Param(SourceTable) %>	/// <returns><%= GetEntClassName(SourceTable) %>实体</returns>
+	/// <exception cref="ex">异常信息</exception>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// </remarks>
+	public <%= GetEntClassName(SourceTable) %> <%= SelectPrefix %><%= GetEntClassName(SourceTable) %><%= SelectSuffix %><%=GetPrimaryKeyName(SourceTable)%>(<%= GetPrimaryKeyParameters(SourceTable) %>)
+	{
+		try
+        {
+          I<%= GetEntClassName(SourceTable) %>DR dal = <%= GetEntClassName(SourceTable) %>Dal.Create(Config.Instance().Dal,Config.Instance().<%= ConnectString %>);
+    	  return dal.<%= SelectFun %><%=GetPrimaryKeyName(SourceTable)%>(<%= GetPrimaryKeyParametervalue(SourceTable) %>);
+        }
+        catch (Exception ex)
+        {
+            log.Error("<%= SelectPrefix %><%= GetEntClassName(SourceTable) %><%= SelectSuffix %><%=GetPrimaryKeyName(SourceTable)%> err:",ex);
+            return null;
+        }
+	}
+	
+	/// <summary>
+	/// 获取所有 <%= GetEntClassName(SourceTable) %>
+	/// </summary>
+	/// <returns>IList <%= GetEntClassName(SourceTable) %> 列表</returns>
+	/// <exception cref="ex">异常信息</exception>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// </remarks>
+	public IList<<%= GetEntClassName(SourceTable) %>> <%= SelectAllPrefix %><%= GetEntClassName(SourceTable) %><%= SelectAllSuffix %>()
+	{
+		try
+        {
+          I<%= GetEntClassName(SourceTable) %>DR dal = <%= GetEntClassName(SourceTable) %>Dal.Create(Config.Instance().Dal,Config.Instance().<%= ConnectString %>);
+    	  return dal.<%= SelectAllFun %>();
+        }
+        catch (Exception ex)
+        {
+            log.Error("<%= SelectAllPrefix %><%= GetEntClassName(SourceTable) %><%= SelectAllSuffix %> err:",ex);
+            return new List<<%= GetEntClassName(SourceTable) %>>();
+        }
+	}
+	
+	/// <summary>
+	/// 添加一条 <%= GetEntClassName(SourceTable) %>
+	/// </summary>
+	/// <param name="ent"><%= GetEntClassName(SourceTable) %>实体</param>
+	/// <returns>1成功,-1失败,0异常　主键从实体里返回</returns>
+	/// <exception cref="ex">异常信息</exception>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// </remarks>
+	public int <%= InsertPrefix %><%= GetEntClassName(SourceTable) %><%= InsertSuffix %>(<%= GetEntClassName(SourceTable) %> ent)
+	{
+		try
+        {
+          I<%= GetEntClassName(SourceTable) %>DR dal = <%= GetEntClassName(SourceTable) %>Dal.Create(Config.Instance().Dal,Config.Instance().<%= ConnectString %>);
+    	  return dal.<%= InsertFun %>(ent);
+        }
+        catch (Exception ex)
+        {
+            log.Error("<%= InsertPrefix %><%= GetEntClassName(SourceTable) %><%= InsertSuffix %> err:",ex);
+            return 0;
+        }
+	}
+
+	/// <summary>
+	/// 更新一条 <%= GetEntClassName(SourceTable) %>
+	/// </summary>
+	/// <param name="ent"><%= GetEntClassName(SourceTable) %>实体</param>
+	/// <returns>1成功,-1失败,0异常</returns>
+	/// <exception cref="ex">异常信息</exception>
+	/// <remarks>
+	/// <para>Author: "<%= DevelopersName %>"</para>
+	/// <para>Date: "<%= DateTime.Now.ToShortDateString() %>"</para>
+	/// </remarks>
+	public int <%= UpdatePrefix %><%= GetEntClassName(SourceTable) %><%= UpdateSuffix %>(<%= GetEntClassName(SourceTable) %> ent)
+	{
+		try
+        {
+          I<%= GetEntClassName(SourceTable) %>DR dal = <%= GetEntClassName(SourceTable) %>Dal.Create(Config.Instance().Dal,Config.Instance().<%= ConnectString %>);
+    	  return dal.<%= UpdateFun %>(ent);
+        }
+        catch (Exception ex)
+        {
+            log.Error("<%= UpdatePrefix %><%= GetEntClassName(SourceTable) %><%= UpdateSuffix %> err:",ex);
+            return 0;
+        }
+	}	
+	#endregion end <%= SourceTable.Name %>
+	<% } %>
+	}
+}
+<script runat="template">
+public string GetClassName(TableSchema table)
+{
+	return "I" + GetEntClassName(table) + "DR";
+}
+</script>
+<!-- #include file="script.inc" -->

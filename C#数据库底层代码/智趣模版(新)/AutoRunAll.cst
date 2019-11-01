@@ -1,0 +1,50 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+
+<%@ Register Name="AutoRunOne" Template="D:\Program Files (x86)\CodeSmith Generator\Templates\智趣模版(新)\AutoRunOne.cst" MergeProperties="False" ExcludeProperties="" %>
+
+<%@ Template Language="C#" TargetLanguage="Text" %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Default="ZqwPlatform v1.0" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context" Default="ZqwPlatform" Description="The namespace to use for this class" %>
+<%@ Property Name="Db" Type="SchemaExplorer.DatabaseSchema" DeepLoad="True" Optional="False"  Category="Context" Description="选择数据库.." %>
+<%@ Property Name="OutPutModelDest" Type="String" %>
+<%@ Property Name="OutPutAccessDest" Type="String" %>
+<%@ Property Name="List" Type="CodeSmith.CustomProperties.StringCollection" Category="表集合" Description="选择要输出的表，为空全部输出" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Import Namespace="SchemaExplorer" %>
+
+<% 
+    foreach(string s in List)
+    {
+        %> i=<%=s%>
+        <%
+    } foreach(TableSchema tb in Db.Tables)
+    {
+        %> j=<%=tb.Name%>
+        <%
+    }
+%>
+ 
+<%
+
+CodeTemplate codeTemplate1=new AutoRunOne();
+codeTemplate1.SetProperty("DevelopersName",DevelopersName);
+codeTemplate1.SetProperty("NameSpace",NameSpace);
+codeTemplate1.SetProperty("OutPutModelDest",OutPutModelDest);
+codeTemplate1.SetProperty("OutPutAccessDest",OutPutAccessDest);
+
+
+foreach(TableSchema tb in Db.Tables){
+    if(List.Contains(tb.Name)||List.Count==0){
+    codeTemplate1.SetProperty("SourceTable",tb);
+    codeTemplate1.RenderToString();
+    }
+}
+
+%>
