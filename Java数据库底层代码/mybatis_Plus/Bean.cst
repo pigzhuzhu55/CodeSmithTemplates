@@ -54,7 +54,7 @@ ArrayList allList = new ArrayList();
 
 </script>
 @Data
-public class <%= GetClassName(SourceTable) %>  extends BaseEntity implements Serializable {
+public class <%= GetClassName(SourceTable) %> extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 	<%
