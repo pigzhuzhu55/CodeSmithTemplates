@@ -1,0 +1,82 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+
+<%@ Register Name="Entity" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\nutzSite\model.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Entity_" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\nutzSite\model_.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Service" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\nutzSite\Service.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="ServiceImpl" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\nutzSite\ServiceImpl.cst" MergeProperties="False" ExcludeProperties="" %>
+
+<%--<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>--%>
+<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceDatabase" Type="SchemaExplorer.DatabaseSchema" Category="Context" Description="" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Property Name="OutPutModelDest" Type="String" Default="E:\mycode\java\NutzSite\src\main\java\io\nutz\nutzsite\module\cms"%>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="System.Text" %>
+<%
+
+try{
+CodeTemplate codeTemplate1=new Entity();
+codeTemplate1.SetProperty("SourceTable",SourceTable);
+string fileName = OutPutModelDest+@"\models\"+GetClassName(SourceTable)+".java";
+codeTemplate1.RenderToFile(fileName,false);
+rendJavaFile(fileName);
+}
+catch{
+}
+
+CodeTemplate codeTemplate2=new Entity_();
+codeTemplate2.SetProperty("SourceTable",SourceTable);
+string fileName2 = OutPutModelDest+@"\models\_\"+GetClassName(SourceTable)+"_.java";
+codeTemplate2.RenderToFile(fileName2,true);
+rendJavaFile(fileName2);
+
+
+try{
+CodeTemplate codeTemplate3=new Service();
+codeTemplate3.SetProperty("SourceTable",SourceTable);
+string fileName3 = OutPutModelDest+@"\services\"+GetClassName(SourceTable)+"Service.java";
+codeTemplate3.RenderToFile(fileName3,false);
+rendJavaFile(fileName3);
+}
+catch{
+}
+
+try{
+CodeTemplate codeTemplate4=new ServiceImpl();
+codeTemplate4.SetProperty("SourceTable",SourceTable);
+string fileName4 = OutPutModelDest+@"\services\impl\"+GetClassName(SourceTable)+"ServiceImpl.java";
+codeTemplate4.RenderToFile(fileName4,false);
+rendJavaFile(fileName4);
+}
+catch{
+}
+
+
+
+%>
+<script runat="template">
+private void rendJavaFile(string fileName){
+    string content=string.Empty;
+    using (var sr = new StreamReader(fileName, Encoding.UTF8))
+    {
+        content= sr.ReadToEnd();
+    }
+
+    using(FileStream fs = new FileStream(fileName, FileMode.Create)){
+        using(StreamWriter sw = new StreamWriter(fs, new System.Text.UTF8Encoding(false))){
+            sw.Write(content);
+            //清空缓冲区
+            sw.Flush();
+        }
+    }
+}
+</script>
+<!-- #include file="script.inc" -->

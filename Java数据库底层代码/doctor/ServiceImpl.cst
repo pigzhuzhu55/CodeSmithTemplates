@@ -1,0 +1,215 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+package cn.prodoctors.service.mybatis.service2.impl;
+
+import cn.prodoctors.core.dto.<%= GetClassName(SourceTable) %>DTO;
+import cn.prodoctors.core.vo.<%= GetClassName(SourceTable) %>VO;
+import cn.prodoctors.core.dto.common.ComboxDTO;
+import cn.prodoctors.core.dto.JwtUser;
+import cn.prodoctors.core.enums.ErrorCode;
+import cn.prodoctors.core.utils.AssertUtil;
+import cn.prodoctors.core.utils.StringUtil;
+import cn.prodoctors.service.mybatis.dao2.mapper.<%= GetClassName(SourceTable) %>Mapper;
+import cn.prodoctors.service.mybatis.domain2.<%= GetClassName(SourceTable) %>;
+import cn.prodoctors.service.mybatis.service2.<%= GetClassName(SourceTable) %>Service;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+*Name: <%=SourceTable.Name%>
+*Author: Caicai
+*Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
+*Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+*/ 
+@Service
+public class <%= GetClassName(SourceTable) %>ServiceImpl extends BaseServiceImpl<<%= GetClassName(SourceTable) %>,String> implements <%= GetClassName(SourceTable) %>Service {
+    @Autowired
+    private <%= GetClassName(SourceTable) %>Mapper myMapper;
+
+    @Override
+    public <%= GetClassName(SourceTable) %>DTO getOne(String id) {
+
+        <%= GetClassName(SourceTable) %> <%= GetVarName(SourceTable) %> = myMapper.selectByPrimaryKey(id);
+        <%= GetClassName(SourceTable) %>DTO <%= GetVarName(SourceTable) %>DTO = new <%= GetClassName(SourceTable) %>DTO();
+        AssertUtil.notNull(<%= GetVarName(SourceTable) %>, ErrorCode.NOT_FOUND_DATA);
+        BeanUtils.copyProperties(<%= GetVarName(SourceTable) %>,<%= GetVarName(SourceTable) %>DTO);
+
+        return <%= GetVarName(SourceTable) %>DTO;
+    }
+
+    @Override
+    public Boolean deleteLogic(JwtUser jwtUser, String id) {
+        <%= GetClassName(SourceTable) %> <%= GetVarName(SourceTable) %> = new <%= GetClassName(SourceTable) %>();
+        <%= GetVarName(SourceTable) %>.setId(id);
+        <% if (hasColumn(SourceTable,"UserIdUpdate")){%>
+        <%= GetVarName(SourceTable) %>.setUserIdUpdate(jwtUser.getId());
+        <%}%>
+        <% if (hasColumn(SourceTable,"UserNameUpdate")){%>
+        <%= GetVarName(SourceTable) %>.setUserNameUpdate(jwtUser.getName());
+        <%}%>
+        <% if (hasColumn(SourceTable,"TimeUpdate")){%>
+        <%= GetVarName(SourceTable) %>.setTimeUpdate(System.currentTimeMillis());
+        <%}%>
+        <% if (hasColumn(SourceTable,"IsDeleted")){%>
+        <%= GetVarName(SourceTable) %>.setIsDeleted((byte)1);
+        <%}%>
+
+        int cnt = myMapper.updateByPrimaryKeySelective(<%= GetVarName(SourceTable) %>);
+        AssertUtil.isTrue(cnt > 0, ErrorCode.OPERATION_FAILD);
+
+        return true;
+    }
+
+    @Override
+    public <%= GetClassName(SourceTable) %>DTO add(JwtUser jwtUser, <%= GetClassName(SourceTable) %>VO <%= GetVarName(SourceTable) %>VO) {
+
+        <%= GetClassName(SourceTable) %> <%= GetVarName(SourceTable) %> = new <%= GetClassName(SourceTable) %>();
+        BeanUtils.copyProperties(<%= GetVarName(SourceTable) %>VO,<%= GetVarName(SourceTable) %>);
+        <% if (hasColumn(SourceTable,"UserIdUpdate")){%>
+        <%= GetVarName(SourceTable) %>.setUserIdUpdate(jwtUser.getId());
+        <%}%>
+        <% if (hasColumn(SourceTable,"UserNameUpdate")){%>
+        <%= GetVarName(SourceTable) %>.setUserNameUpdate(jwtUser.getName());
+        <%}%>
+        <% if (hasColumn(SourceTable,"TimeUpdate")){%>
+        <%= GetVarName(SourceTable) %>.setTimeUpdate(System.currentTimeMillis());
+        <%}%>
+        <% if (hasColumn(SourceTable,"IsDeleted")){%>
+        <%= GetVarName(SourceTable) %>.setIsDeleted((byte)0);
+        <%}%>
+
+        int cnt ;
+        
+        //--
+        Example example2 = new Example(<%= GetClassName(SourceTable) %>.class);
+        Example.Criteria criteria2 = example2.createCriteria();
+        criteria2.andEqualTo(<%= GetClassName(SourceTable) %>.$.phone, <%= GetVarName(SourceTable) %>VO.getPhone());
+        <% if (hasColumn(SourceTable,"IsDeleted")){%>
+        criteria2.andEqualTo(<%= GetClassName(SourceTable) %>.$.isDeleted, (byte)0);
+        <%}%>
+        cnt = myMapper.selectCountByExample(example2);
+        AssertUtil.isTrue(cnt==0, ErrorCode.GET_DUM_DATA_ERROR);
+        //--
+        
+        <% if (hasColumn(SourceTable,"UserIdCreate")){%>
+        <%= GetVarName(SourceTable) %>.setUserIdCreate(jwtUser.getId());
+        <%}%>
+        <% if (hasColumn(SourceTable,"UserNameCreate")){%>
+        <%= GetVarName(SourceTable) %>.setUserNameCreate(jwtUser.getName());
+        <%}%>
+        <% if (hasColumn(SourceTable,"TimeCreate")){%>
+        <%= GetVarName(SourceTable) %>.setTimeCreate(System.currentTimeMillis());
+        <%}%>
+        cnt = myMapper.insertSelective(<%= GetVarName(SourceTable) %>);
+        AssertUtil.isTrue(cnt>0, ErrorCode.OPERATION_FAILD);
+     
+        <%= GetClassName(SourceTable) %>DTO <%= GetVarName(SourceTable) %>DTO = new <%= GetClassName(SourceTable) %>DTO();
+        BeanUtils.copyProperties(<%= GetVarName(SourceTable) %>,<%= GetVarName(SourceTable) %>DTO);
+        return <%= GetVarName(SourceTable) %>DTO;
+    }
+    
+    @Override
+    public <%= GetClassName(SourceTable) %>DTO edit(JwtUser jwtUser, <%= GetClassName(SourceTable) %>VO <%= GetVarName(SourceTable) %>VO, String id) {
+
+        <%= GetClassName(SourceTable) %> <%= GetVarName(SourceTable) %> = new <%= GetClassName(SourceTable) %>();
+        BeanUtils.copyProperties(<%= GetVarName(SourceTable) %>VO,<%= GetVarName(SourceTable) %>);
+        <% if (hasColumn(SourceTable,"UserIdUpdate")){%>
+        <%= GetVarName(SourceTable) %>.setUserIdUpdate(jwtUser.getId());
+        <%}%>
+        <% if (hasColumn(SourceTable,"UserNameUpdate")){%>
+        <%= GetVarName(SourceTable) %>.setUserNameUpdate(jwtUser.getName());
+        <%}%>
+        <% if (hasColumn(SourceTable,"TimeUpdate")){%>
+        <%= GetVarName(SourceTable) %>.setTimeUpdate(System.currentTimeMillis());
+        <%}%>
+        <% if (hasColumn(SourceTable,"IsDeleted")){%>
+        <%= GetVarName(SourceTable) %>.setIsDeleted((byte)0);
+        <%}%>
+        
+        int cnt ;
+        
+        //--
+        Example example2 = new Example(<%= GetClassName(SourceTable) %>.class);
+        Example.Criteria criteria2 = example2.createCriteria();
+        criteria2.andEqualTo(<%= GetClassName(SourceTable) %>.$.phone, <%= GetVarName(SourceTable) %>VO.getPhone());
+        <% if (hasColumn(SourceTable,"IsDeleted")){%>
+        criteria2.andEqualTo(<%= GetClassName(SourceTable) %>.$.isDeleted, (byte)0);
+        <%}%>
+        criteria2.andNotEqualTo(<%= GetClassName(SourceTable) %>.$.id, id);
+        cnt = myMapper.selectCountByExample(example2);
+        AssertUtil.isTrue(cnt==0, ErrorCode.GET_DUM_DATA_ERROR);
+        //--
+        
+        <%= GetVarName(SourceTable) %>.setId(id);
+        cnt = myMapper.updateByPrimaryKeySelective(<%= GetVarName(SourceTable) %>);
+        AssertUtil.isTrue(cnt>0, ErrorCode.OPERATION_FAILD);
+        
+        <%= GetClassName(SourceTable) %>DTO <%= GetVarName(SourceTable) %>DTO = new <%= GetClassName(SourceTable) %>DTO();
+        BeanUtils.copyProperties(<%= GetVarName(SourceTable) %>,<%= GetVarName(SourceTable) %>DTO);
+        return <%= GetVarName(SourceTable) %>DTO;
+    }
+
+    @Override
+    public Page page(Example example, Pageable pageable) {
+        PageHelper.startPage(pageable.getPageNumber()+1, pageable.getPageSize(), true);
+        List<<%= GetClassName(SourceTable) %>> lists = myMapper.selectByExample(example);
+        PageInfo<<%= GetClassName(SourceTable) %>> pageInfo = new PageInfo<<%= GetClassName(SourceTable) %>>(lists);
+
+        List<<%= GetClassName(SourceTable) %>DTO> retList = new ArrayList<>();
+        for(<%= GetClassName(SourceTable) %> <%= GetVarName(SourceTable) %>:lists)
+        {
+            <%= GetClassName(SourceTable) %>DTO item = new <%= GetClassName(SourceTable) %>DTO();
+            BeanUtils.copyProperties(<%= GetVarName(SourceTable) %>,item);
+            retList.add(item);
+        }
+
+        return new PageImpl(retList, pageable, pageInfo.getTotal());
+    }
+    
+    @Override
+    public List<ComboxDTO> combox(tk.mybatis.mapper.entity.Example example){
+        List<ComboxDTO> retList = new ArrayList<>();
+
+        example.selectProperties(<%= GetClassName(SourceTable) %>.$.id,<%= GetClassName(SourceTable) %>.$.name);
+        List<<%= GetClassName(SourceTable) %>> <%= GetVarName(SourceTable) %> = myMapper.selectByExample(example);
+
+        for (<%= GetClassName(SourceTable) %> item : <%= GetVarName(SourceTable) %>) {
+            ComboxDTO cb = new ComboxDTO();
+            cb.setId(item.getId());
+            cb.setName(item.getName());
+            retList.add(cb);
+        }
+        return retList;
+
+    }
+    
+    
+    @Override
+    public String getName(String id) {
+        Example example = new Example(<%= GetClassName(SourceTable) %>.class);
+        Example.Criteria criteria2 = example.createCriteria();
+        criteria2.andEqualTo(<%= GetClassName(SourceTable) %>.$.id, id);
+        example.selectProperties(<%= GetClassName(SourceTable) %>.$.name);
+
+        <%= GetClassName(SourceTable) %> <%= GetVarName(SourceTable) %> = myMapper.selectOneByExample(example);
+        if(<%= GetVarName(SourceTable) %>!=null)
+            return <%= GetVarName(SourceTable) %>.getName();
+        else
+            return StringUtil.EMPTY;
+    }
+}
+<!-- #include file="script.inc" -->

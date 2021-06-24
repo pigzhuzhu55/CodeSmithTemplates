@@ -4,20 +4,20 @@
 <%@ Assembly Name="System.Data" %>
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
-package com.iqeq.pad.dao.mapper.source1;
+package io.nutz.nutzsite.module.cms.services;
 
-import com.iqeq.pad.dao.MyMapper;
-import com.iqeq.pad.pojo.<%= GetClassName(SourceTable) %>;
-import org.springframework.stereotype.Component;
+import io.nutz.nutzsite.common.service.BaseService;
+import io.nutz.nutzsite.module.cms.models.<%= GetClassName(SourceTable) %>;
 
 /**
 *Name: <%=SourceTable.Name%>
 *Author: Caicai
 *Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
-*Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+*Description: <%= FilterString(SourceTable.Description)%>
 */ 
-@Component
-public interface <%= GetClassName(SourceTable) %>Mapper extends MyMapper<<%= GetClassName(SourceTable) %>> {
+
+public interface <%= GetClassName(SourceTable) %>Service extends BaseService<<%= GetClassName(SourceTable) %>> {
+
 
 }
 <!-- #include file="script.inc" -->

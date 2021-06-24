@@ -1,0 +1,114 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.pojo;
+
+import com.alibaba.fastjson.annotation.JSONField;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.cly.tfxgj.dbs.pojo.base.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.iqeq.common.utils.DateUtil;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+*Name: <%=SourceTable.Name%>
+*Author: Caicai
+*Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
+*Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+*/ 
+
+<script runat="template">
+public class MyCompare : System.Collections.IComparer
+{
+    public int Compare(object x, object y)
+    {
+        string a = ((ColumnSchema)x).Name;
+        string b = ((ColumnSchema)y).Name;
+        return a.CompareTo(b);
+    }
+}
+
+MyCompare myCompare=new MyCompare();
+//生成属性的时候，id总是在前面，后面依次是类型为Integer的类型，最后面是日期类型，剩下的按照字母排序放到中间。
+
+//Integer的类型
+ArrayList intList = new ArrayList();
+//中间
+ArrayList normalList = new ArrayList();
+//日期类型
+ArrayList dateList = new ArrayList();
+
+
+ArrayList allList = new ArrayList();
+
+
+
+</script>
+@Data
+public class <%= GetClassName(SourceTable) %>  extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+	<%
+    for (int i = 0; i < SourceTable.Columns.Count; i++) { 
+        ColumnSchema column = SourceTable.Columns[i];
+        if(i==0 || column.Name.ToLower()=="create_user"||
+            column.Name.ToLower()=="create_time"||
+            column.Name.ToLower()=="update_user"||
+            column.Name.ToLower()=="update_time"||
+            column.Name.ToLower()=="status"||
+            column.Name.ToLower()=="is_deleted"
+            ){
+             continue;
+        }
+        
+        string type = GetCSharpVariableType(column);
+        switch(type){
+            case "Integer": {
+    			 intList.Add(column);
+    		}break;
+            case "Date": {
+    			 dateList.Add(column);
+    		}break;
+            default:
+    		{
+    			 normalList.Add(column);
+    		}break;
+        }
+    }
+    intList.Sort(myCompare);
+    dateList.Sort(myCompare);
+    normalList.Sort(myCompare);
+    allList.AddRange(intList);
+    allList.AddRange(normalList);
+    allList.AddRange(dateList);
+    %>
+    
+    <%
+    for (int i = 0; i < allList.Count; i++) { 
+    ColumnSchema column = (ColumnSchema)allList[i];
+    string type = GetCSharpVariableType(column);
+    %>
+    <% if (!String.IsNullOrEmpty(column.Description)){%>
+    @ApiModelProperty(name = "<%= GetCamelCaseName(column.Name) %>", value = "<%= FilterString(column.Description)%>")
+    <%}%>
+    <% if (type=="Date"){%>
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,timezone = "GMT+8", pattern = DateUtil.PATTERN_DATETIME,locale = "zh_CN")
+    <%}%>
+    private <%= GetCSharpVariableType(column) %> <%= GetCamelCaseName(column.Name) %>;
+    <% if (i < allList.Count - 1) Response.Write("\r\n"); %>
+    <%
+    }
+    %>
+}
+ 
+<!-- #include file="script.inc" -->

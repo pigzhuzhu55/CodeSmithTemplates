@@ -4,10 +4,10 @@
 <%@ Assembly Name="System.Data" %>
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
-package com.iqeq.pad.dao.mapper.source1;
+package cn.prodoctors.service.mybatis.dao2.mapper;
 
-import com.iqeq.pad.dao.MyMapper;
-import com.iqeq.pad.pojo.<%= GetClassName(SourceTable) %>;
+import cn.prodoctors.service.mybatis.dao2.MyMapper;
+import cn.prodoctors.service.mybatis.domain2.<%= GetClassName(SourceTable) %>;
 import org.springframework.stereotype.Component;
 
 /**

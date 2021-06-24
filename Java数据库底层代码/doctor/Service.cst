@@ -1,0 +1,40 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+package cn.prodoctors.service.mybatis.service2;
+
+import cn.prodoctors.service.mybatis.domain2.<%= GetClassName(SourceTable) %>;
+import cn.prodoctors.core.dto.<%= GetClassName(SourceTable) %>DTO;
+import cn.prodoctors.core.vo.<%= GetClassName(SourceTable) %>VO;
+import cn.prodoctors.core.dto.JwtUser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import cn.prodoctors.core.dto.common.ComboxDTO;
+import java.util.List;
+
+/**
+*Name: <%=SourceTable.Name%>
+*Author: Caicai
+*Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
+*Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+*/ 
+public interface <%= GetClassName(SourceTable) %>Service extends BaseService<<%= GetClassName(SourceTable) %>,String> {
+
+    <%= GetClassName(SourceTable) %>DTO getOne(String id);
+
+    Boolean deleteLogic(JwtUser jwtUser, String id);
+
+    <%= GetClassName(SourceTable) %>DTO add(JwtUser jwtUser, <%= GetClassName(SourceTable) %>VO <%= GetVarName(SourceTable) %>VO);
+    
+    <%= GetClassName(SourceTable) %>DTO edit(JwtUser jwtUser, <%= GetClassName(SourceTable) %>VO <%= GetVarName(SourceTable) %>VO, String id);
+
+    Page page(tk.mybatis.mapper.entity.Example example, Pageable pageable);
+    
+    List<ComboxDTO> combox(tk.mybatis.mapper.entity.Example example);
+    
+    String getName(String id);
+}
+<!-- #include file="script.inc" -->

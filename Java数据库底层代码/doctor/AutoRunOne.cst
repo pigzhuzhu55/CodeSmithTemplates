@@ -1,0 +1,112 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+
+<%@ Register Name="Entity" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\IQEQ\Java数据库底层代码\doctor\Bean.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Service" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\IQEQ\Java数据库底层代码\doctor\Service.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Mapper" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\IQEQ\Java数据库底层代码\doctor\Mapper.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="ServiceImpl" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\IQEQ\Java数据库底层代码\doctor\ServiceImpl.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Controller" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\IQEQ\Java数据库底层代码\doctor\Controller.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="DTO" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\IQEQ\Java数据库底层代码\doctor\DTO.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="VO" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\IQEQ\Java数据库底层代码\doctor\VO.cst" MergeProperties="False" ExcludeProperties="" %>
+
+<%--<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>--%>
+<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Property Name="OutPutModelDest" Type="String" Default="E:\mycode\java\AccudsAPI\doctor-service\src\main\java\cn\prodoctors\service\mybatis"%>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="System.Text" %>
+<%
+CodeTemplate codeTemplate1=new Entity();
+codeTemplate1.SetProperty("SourceTable",SourceTable);
+string fileName = OutPutModelDest+@"\domain2\"+GetClassName(SourceTable)+".java";
+codeTemplate1.RenderToFile(fileName,true);
+rendJavaFile(fileName);
+
+
+try{
+CodeTemplate codeTemplate3=new Mapper();
+codeTemplate3.SetProperty("SourceTable",SourceTable);
+string fileName3 = OutPutModelDest+@"\dao2\mapper\"+GetClassName(SourceTable)+"Mapper.java";
+codeTemplate3.RenderToFile(fileName3,false);
+rendJavaFile(fileName3);
+}
+catch{
+}
+
+try{
+CodeTemplate codeTemplate2=new Service();
+codeTemplate2.SetProperty("SourceTable",SourceTable);
+string fileName2 = OutPutModelDest+@"\service2\"+GetClassName(SourceTable)+"Service.java";
+codeTemplate2.RenderToFile(fileName2,false);
+rendJavaFile(fileName2);
+}
+catch{
+}
+
+try{
+CodeTemplate codeTemplate4=new ServiceImpl();
+codeTemplate4.SetProperty("SourceTable",SourceTable);
+string fileName4 = OutPutModelDest+@"\service2\impl\"+GetClassName(SourceTable)+"ServiceImpl.java";
+codeTemplate4.RenderToFile(fileName4,false);
+rendJavaFile(fileName4);
+}
+catch{
+}
+
+try{
+CodeTemplate codeTemplate5=new Controller();
+codeTemplate5.SetProperty("SourceTable",SourceTable);
+string fileName5 = OutPutModelDest+@"\..\..\..\..\..\..\..\..\doctor-admin\src\main\java\cn\prodoctors\admin\controller\"+GetClassName(SourceTable)+"Controller.java";
+codeTemplate5.RenderToFile(fileName5,false);
+rendJavaFile(fileName5);
+}
+catch{
+}
+
+
+try{
+CodeTemplate codeTemplate6=new DTO();
+codeTemplate6.SetProperty("SourceTable",SourceTable);
+string fileName6 = OutPutModelDest+@"\..\..\..\..\..\..\..\..\doctor-core\src\main\java\cn\prodoctors\core\dto\"+GetClassName(SourceTable)+"DTO.java";
+codeTemplate6.RenderToFile(fileName6,false);
+rendJavaFile(fileName6);
+}
+catch{
+}
+
+try{
+CodeTemplate codeTemplate7=new VO();
+codeTemplate7.SetProperty("SourceTable",SourceTable);
+string fileName7 = OutPutModelDest+@"\..\..\..\..\..\..\..\..\doctor-core\src\main\java\cn\prodoctors\core\vo\"+GetClassName(SourceTable)+"VO.java";
+codeTemplate7.RenderToFile(fileName7,false);
+rendJavaFile(fileName7);
+}
+catch{
+}
+
+%>
+<script runat="template">
+private void rendJavaFile(string fileName){
+    string content=string.Empty;
+    using (var sr = new StreamReader(fileName, Encoding.UTF8))
+    {
+        content= sr.ReadToEnd();
+    }
+
+    using(FileStream fs = new FileStream(fileName, FileMode.Create)){
+        using(StreamWriter sw = new StreamWriter(fs, new System.Text.UTF8Encoding(false))){
+            sw.Write(content);
+            //清空缓冲区
+            sw.Flush();
+        }
+    }
+}
+</script>
+<!-- #include file="script.inc" -->

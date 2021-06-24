@@ -4,21 +4,21 @@
 <%@ Assembly Name="System.Data" %>
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
-/**
+package cn.prodoctors.service.mybatis.domain2;
+
+import cn.prodoctors.service.mybatis.UUIdGenId;
+import lombok.Data;
+import io.swagger.annotations.ApiModelProperty;
+import tk.mybatis.mapper.annotation.KeySql;
+import javax.persistence.*;
+import java.io.Serializable;
+
+ /**
 *Name: <%=SourceTable.Name%>
 *Author: Caicai
 *Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
 *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
 */ 
-package com.iqeq.pad.pojo;
-
-import lombok.Data;
-import tk.mybatis.mapper.annotation.KeySql;
-import javax.persistence.*;
-import java.io.Serializable;
-import java.math.BigDecimal;
- 
- 
 @Data
 @Table(name = "<%=SourceTable.Name%>")
 public class <%= GetClassName(SourceTable) %> implements Serializable {
@@ -30,22 +30,13 @@ public class <%= GetClassName(SourceTable) %> implements Serializable {
     bool isPk = SourceTable.Columns[i].IsPrimaryKeyMember;
     %>
     <% if (!String.IsNullOrEmpty(SourceTable.Columns[i].Description)){%>
-    /**
-    *<%= FilterString(SourceTable.Columns[i].Description)%>
-    */
+    @ApiModelProperty(name = "<%= GetCamelCaseName(SourceTable.Columns[i].Name) %>", value = "<%= FilterString(SourceTable.Columns[i].Description)%>")
     <%}%>
     <% if (isPk){%>
     @Id
+    @KeySql(genId = UUIdGenId.class)
     <%}%>
-    <% if (isIdentity){%>
-    @KeySql(useGeneratedKeys = true)
-    @GeneratedValue(strategy = GenerationType.IDENTITY,generator = "JDBC")
-    <%}%>
-    <% if(i==0){%>
-    @Column(name = "<%= SourceTable.Columns[i].Name %>",insertable = false,updatable = false)
-    <% } else {%>
     @Column(name = "<%= SourceTable.Columns[i].Name %>")
-    <% } %> 
     <%if(SourceTable.Columns[i].DataType==DbType.Date||SourceTable.Columns[i].DataType==DbType.DateTime){%>
     <%}%>
     private <%= GetCSharpVariableType(SourceTable.Columns[i]) %> <%= GetCamelCaseName(SourceTable.Columns[i].Name) %>;

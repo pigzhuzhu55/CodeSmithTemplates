@@ -1,0 +1,76 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+
+<%@ Register Name="Entity" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\nancan-train-api\Bean.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Service" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\nancan-train-api\Service.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Mapper" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\nancan-train-api\Mapper.cst" MergeProperties="False" ExcludeProperties="" %>
+
+<%--<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>--%>
+<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceDatabase" Type="SchemaExplorer.DatabaseSchema" Category="Context" Description="" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Property Name="Namespace" Type="String" Default="org.cai.inspection"%>
+<%@ Property Name="OutPutModelDest" Type="String" Default="E:\个人代码\java\nancan_train\back_end\nancan-train-api\src\main\java\com\nancan\train\api"%>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="System.Text" %>
+<%
+
+
+CodeTemplate codeTemplate1=new Entity();
+codeTemplate1.SetProperty("Namespace",Namespace);
+codeTemplate1.SetProperty("SourceTable",SourceTable);
+string fileName = OutPutModelDest+@"\model\po\"+GetClassName(SourceTable)+".java";
+codeTemplate1.RenderToFile(fileName,true);
+rendJavaFile(fileName);
+
+try{
+CodeTemplate codeTemplate2=new Service();
+codeTemplate2.SetProperty("Namespace",Namespace);
+codeTemplate2.SetProperty("SourceDatabase",SourceDatabase);
+codeTemplate2.SetProperty("SourceTable",SourceTable);
+string fileName2 = OutPutModelDest+@"\service\"+GetClassName(SourceTable)+"Service.java";
+codeTemplate2.RenderToFile(fileName2,false);
+rendJavaFile(fileName2);
+}
+catch{
+}
+
+try{
+CodeTemplate codeTemplate3=new Mapper();
+codeTemplate3.SetProperty("Namespace",Namespace);
+codeTemplate3.SetProperty("SourceDatabase",SourceDatabase);
+codeTemplate3.SetProperty("SourceTable",SourceTable);
+string fileName3 = OutPutModelDest+@"\mapper\"+GetDatabaseName(SourceDatabase)+@"\"+GetClassName(SourceTable)+"Mapper.java";
+codeTemplate3.RenderToFile(fileName3,false);
+rendJavaFile(fileName3);
+}
+catch{
+}
+
+
+%>
+<script runat="template">
+private void rendJavaFile(string fileName){
+    string content=string.Empty;
+    using (var sr = new StreamReader(fileName, Encoding.UTF8))
+    {
+        content= sr.ReadToEnd();
+    }
+
+    using(FileStream fs = new FileStream(fileName, FileMode.Create)){
+        using(StreamWriter sw = new StreamWriter(fs, new System.Text.UTF8Encoding(false))){
+            sw.Write(content);
+            //清空缓冲区
+            sw.Flush();
+        }
+    }
+}
+</script>
+<!-- #include file="script.inc" -->

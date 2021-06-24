@@ -1,5 +1,6 @@
 ﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
 <%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Property Name="Namespace" Type="String" Default="org.cai.inspection"%>
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Assembly Name="System.Data" %>
 <%@ Import Namespace="SchemaExplorer" %>
@@ -8,32 +9,26 @@
 *Name: <%=SourceTable.Name%>
 *Author: Caicai
 *Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
-*Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+*Description: <%= Copyright %>
 */ 
-package com.iqeq.pad.pojo;
+package <%=Namespace%>.model.po;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.KeySql;
+
 import javax.persistence.*;
-import java.io.Serializable;
-import java.math.BigDecimal;
  
  
 @Data
 @Table(name = "<%=SourceTable.Name%>")
-public class <%= GetClassName(SourceTable) %> implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class <%= GetClassName(SourceTable) %> {
 
 	<% for (int i = 0; i < SourceTable.Columns.Count; i++) { 
     bool isIdentity = SourceTable.Columns[i].ExtendedProperties["CS_IsIdentity"].Value.ToString()=="True";
     bool isPk = SourceTable.Columns[i].IsPrimaryKeyMember;
     %>
-    <% if (!String.IsNullOrEmpty(SourceTable.Columns[i].Description)){%>
-    /**
-    *<%= FilterString(SourceTable.Columns[i].Description)%>
-    */
-    <%}%>
+    @ApiModelProperty(name = "<%= GetCamelCaseName(SourceTable.Columns[i].Name) %>", value = "<%= FilterString(SourceTable.Columns[i].Description)%>")
     <% if (isPk){%>
     @Id
     <%}%>
@@ -46,8 +41,6 @@ public class <%= GetClassName(SourceTable) %> implements Serializable {
     <% } else {%>
     @Column(name = "<%= SourceTable.Columns[i].Name %>")
     <% } %> 
-    <%if(SourceTable.Columns[i].DataType==DbType.Date||SourceTable.Columns[i].DataType==DbType.DateTime){%>
-    <%}%>
     private <%= GetCSharpVariableType(SourceTable.Columns[i]) %> <%= GetCamelCaseName(SourceTable.Columns[i].Name) %>;
     <% if (i < SourceTable.Columns.Count - 1) Response.Write("\r\n"); %>
     <%}%>
