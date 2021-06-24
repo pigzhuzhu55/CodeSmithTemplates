@@ -111,7 +111,7 @@ public string GetCSharpVariableType(ColumnSchema column)
 		case DbType.AnsiStringFixedLength: return "String";
 		case DbType.Binary: return "Byte[]";
 		case DbType.Boolean: return "Boolean";
-		case DbType.Byte: return "Byte";
+		case DbType.Byte: return "Integer";
 		case DbType.Currency: return "BigDecimal";
 		case DbType.Date: return "Date";
 		case DbType.DateTime: return "Date";
