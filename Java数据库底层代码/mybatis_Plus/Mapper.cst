@@ -9,7 +9,7 @@
 package <%=Package%>.dao.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import <%=Package%>.pojo.<%= GetClassName(SourceTable) %>;
+import <%=Package%>.entity.<%= GetClassName(SourceTable) %>;
 import org.springframework.stereotype.Component;
 
 /**

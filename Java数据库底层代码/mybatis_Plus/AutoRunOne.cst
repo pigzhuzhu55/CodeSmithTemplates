@@ -27,7 +27,7 @@ bool cover = false;
 
 CodeTemplate codeTemplate1=new Bean();
 codeTemplate1.SetProperty("SourceTable",SourceTable);
-string fileName = OutPutModelDest+@"pojo\"+GetClassName(SourceTable)+".java";
+string fileName = OutPutModelDest+@"entity\"+GetClassName(SourceTable)+".java";
 codeTemplate1.RenderToFile(fileName,true);
 rendJavaFile(fileName);
 

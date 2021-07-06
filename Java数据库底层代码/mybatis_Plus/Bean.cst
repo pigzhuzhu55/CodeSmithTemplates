@@ -6,11 +6,11 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.pojo;
+package <%=Package%>.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.cly.tfxgj.dbs.pojo.base.BaseEntity;
+import com.cly.tfxgj.dbs.entity.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.iqeq.common.utils.DateUtil;
 import io.swagger.annotations.ApiModelProperty;

@@ -8,7 +8,7 @@
 <%@ Import Namespace="System.Collections" %>
 package <%=Package%>.service;
 
-import <%=Package%>.pojo.<%= GetClassName(SourceTable) %>;
+import <%=Package%>.entity.<%= GetClassName(SourceTable) %>;
 
 /**
 *Name: <%=SourceTable.Name%>

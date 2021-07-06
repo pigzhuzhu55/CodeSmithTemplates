@@ -8,7 +8,7 @@
 <%@ Import Namespace="System.Collections" %>
 package <%=Package%>.dao;
 
-import <%=Package%>.pojo.<%= GetClassName(SourceTable) %>;
+import <%=Package%>.entity.<%= GetClassName(SourceTable) %>;
 import <%=Package%>.dao.mapper.<%= GetClassName(SourceTable) %>Mapper;
 import org.springframework.stereotype.Repository;
 
