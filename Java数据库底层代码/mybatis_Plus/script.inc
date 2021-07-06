@@ -122,7 +122,7 @@ public string GetCSharpVariableType(ColumnSchema column)
 		case DbType.Int32: return "Integer";
 		case DbType.Int64: return "Long";
 		case DbType.Object: return "Object";
-		case DbType.SByte: return "Byte";
+		case DbType.SByte: return "Integer";
 		case DbType.Single: return "Double";
 		case DbType.String: return "String";
 		case DbType.StringFixedLength: return "String";
