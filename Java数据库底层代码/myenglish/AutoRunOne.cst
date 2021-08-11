@@ -4,10 +4,10 @@ Author:
 Description: 
 --%>
 
-<%@ Register Name="Entity" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\myenglish\Bean.cst" MergeProperties="False" ExcludeProperties="" %>
-<%@ Register Name="Service" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\myenglish\Service.cst" MergeProperties="False" ExcludeProperties="" %>
-<%@ Register Name="Mapper" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\myenglish\Mapper.cst" MergeProperties="False" ExcludeProperties="" %>
-<%@ Register Name="ServiceImpl" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\myenglish\ServiceImpl.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Entity" Template="Bean.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Service" Template="Service.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Mapper" Template="Mapper.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="ServiceImpl" Template="ServiceImpl.cst" MergeProperties="False" ExcludeProperties="" %>
 
 <%--<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>--%>
 <%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>

@@ -1,0 +1,24 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.service;
+
+import <%=Package%>.entity.<%= GetClassName(SourceTable) %>;
+
+/**
+*Name: <%=SourceTable.Name%>
+*Author: Caicai
+*Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
+*Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+*/ 
+public interface <%= GetClassName(SourceTable) %>Service extends BaseService<<%= GetClassName(SourceTable) %>> {
+
+  
+}
+ 
+<!-- #include file="script.inc" -->
