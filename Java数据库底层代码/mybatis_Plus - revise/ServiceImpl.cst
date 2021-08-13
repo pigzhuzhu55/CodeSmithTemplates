@@ -6,14 +6,14 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.service.impl;
+package <%=Package%>.dbs.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import <%=Package%>.dao.<%= GetClassName(SourceTable) %>Dao;
-import <%=Package%>.entity.<%= GetClassName(SourceTable) %>;
-import <%=Package%>.dao.mapper.<%= GetClassName(SourceTable) %>Mapper;
-import <%=Package%>.service.<%= GetClassName(SourceTable) %>Service;
+import <%=Package%>.dbs.dao.<%= GetClassName(SourceTable) %>Dao;
+import <%=Package%>.dbs.entity.<%= GetClassName(SourceTable) %>;
+import <%=Package%>.dbs.dao.mapper.<%= GetClassName(SourceTable) %>Mapper;
+import <%=Package%>.dbs.service.<%= GetClassName(SourceTable) %>Service;
 import com.iqeq.common.utils.StringUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

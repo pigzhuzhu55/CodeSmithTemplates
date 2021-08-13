@@ -2,32 +2,92 @@
 <%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
-package com.iqeq.center.controller;
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.api.controller;
 
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSort;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.pagehelper.util.StringUtil;
+import com.iqeq.common.model.ResponseData;
+import com.iqeq.common.model.page.PaginationContext;
+import com.iqeq.common.utils.AssertUtil;
+import com.iqeq.common.utils.DateUtil;
+import com.iqeq.common.utils.Fc;
+import com.iqeq.common.utils.ReturnJsonUtil;
+import io.swagger.annotations.*;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.beetl.sql.core.engine.PageQuery;
-import org.beetl.sql.core.query.LambdaQuery;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
-import com.iqeq.center.pojo.entity.ApiListResult;
-import com.iqeq.center.pojo.entity.ApiResult;
-import com.iqeq.center.dao.admin.SysUserDao;
-import com.iqeq.center.dao.iqeqSoftStat.AppVersionDao;
-import com.iqeq.center.pojo.AppVersion;
-import com.iqeq.center.pojo.SysUser;
+
+import <%=Package%>.dbs.entity.<%= GetClassName(SourceTable) %>;
+import <%=Package%>.dbs.mp.support.Condition;
+import <%=Package%>.dbs.service.<%= GetClassName(SourceTable) %>Service;
+
+import java.util.Date;
 import java.util.List;
- 
+
+<script runat="template">
+public class MyCompare : System.Collections.IComparer
+{
+    public int Compare(object x, object y)
+    {
+        string a = ((ColumnSchema)x).Name;
+        string b = ((ColumnSchema)y).Name;
+        return a.CompareTo(b);
+    }
+}
+
+MyCompare myCompare=new MyCompare();
+//生成属性的时候，id总是在前面，后面依次是类型为Integer的类型，最后面是日期类型，剩下的按照字母排序放到中间。
+
+//Integer的类型
+ArrayList intList = new ArrayList();
+//中间
+ArrayList normalList = new ArrayList();
+//日期类型
+ArrayList dateList = new ArrayList();
+
+
+ArrayList allList = new ArrayList();
+
+
+</script>
+<%
+    string routerName = GetVarName(SourceTable);
+    string controllerName = GetClassName(SourceTable); 
+    if (routerName.StartsWith("tb"))
+    	routerName = GetCamelCaseName(routerName.Substring(Prefix.Length));
+    if (controllerName.StartsWith("Tb"))
+    	controllerName = controllerName.Substring(Prefix.Length);
+    
+    for (int i = 0; i < SourceTable.Columns.Count; i++) { 
+        ColumnSchema column = SourceTable.Columns[i];
+        string type = GetCSharpVariableType(column);
+        switch(type){
+            case "Integer": {
+    			 intList.Add(column);
+    		}break;
+            case "Date": {
+    			 dateList.Add(column);
+    		}break;
+            default:
+    		{
+    			 normalList.Add(column);
+    		}break;
+        }
+    }
+    intList.Sort(myCompare);
+    dateList.Sort(myCompare);
+    normalList.Sort(myCompare);
+    allList.AddRange(intList);
+    allList.AddRange(normalList);
+    allList.AddRange(dateList);
+    %>
 
 /**
 *Name: <%=SourceTable.Description%>控制器
@@ -35,165 +95,146 @@ import java.util.List;
 *Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
 *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
 */ 
-@Api(value="<%=SourceTable.Description%>相关API",tags={"<%=SourceTable.Description%>相关API"})
+@Api(tags = "<%=SourceTable.Description%>相关api")
 @RestController
-@RequestMapping("/api/admin/<%= GetVarName(SourceTable) %>")
-public class <%= GetClassName(SourceTable) %>Controller extends  BaseController{
+@AllArgsConstructor
+@RequestMapping("/<%= routerName%>")
+public class <%= controllerName %>Controller extends  BaseController{
     @Autowired
     private <%= GetClassName(SourceTable) %>Service <%= GetVarName(SourceTable) %>Service;
 
-    private HttpServletRequest request;
-    protected HttpServletResponse response;
+    @ApiOperation("详情接口")
+    @GetMapping(value = "/info", produces = "application/json")
+    public ResponseData<<%= GetClassName(SourceTable) %>> info(Integer id) {
 
-    @ModelAttribute
-    public void setReqAndRes(HttpServletRequest req, HttpServletResponse res) {
-        this.request = req;
-        this.response = res;
-    }
-
-    @ApiOperation("详情")
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @Access(value = AccessAdminConstants.<%= GetClassName(SourceTable).ToUpper() %>_GET)
-    public CommonResponse<<%= GetClassName(SourceTable) %>DTO> get(@PathVariable("id") String id) {
-
-        <%= GetClassName(SourceTable) %>DTO ret = <%= GetVarName(SourceTable) %>Service.getOne(id);
-        return new CommonResponse(ret);
-    }
-
-    @ApiOperation("删除")
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    @Access(value = <%= GetClassName(SourceTable).ToUpper() %>_DELETE)
-    public CommonResponse<Boolean> delete(@AuthenticationPrincipal JwtUser jwtUser, @PathVariable("id") String id) {
-
-        boolean ret = <%= GetVarName(SourceTable) %>Service.deleteLogic(jwtUser, id);
-        return new CommonResponse(ret);
-    }
-
-    @ApiOperation("新增")
-    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    @Access(value = <%= GetClassName(SourceTable).ToUpper() %>_CREATE)
-    public CommonResponse<<%= GetClassName(SourceTable) %>DTO> create(@AuthenticationPrincipal JwtUser jwtUser,
-                                                 @Valid @RequestBody <%= GetClassName(SourceTable) %>VO <%= GetVarName(SourceTable) %>VO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return new CommonResponse<>(bindingResult.getErrorCount(), bindingResult.getFieldError().getDefaultMessage());
-        }
-        <%= GetClassName(SourceTable) %>DTO ret = <%= GetVarName(SourceTable) %>Service.add(jwtUser,<%= GetVarName(SourceTable) %>VO);
-        return new CommonResponse(ret);
-    }
-    
-    @ApiOperation("编辑")
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    @Access(value = <%= GetClassName(SourceTable).ToUpper() %>_EDIT)
-    public CommonResponse<<%= GetClassName(SourceTable) %>DTO> edit(@AuthenticationPrincipal JwtUser jwtUser,
-                                                 @PathVariable(required = false,name = "id") String id,
-                                                 @Valid @RequestBody <%= GetClassName(SourceTable) %>VO <%= GetVarName(SourceTable) %>VO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return new CommonResponse<>(bindingResult.getErrorCount(), bindingResult.getFieldError().getDefaultMessage());
-        }
-        <%= GetClassName(SourceTable) %>DTO ret = <%= GetVarName(SourceTable) %>Service.edit(jwtUser,<%= GetVarName(SourceTable) %>VO, id);
-        return new CommonResponse(ret);
+        <%= GetClassName(SourceTable) %> ret = <%= GetVarName(SourceTable) %>Service.getById(id);
+        return ReturnJsonUtil.ok("获取成功", ret);
     }
 
 
-    @ApiOperation("分页列表")
-    @RequestMapping(value = "/page", method = RequestMethod.GET)
-    @Access(<%= GetClassName(SourceTable).ToUpper() %>_PAGE)
-    public CommonPagerResponse<<%= GetClassName(SourceTable) %>DTO> page(
-    <% for (int i = 0; i < SourceTable.Columns.Count; i++) {%>
-        @RequestParam(required = false,value = "<%=GetCamelCaseName(SourceTable.Columns[i].Name)%>") <%= GetCSharpVariableType(SourceTable.Columns[i]) %> <%=GetCamelCaseName(SourceTable.Columns[i].Name)%>,
-    <%}%>
-            @PageableDefault(size = HttpConstants.DEFAULT_PAGE_SIZE, sort = {HttpConstants.FIELD_SORT_TIME_CREATE}, direction = Sort.Direction.DESC)
-                    Pageable pageable) {
-
-        Example example = new Example(<%= GetClassName(SourceTable) %>.class);
-        Example.Criteria criteria = example.createCriteria();
-
-        <% for (int i = 0; i < SourceTable.Columns.Count; i++) {%>
-        <%if(GetCSharpVariableType(SourceTable.Columns[i])=="String"){%>
-        if(<%= GetCamelCaseName(SourceTable.Columns[i].Name) %> != null)
-        {
-            criteria.andLike(<%= GetClassName(SourceTable) %>.$.<%= GetCamelCaseName(SourceTable.Columns[i].Name) %>,"%"+ <%= GetCamelCaseName(SourceTable.Columns[i].Name) %>.trim()+ "%");
-        }
-        <%} else if(GetCSharpVariableType(SourceTable.Columns[i])=="Integer"){%>
-        if(<%= GetCamelCaseName(SourceTable.Columns[i].Name) %> != null)
-        {
-            criteria.andEqualTo(<%= GetClassName(SourceTable) %>.$.<%= GetCamelCaseName(SourceTable.Columns[i].Name) %>,<%=GetCamelCaseName(SourceTable.Columns[i].Name)%>);
-        }
-        <%} else if(GetCSharpVariableType(SourceTable.Columns[i])=="Short"){%>
-        if(<%= GetCamelCaseName(SourceTable.Columns[i].Name) %> != null)
-        {
-            criteria.andEqualTo(<%= GetClassName(SourceTable) %>.$.<%= GetCamelCaseName(SourceTable.Columns[i].Name) %>,<%=GetCamelCaseName(SourceTable.Columns[i].Name)%>);
-        }
-        <%}else if(GetCSharpVariableType(SourceTable.Columns[i])=="Byte"){%>
-        if(<%= GetCamelCaseName(SourceTable.Columns[i].Name) %> != null)
-        {
-            criteria.andEqualTo(<%= GetClassName(SourceTable) %>.$.<%= GetCamelCaseName(SourceTable.Columns[i].Name) %>,<%=GetCamelCaseName(SourceTable.Columns[i].Name)%>);
-        }
-        <%}else if(GetCSharpVariableType(SourceTable.Columns[i])=="Long"){%>
-        if(<%= GetCamelCaseName(SourceTable.Columns[i].Name) %> != null)
-        {
-            criteria.andEqualTo(<%= GetClassName(SourceTable) %>.$.<%= GetCamelCaseName(SourceTable.Columns[i].Name) %>,<%=GetCamelCaseName(SourceTable.Columns[i].Name)%>);
-        }
+    @ApiOperation("列表查询接口")
+    @ApiImplicitParams({
+        <%for (int i = 0; i < allList.Count; i++) { 
+        ColumnSchema column = (ColumnSchema)allList[i];
+        string type = GetCSharpVariableType(column);%>
+        <%if(type=="String"){%>
+        @ApiImplicitParam(name = "<%= GetCamelCaseName(column.Name) %>", value = "<%= FilterString(column.Description)%>", paramType ="query", required = false),
+        <%}else if(type=="Integer"){%>
+        @ApiImplicitParam(name = "<%= GetCamelCaseName(column.Name) %>", value = "<%= FilterString(column.Description)%>", dataType = "int", paramType ="query", required = false),
+        <%}else if(type=="Date"){%>
+        @ApiImplicitParam(name = "<%= GetCamelCaseName(column.Name) %>Rangle", value = "<%= FilterString(column.Description)%>,取范围按~隔开【eg:2021-01-01~2021-02-01】", paramType = "query", required = false),
         <%}}%>
+        @ApiImplicitParam(name = "pageNum", value = "第几页", defaultValue = "1", paramType = "query", dataType = "int", required = true),
+        @ApiImplicitParam(name = "pageSize", value = "每页长度", defaultValue = "10", paramType = "query", dataType = "int", required = true),
+    })
+    @GetMapping(value = "/list", produces = "application/json")
+    public ResponseData<Page<<%= GetClassName(SourceTable) %>>> list(
+        <%for (int i = 0; i < allList.Count; i++) { 
+        ColumnSchema column = (ColumnSchema)allList[i];
+        string type = GetCSharpVariableType(column);%>
+        <%if(type=="String"){%>
+        String <%= GetCamelCaseName(column.Name) %>,
+        <%}else if(type=="Integer"){%>
+        Integer <%= GetCamelCaseName(column.Name) %>,
+        <%}else if(type=="Date"){%>
+        String <%= GetCamelCaseName(column.Name) %>Rangle,
+        <%}}%>
+        Integer pageNum, Integer pageSize
+    ) {
         
-        for(Sort.Order order : pageable.getSort()){
-            if(order.getDirection().isAscending()) {
-                example.orderBy(StringEscapeUtils.escapeSql(order.getProperty()));
-            }
-            else
-            {
-                example.orderBy(StringEscapeUtils.escapeSql(order.getProperty())).desc();
-            }
+        LambdaQueryWrapper<<%= GetClassName(SourceTable) %>> queryWrapper = Condition.<<%= GetClassName(SourceTable) %>>getQueryWrapper().lambda();
+        //条件准备
+        <%
+        for (int i = 0; i < intList.Count; i++) { 
+        ColumnSchema column = (ColumnSchema)intList[i];
+        %>
+        if(<%= GetCamelCaseName(column.Name) %>!=null){
+            queryWrapper.eq(<%= GetClassName(SourceTable) %>::get<%= GetPascalCaseName(column.Name)%>,<%= GetCamelCaseName(column.Name) %>);
         }
-
-        Page retList = <%= GetVarName(SourceTable) %>Service.page(example,pageable);
-
-        return new CommonPagerResponse<>(retList);
-    }
-    
-    @ApiOperation("下拉列表")
-    @RequestMapping(value = "/combox", method = RequestMethod.GET)
-    @Access(value = AccessAdminConstants.<%= GetClassName(SourceTable).ToUpper() %>_COMBOX)
-    public CommonResponse<List<ComboxDTO>> combox(
-     <% for (int i = 0; i < SourceTable.Columns.Count; i++) {%>
-        @RequestParam(required = false,value = "<%=GetCamelCaseName(SourceTable.Columns[i].Name)%>") <%= GetCSharpVariableType(SourceTable.Columns[i]) %> <%=GetCamelCaseName(SourceTable.Columns[i].Name)%>,
-    <%}%>
-            @AuthenticationPrincipal JwtUser jwtUser) {
+        <%}%>
+        
+        <%
+        for (int i = 0; i < normalList.Count; i++) { 
+        ColumnSchema column = (ColumnSchema)normalList[i];
+        string type = GetCSharpVariableType(column);
+        if(type!="String")
+            continue;
+        %>
+        if(<%= GetCamelCaseName(column.Name) %>!=null){
+            queryWrapper.like(<%= GetClassName(SourceTable) %>::get<%= GetPascalCaseName(column.Name)%>,<%= GetCamelCaseName(column.Name) %>);
+        }
+        <%}%>
+        
+        
+        <%
+        for (int i = 0; i < dateList.Count; i++) { 
+        ColumnSchema column = (ColumnSchema)dateList[i];
+        %>
+        if(!StringUtils.isEmpty(<%= GetCamelCaseName(column.Name) %>Rangle)){
+            Date selectDateRangle1 = null;
+            Date selectDateRangle2 = null;
+            String[] tmpStr = <%= GetCamelCaseName(column.Name) %>Rangle.split("~");
+            if (!StringUtils.isEmpty(tmpStr[0].trim())) {
+                selectDateRangle1 = DateUtil.parseDateFormat(tmpStr[0].trim(),DateUtil.PATTERN_DATE);
+            }
+            if (tmpStr.length > 1 && !StringUtils.isEmpty(tmpStr[1].trim())) {
+                selectDateRangle2 = DateUtil.parseDateFormat(tmpStr[1].trim(),DateUtil.PATTERN_DATE);
+            }
             
-        Example example = new Example(<%= GetClassName(SourceTable) %>.class);
-        Example.Criteria criteria = example.createCriteria();
+            if(selectDateRangle1!=null){
+                queryWrapper.ge(<%= GetClassName(SourceTable) %>::get<%= GetPascalCaseName(column.Name)%>,selectDateRangle1);
+            }
 
-        <% for (int i = 0; i < SourceTable.Columns.Count; i++) {%>
-        <%if(GetCSharpVariableType(SourceTable.Columns[i])=="String"){%>
-        if(<%= GetCamelCaseName(SourceTable.Columns[i].Name) %> != null)
-        {
-            criteria.andLike(<%= GetClassName(SourceTable) %>.$.<%= GetCamelCaseName(SourceTable.Columns[i].Name) %>,"%"+ <%= GetCamelCaseName(SourceTable.Columns[i].Name) %>.trim()+ "%");
+            if(selectDateRangle2!=null){
+                queryWrapper.le(<%= GetClassName(SourceTable) %>::get<%= GetPascalCaseName(column.Name)%>,selectDateRangle2);
+            }
         }
-        <%} else if(GetCSharpVariableType(SourceTable.Columns[i])=="Integer"){%>
-        if(<%= GetCamelCaseName(SourceTable.Columns[i].Name) %> != null)
-        {
-            criteria.andEqualTo(<%= GetClassName(SourceTable) %>.$.<%= GetCamelCaseName(SourceTable.Columns[i].Name) %>,<%=GetCamelCaseName(SourceTable.Columns[i].Name)%>);
-        }
-        <%} else if(GetCSharpVariableType(SourceTable.Columns[i])=="Short"){%>
-        if(<%= GetCamelCaseName(SourceTable.Columns[i].Name) %> != null)
-        {
-            criteria.andEqualTo(<%= GetClassName(SourceTable) %>.$.<%= GetCamelCaseName(SourceTable.Columns[i].Name) %>,<%=GetCamelCaseName(SourceTable.Columns[i].Name)%>);
-        }
-        <%}else if(GetCSharpVariableType(SourceTable.Columns[i])=="Byte"){%>
-        if(<%= GetCamelCaseName(SourceTable.Columns[i].Name) %> != null)
-        {
-            criteria.andEqualTo(<%= GetClassName(SourceTable) %>.$.<%= GetCamelCaseName(SourceTable.Columns[i].Name) %>,<%=GetCamelCaseName(SourceTable.Columns[i].Name)%>);
-        }
-        <%}else if(GetCSharpVariableType(SourceTable.Columns[i])=="Long"){%>
-        if(<%= GetCamelCaseName(SourceTable.Columns[i].Name) %> != null)
-        {
-            criteria.andEqualTo(<%= GetClassName(SourceTable) %>.$.<%= GetCamelCaseName(SourceTable.Columns[i].Name) %>,<%=GetCamelCaseName(SourceTable.Columns[i].Name)%>);
-        }
-        <%}}%>
+        <%}%>
         
-        return new CommonResponse<>(<%= GetVarName(SourceTable) %>Service.combox(example));
+        Page<<%= GetClassName(SourceTable) %>> ret =  <%= GetVarName(SourceTable) %>Service.page(PaginationContext.getMpPage(),queryWrapper);
+
+        return ReturnJsonUtil.ok("获取成功", ret);
+    }
+    
+    
+    @ApiOperation("新增接口")
+    @PostMapping("/create")
+    public ResponseData create(@RequestBody <%= GetClassName(SourceTable) %> form) {
+
+        LambdaQueryWrapper<<%= GetClassName(SourceTable) %>> queryWrapper = Condition.<<%= GetClassName(SourceTable) %>>getQueryWrapper().lambda();
+        queryWrapper.eq(<%= GetClassName(SourceTable) %>::getIsDeleted, false);
+
+        queryWrapper.eq(<%= GetClassName(SourceTable) %>::getName, form.getName());
+        int cnt = <%= GetVarName(SourceTable) %>Service.count(queryWrapper);
+        AssertUtil.isTrue(cnt == 0, "存在相同的名称");
+        boolean ret = <%= GetVarName(SourceTable) %>Service.saveOrUpdate(form);
+        return ret ? ReturnJsonUtil.ok("新增成功") : ReturnJsonUtil.fail("新增失败");
     }
 
+    @ApiOperation("修改接口")
+    @PostMapping("/update")
+    public ResponseData update(@RequestBody <%= GetClassName(SourceTable) %> form) {
+        AssertUtil.isTrue(!Fc.isNullOrZero(form.getId()), "ID不能为空");
+        LambdaQueryWrapper<<%= GetClassName(SourceTable) %>> queryWrapper = Condition.<<%= GetClassName(SourceTable) %>>getQueryWrapper().lambda();
+        queryWrapper.eq(<%= GetClassName(SourceTable) %>::getIsDeleted, false);
+
+
+        queryWrapper.eq(<%= GetClassName(SourceTable) %>::getName, form.getName());
+        queryWrapper.ne(<%= GetClassName(SourceTable) %>::getId, form.getId());
+        int cnt = <%= GetVarName(SourceTable) %>Service.count(queryWrapper);
+        AssertUtil.isTrue(cnt == 0, "存在相同的名称");
+
+        boolean ret = <%= GetVarName(SourceTable) %>Service.saveOrUpdate(form);
+
+        return ret ? ReturnJsonUtil.ok("修改成功") : ReturnJsonUtil.fail("修改失败");
+    }
+
+    @ApiOperation("删除接口")
+    @PostMapping("/delete")
+    public ResponseData delete(@ApiParam(value = "删除id，多个按,隔开",required = true) @RequestParam String ids){
+        AssertUtil.notEmpty(ids,  "主键不可为空");
+        return ReturnJsonUtil.status(<%= GetVarName(SourceTable) %>Service.removeByIds(Fc.toStrList(ids)));
+    }
 }
  
 <!-- #include file="script.inc" -->

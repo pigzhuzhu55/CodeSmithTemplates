@@ -6,10 +6,10 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.dao.mapper;
+package <%=Package%>.dbs.dao.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import <%=Package%>.entity.<%= GetClassName(SourceTable) %>;
+import com.baomidou.mybatisplus.core.mapper.MyBaseMapper;
+import <%=Package%>.dbs.entity.<%= GetClassName(SourceTable) %>;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
 */ 
 @Component("<%= GetVarName(SourceTable) %>Mapper")
-public interface <%= GetClassName(SourceTable) %>Mapper extends BaseMapper<<%= GetClassName(SourceTable) %>> {
+public interface <%= GetClassName(SourceTable) %>Mapper extends MyBaseMapper<<%= GetClassName(SourceTable) %>> {
 
 }
 

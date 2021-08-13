@@ -6,9 +6,9 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.service;
+package <%=Package%>.dbs.service;
 
-import <%=Package%>.entity.<%= GetClassName(SourceTable) %>;
+import <%=Package%>.dbs.entity.<%= GetClassName(SourceTable) %>;
 
 /**
 *Name: <%=SourceTable.Name%>

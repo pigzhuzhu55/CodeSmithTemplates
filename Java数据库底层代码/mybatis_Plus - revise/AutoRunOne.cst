@@ -9,6 +9,7 @@ Description:
 <%@ Register Name="Mapper" Template="Mapper.cst" MergeProperties="False" ExcludeProperties="" %>
 <%@ Register Name="Service" Template="Service.cst" MergeProperties="False" ExcludeProperties="" %>
 <%@ Register Name="ServiceImpl" Template="ServiceImpl.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Controller" Template="Controller.cst" MergeProperties="False" ExcludeProperties="" %>
 
 <%--<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>--%>
 <%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
@@ -23,7 +24,7 @@ Description:
 <%
 
 
-bool cover = false;
+bool cover = true;
 
 CodeTemplate codeTemplate1=new Bean();
 codeTemplate1.SetProperty("SourceTable",SourceTable);
@@ -82,6 +83,21 @@ rendJavaFile(fileName5);
 catch{
 }
 
+
+try{
+CodeTemplate codeTemplate6=new Controller();
+codeTemplate6.SetProperty("SourceTable",SourceTable);
+codeTemplate6.SetProperty("Package",Package);
+codeTemplate6.SetProperty("Prefix",Prefix);
+string controllerName = GetClassName(SourceTable); 
+if (controllerName.StartsWith("Tb"))
+	controllerName = controllerName.Substring(Prefix.Length);
+string fileName6 = OutPutModelDest+@"\..\..\..\..\..\..\..\..\..\mall-revise-api\src\main\java\com\iqeq\mall\revise\api\controller\"+controllerName+"Controller.java";
+codeTemplate6.RenderToFile(fileName6,cover);
+rendJavaFile(fileName6);
+}
+catch{
+}
 
 
 %>
