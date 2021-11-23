@@ -207,7 +207,7 @@ public class <%= controllerName %>Controller extends  BaseController{
         queryWrapper.eq(<%= GetClassName(SourceTable) %>::getName, form.getName());
         int cnt = <%= GetVarName(SourceTable) %>Service.count(queryWrapper);
         AssertUtil.isTrue(cnt == 0, "存在相同的名称");
-        boolean ret = <%= GetVarName(SourceTable) %>Service.saveOrUpdate(form);
+        boolean ret = <%= GetVarName(SourceTable) %>Service.save(form);
         return ret ? ReturnJsonUtil.ok("新增成功") : ReturnJsonUtil.fail("新增失败");
     }
 
@@ -224,7 +224,7 @@ public class <%= controllerName %>Controller extends  BaseController{
         int cnt = <%= GetVarName(SourceTable) %>Service.count(queryWrapper);
         AssertUtil.isTrue(cnt == 0, "存在相同的名称");
 
-        boolean ret = <%= GetVarName(SourceTable) %>Service.saveOrUpdate(form);
+        boolean ret = <%= GetVarName(SourceTable) %>Service.updateById(form);
 
         return ret ? ReturnJsonUtil.ok("修改成功") : ReturnJsonUtil.fail("修改失败");
     }

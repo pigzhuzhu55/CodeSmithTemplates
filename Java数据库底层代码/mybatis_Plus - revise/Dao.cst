@@ -21,6 +21,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class <%= GetClassName(SourceTable) %>Dao extends IqeqServiceImpl<<%= GetClassName(SourceTable) %>Mapper, <%= GetClassName(SourceTable) %>> {
 
+    private final <%= GetClassName(SourceTable) %>Mapper <%= GetVarName(SourceTable) %>Mapper;
+
+    public <%= GetClassName(SourceTable) %>Dao(<%= GetClassName(SourceTable) %>Mapper <%= GetVarName(SourceTable) %>Mapper) {
+        this.<%= GetVarName(SourceTable) %>Mapper = <%= GetVarName(SourceTable) %>Mapper;
+    }
+
 }
 
  

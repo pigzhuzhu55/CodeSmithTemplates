@@ -24,7 +24,7 @@ Description:
 <%
 
 
-bool cover = true;
+bool cover = false;
 
 CodeTemplate codeTemplate1=new Bean();
 codeTemplate1.SetProperty("SourceTable",SourceTable);
