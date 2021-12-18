@@ -191,9 +191,9 @@ public class <%= controllerName %>Controller extends  BaseController{
         }
         <%}%>
         
-        Page<<%= GetClassName(SourceTable) %>> ret =  <%= GetVarName(SourceTable) %>Service.page(PaginationContext.getMpPage(),queryWrapper);
+        Page<<%= GetClassName(SourceTable) %>> retPage =  <%= GetVarName(SourceTable) %>Service.page(PaginationContext.getMpPage(),queryWrapper);
 
-        return ReturnJsonUtil.ok("获取成功", ret);
+        return ReturnJsonUtil.ok("获取成功", retPage);
     }
     
     
