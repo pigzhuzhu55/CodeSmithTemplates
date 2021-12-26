@@ -6,24 +6,25 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.dbs.entity;
+package <%=Package%>.<%=Module%>.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.IdType;
-import <%=Package%>.dbs.entity.base.*;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.iqeq.common.utils.DateUtil;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.io.Serializable;
 import java.util.Date;
+import java.io.Serializable;
+import com.luoying.app.common.mp.entity.BaseEntity;
+import lombok.EqualsAndHashCode;
+
 
 /**
-*Name: <%=SourceTable.Name%>
+*Name: <%=SourceTable.Description%>
 *Author: Caicai
 *Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
 *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
@@ -52,12 +53,16 @@ ArrayList dateList = new ArrayList();
 
 //主键类型[目前不支持联合主键]
 ArrayList pkList = new ArrayList();
+
 ArrayList allList = new ArrayList();
 
 
 
 </script>
 @Data
+@EqualsAndHashCode(callSuper = true)
+@TableName("<%= SourceTable.Name%>")
+@ApiModel(value="<%= GetClassName(SourceTable)%>对象", description="<%= SourceTable.Description%>")
 public class <%= GetClassName(SourceTable) %> extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -68,10 +73,18 @@ public class <%= GetClassName(SourceTable) %> extends BaseEntity implements Seri
             pkList.Add(column);
             continue;
         }
+        else if(column.Name.ToLower()=="create_by"||
+            column.Name.ToLower()=="create_time"||
+            column.Name.ToLower()=="update_by"||
+            column.Name.ToLower()=="update_time"||
+            column.Name.ToLower()=="del_flag"
+            ){
+             continue;
+        }
         
         string type = GetCSharpVariableType(column);
         switch(type){
-            case "Integer": {
+            case "Integer":case "Long":{
     			 intList.Add(column);
     		}break;
             case "Date": {
@@ -114,15 +127,10 @@ public class <%= GetClassName(SourceTable) %> extends BaseEntity implements Seri
     @ApiModelProperty(name = "<%= GetCamelCaseName(column.Name) %>", value = "<%= FilterString(column.Description)%>")
     <%}%>
     <% if (type=="Date"){%>
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(shape = JsonFormat.Shape.STRING,timezone = "GMT+8", pattern = DateUtil.PATTERN_DATETIME,locale = "zh_CN")
+    @JSONField(format=PATTERN_DATETIME)
+    @JsonFormat(shape = JsonFormat.Shape.STRING,timezone = "GMT+8", pattern = PATTERN_DATETIME,locale = "zh_CN")
     <%}%>
-    <% if(column.Name.ToLower()=="create_user"||column.Name.ToLower()=="create_time"||column.Name.ToLower()=="is_deleted"){ %>
-    @TableField(value = "<%=column.Name%>", fill = FieldFill.INSERT)
-    <%} %>
-    <% if(column.Name.ToLower()=="update_user"||column.Name.ToLower()=="update_time"){ %>
-    @TableField(value = "<%=column.Name%>", fill = FieldFill.INSERT_UPDATE)
-    <%} %>
+    @TableField(value = "<%=column.Name%>")
     private <%= GetCSharpVariableType(column) %> <%= GetCamelCaseName(column.Name) %>;
     <% if (i < allList.Count - 1) Response.Write("\r\n"); %>
     <%
