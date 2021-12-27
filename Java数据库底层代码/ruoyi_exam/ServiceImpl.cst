@@ -27,7 +27,7 @@ import <%=Package%>.common.web.vo.Paging;
 /**
  *Name: <%=SourceTable.Description%> 服务实现类
  *Author: Caicai
- *Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
+ *Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
  *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
  */ 
 @Slf4j

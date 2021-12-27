@@ -27,7 +27,7 @@ import <%=Package%>.common.mp.entity.BaseEntity;
 /**
  *Name: <%=SourceTable.Description%> 数据库实体对象
  *Author: Caicai
- *Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
+ *Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
  *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
  */ 
 

@@ -22,7 +22,7 @@ import <%=Package%>.<%=Project%>.<%=Module%>.service.vo.page.UserQueryPageVo;
 /**
  *Name: <%=SourceTable.Description%> Mapper接口
  *Author: Caicai
- *Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
+ *Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
  *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
  */ 
 @Repository

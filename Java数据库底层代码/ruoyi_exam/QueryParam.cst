@@ -22,7 +22,7 @@ import <%=Package%>.common.web.param.OrderQueryParam;
 /**
  *Name: <%=SourceTable.Description%>  查询参数对象
  *Author: Caicai
- *Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
+ *Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
  *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
  */ 
 
