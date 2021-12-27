@@ -1,0 +1,33 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.<%=Project%>.<%=Module%>.service;
+
+import <%=Package%>.<%=Project%>.<%=Module%>.entity.<%= GetClassName(SourceTable) %>;
+import <%=Package%>.<%=Project%>.<%=Module%>.service.param.<%= GetClassName(SourceTable) %>QueryParam;
+import <%=Package%>.<%=Project%>.<%=Module%>.service.vo.page.<%= GetClassName(SourceTable) %>QueryPageVo;
+import <%=Package%>.common.mp.service.BaseService;
+import <%=Package%>.common.web.vo.Paging;
+
+/**
+ *Name: <%=SourceTable.Description%> 服务类
+ *Author: Caicai
+ *Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
+ *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+ */ 
+public interface <%= GetClassName(SourceTable) %>Service extends BaseService<<%= GetClassName(SourceTable) %>> {
+
+      /**
+     * 获取分页对象
+     * @param param
+     * @return
+     */
+    Paging<<%= GetClassName(SourceTable) %>QueryPageVo> getPageList(<%= GetClassName(SourceTable) %>QueryParam param) throws Exception;
+}
+ 
+<!-- #include file="script.inc" -->

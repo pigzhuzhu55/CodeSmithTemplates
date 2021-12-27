@@ -14,7 +14,7 @@ public string Prefix
 	}
 }
 
-private string _package = "com.luoying.app.modular";
+private string _package = "com.luoying.app";
 [Category("项目设置")]
 [Description("包名路径.")]
 public string Package
@@ -26,6 +26,21 @@ public string Package
  	set 
 	{
 		_package = value;
+	}
+}
+
+private string _project = "modular";
+[Category("项目设置")]
+[Description("项目名称.")]
+public string Project
+{
+ 	get 
+	{
+		return _project;
+	}
+ 	set 
+	{
+		_project = value;
 	}
 }
 

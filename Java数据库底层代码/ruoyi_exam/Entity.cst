@@ -6,7 +6,7 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.<%=Module%>.entity;
+package <%=Package%>.<%=Project%>.<%=Module%>.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -19,16 +19,17 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
-import com.luoying.app.common.mp.entity.BaseEntity;
 import lombok.EqualsAndHashCode;
+
+import <%=Package%>.common.mp.entity.BaseEntity;
 
 
 /**
-*Name: <%=SourceTable.Description%>
-*Author: Caicai
-*Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
-*Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
-*/ 
+ *Name: <%=SourceTable.Description%> 数据库实体对象
+ *Author: Caicai
+ *Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
+ *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+ */ 
 
 <script runat="template">
 public class MyCompare : System.Collections.IComparer

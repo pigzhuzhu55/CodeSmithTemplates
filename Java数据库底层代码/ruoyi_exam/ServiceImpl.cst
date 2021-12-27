@@ -1,0 +1,49 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.<%=Project%>.<%=Module%>.service.impl;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
+import <%=Package%>.<%=Project%>.<%=Module%>.entity.<%= GetClassName(SourceTable) %>;
+import <%=Package%>.<%=Project%>.<%=Module%>.mapper.<%= GetClassName(SourceTable) %>Mapper;
+import <%=Package%>.<%=Project%>.<%=Module%>.service.<%= GetClassName(SourceTable) %>Service;
+import <%=Package%>.<%=Project%>.<%=Module%>.service.param.<%= GetClassName(SourceTable) %>QueryParam;
+import <%=Package%>.<%=Project%>.<%=Module%>.service.vo.page.<%= GetClassName(SourceTable) %>QueryPageVo;
+import <%=Package%>.common.mp.service.impl.BaseServiceImpl;
+import <%=Package%>.common.web.vo.Paging;
+
+/**
+ *Name: <%=SourceTable.Description%> 服务实现类
+ *Author: Caicai
+ *Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
+ *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+ */ 
+@Slf4j
+@Service("<%= GetVarName(SourceTable) %>Service")
+public class <%= GetClassName(SourceTable) %>ServiceImpl extends BaseServiceImpl<<%= GetClassName(SourceTable) %>Mapper, <%= GetClassName(SourceTable) %>> implements <%= GetClassName(SourceTable) %>Service {
+
+    @Autowired
+    private <%= GetClassName(SourceTable) %>Mapper <%= GetVarName(SourceTable) %>Mapper;
+
+    @Override
+    public Paging<<%= GetClassName(SourceTable) %>QueryPageVo> getPageList(<%= GetClassName(SourceTable) %>QueryParam param) throws Exception{
+        Page page = setPageParam(param,OrderItem.desc("create_time"));
+        IPage<<%= GetClassName(SourceTable) %>QueryPageVo> iPage = <%= GetVarName(SourceTable) %>Mapper.getPageList(page,param);
+        return new Paging(iPage);
+    }
+
+}
+ 
+<!-- #include file="script.inc" -->

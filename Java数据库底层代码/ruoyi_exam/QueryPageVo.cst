@@ -6,21 +6,19 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.<%=Project%>.<%=Module%>.service.param;
+package <%=Package%>.<%=Project%>.<%=Module%>.service.vo.page;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import <%=Package%>.common.web.param.OrderQueryParam;
-
 
 /**
- *Name: <%=SourceTable.Description%>  查询参数对象
+ *Name: <%=SourceTable.Description%>  查询结果翻页对象
  *Author: Caicai
  *Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
  *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
@@ -56,9 +54,8 @@ ArrayList allList = new ArrayList();
 
 </script>
 @Data
-@EqualsAndHashCode(callSuper = true)
-@ApiModel(value="<%= GetClassName(SourceTable)%>QueryParam对象", description="<%= SourceTable.Description%>查询参数对象")
-public class <%= GetClassName(SourceTable) %>QueryParam extends OrderQueryParam {
+@ApiModel(value="<%= GetClassName(SourceTable)%>QueryPageVo对象", description="<%= SourceTable.Description%>查询结果翻页对象")
+public class <%= GetClassName(SourceTable) %>QueryPageVo implements Serializable{
 
 	<%
     for (int i = 0; i < SourceTable.Columns.Count; i++) { 
