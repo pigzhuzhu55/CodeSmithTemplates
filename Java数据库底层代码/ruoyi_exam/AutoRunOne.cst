@@ -31,57 +31,49 @@ bool cover = false;
     CodeTemplate codeTemplate1=new Entity();
     initProps(codeTemplate1);
     string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\entity\"+GetClassName(SourceTable)+".java";
-    codeTemplate1.RenderToFile(fileName,true);
-    rendJavaFile(fileName);
+    rendJavaFile(codeTemplate1,fileName,true);
 }
 {
     CodeTemplate codeTemplate1=new QueryPageVo();
     initProps(codeTemplate1);
     string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\service\vo\page\"+GetClassName(SourceTable)+"QueryPageVo.java";
-    codeTemplate1.RenderToFile(fileName,true);
-    rendJavaFile(fileName);
+    rendJavaFile(codeTemplate1,fileName,cover);
 }
 {
     CodeTemplate codeTemplate1=new QueryParam();
     initProps(codeTemplate1);
     string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\service\param\"+GetClassName(SourceTable)+"QueryParam.java";
-    codeTemplate1.RenderToFile(fileName,true);
-    rendJavaFile(fileName);
+    rendJavaFile(codeTemplate1,fileName,cover);
 }
 {
     CodeTemplate codeTemplate1=new Service();
     initProps(codeTemplate1);
     string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\service\"+GetClassName(SourceTable)+"Service.java";
-    codeTemplate1.RenderToFile(fileName,true);
-    rendJavaFile(fileName);
+    rendJavaFile(codeTemplate1,fileName,cover);
 }
 {
     CodeTemplate codeTemplate1=new ServiceImpl();
     initProps(codeTemplate1);
     string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\service\impl\"+GetClassName(SourceTable)+"ServiceImpl.java";
-    codeTemplate1.RenderToFile(fileName,true);
-    rendJavaFile(fileName);
+    rendJavaFile(codeTemplate1,fileName,cover);
 }
 {
     CodeTemplate codeTemplate1=new Controller();
     initProps(codeTemplate1);
     string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\controller\"+GetClassName(SourceTable)+"Controller.java";
-    codeTemplate1.RenderToFile(fileName,true);
-    rendJavaFile(fileName);
+    rendJavaFile(codeTemplate1,fileName,cover);
 }
 {
     CodeTemplate codeTemplate1=new Mapper();
     initProps(codeTemplate1);
     string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\mapper\"+GetClassName(SourceTable)+"Mapper.java";
-    codeTemplate1.RenderToFile(fileName,true);
-    rendJavaFile(fileName);
+    rendJavaFile(codeTemplate1,fileName,cover);
 }
 {
     CodeTemplate codeTemplate1=new MapperXml();
     initProps(codeTemplate1);
     string fileName = OutPutModelDest+@"resources\mapper\"+Module+@"\"+GetClassName(SourceTable)+"Mapper.xml";
-    codeTemplate1.RenderToFile(fileName,true);
-    rendJavaFile(fileName);
+    rendJavaFile(codeTemplate1,fileName,cover);
 }
 %>
 <script runat="template">
@@ -94,19 +86,24 @@ private void initProps(CodeTemplate codeTemplate1){
 }
 
 
-private void rendJavaFile(string fileName){
-    string content=string.Empty;
-    using (var sr = new StreamReader(fileName, Encoding.UTF8))
-    {
-        content= sr.ReadToEnd();
-    }
-
-    using(FileStream fs = new FileStream(fileName, FileMode.Create)){
-        using(StreamWriter sw = new StreamWriter(fs, new System.Text.UTF8Encoding(false))){
-            sw.Write(content);
-            //清空缓冲区
-            sw.Flush();
+private void rendJavaFile(CodeTemplate codeTemplate1,string fileName,bool cover){
+    try{
+        codeTemplate1.RenderToFile(fileName,cover);
+        string content=string.Empty;
+        using (var sr = new StreamReader(fileName, Encoding.UTF8))
+        {
+            content= sr.ReadToEnd();
         }
+
+        using(FileStream fs = new FileStream(fileName, FileMode.Create)){
+            using(StreamWriter sw = new StreamWriter(fs, new System.Text.UTF8Encoding(false))){
+                sw.Write(content);
+                //清空缓冲区
+                sw.Flush();
+            }
+        }
+    }
+    catch{
     }
 }
 </script>

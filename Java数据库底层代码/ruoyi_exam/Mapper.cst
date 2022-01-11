@@ -14,9 +14,9 @@ import com.baomidou.mybatisplus.core.mapper.MyBaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import <%=Package%>.<%=Project%>.<%=Module%>.entity.User;
-import <%=Package%>.<%=Project%>.<%=Module%>.service.param.UserQueryParam;
-import <%=Package%>.<%=Project%>.<%=Module%>.service.vo.page.UserQueryPageVo;
+import <%=Package%>.<%=Project%>.<%=Module%>.entity.<%= GetClassName(SourceTable) %>;
+import <%=Package%>.<%=Project%>.<%=Module%>.service.param.<%= GetClassName(SourceTable) %>QueryParam;
+import <%=Package%>.<%=Project%>.<%=Module%>.service.vo.page.<%= GetClassName(SourceTable) %>QueryPageVo;
 
 
 /**
