@@ -73,7 +73,7 @@ bool cover = false;
     CodeTemplate codeTemplate1=new MapperXml();
     initProps(codeTemplate1);
     string fileName = OutPutModelDest+@"resources\mapper\"+Module+@"\"+GetClassName(SourceTable)+"Mapper.xml";
-    rendJavaFile(codeTemplate1,fileName,cover);
+    rendJavaFile(codeTemplate1,fileName,true);
 }
 %>
 <script runat="template">

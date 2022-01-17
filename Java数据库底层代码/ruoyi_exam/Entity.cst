@@ -74,14 +74,7 @@ public class <%= GetClassName(SourceTable) %> extends BaseEntity implements Seri
             pkList.Add(column);
             continue;
         }
-        else if(column.Name.ToLower()=="create_by"||
-            column.Name.ToLower()=="create_time"||
-            column.Name.ToLower()=="update_by"||
-            column.Name.ToLower()=="update_time"||
-            column.Name.ToLower()=="del_flag"
-            ){
-             continue;
-        }
+        
         
         string type = GetCSharpVariableType(column);
         switch(type){
