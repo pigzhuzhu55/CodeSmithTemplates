@@ -9,10 +9,7 @@
 package <%=Package%>.<%=Project%>.<%=Module%>.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -124,7 +121,13 @@ public class <%= GetClassName(SourceTable) %> extends BaseEntity implements Seri
     @JSONField(format=PATTERN_DATETIME)
     @JsonFormat(shape = JsonFormat.Shape.STRING,timezone = "GMT+8", pattern = PATTERN_DATETIME,locale = "zh_CN")
     <%}%>
+    <% if (column.Name.IndexOf("own_create")>-1){%>
+    @TableField(value = "<%=column.Name%>",fill = FieldFill.INSERT)
+    <%}else if(column.Name.IndexOf("own_update")>-1){%>
+    @TableField(value = "<%=column.Name%>",fill = FieldFill.UPDATE)
+    <%}else {%>
     @TableField(value = "<%=column.Name%>")
+    <%}%>
     private <%= GetCSharpVariableType(column) %> <%= GetCamelCaseName(column.Name) %>;
     <% if (i < allList.Count - 1) Response.Write("\r\n"); %>
     <%
