@@ -5,6 +5,7 @@ Description:
 --%>
 
 <%@ Register Name="Entity" Template="Entity.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="FormVo" Template="FormVo.cst" MergeProperties="False" ExcludeProperties="" %>
 <%@ Register Name="QueryPageVo" Template="QueryPageVo.cst" MergeProperties="False" ExcludeProperties="" %>
 <%@ Register Name="QueryParam" Template="QueryParam.cst" MergeProperties="False" ExcludeProperties="" %>
 <%@ Register Name="Service" Template="Service.cst" MergeProperties="False" ExcludeProperties="" %>
@@ -26,12 +27,18 @@ Description:
 <%
 
 
-bool cover = false;
+bool cover = true;
 {
     CodeTemplate codeTemplate1=new Entity();
     initProps(codeTemplate1);
     string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\entity\"+GetClassName(SourceTable)+".java";
     rendJavaFile(codeTemplate1,fileName,true);
+}
+{
+    CodeTemplate codeTemplate1=new FormVo();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\service\param\form\"+GetClassName(SourceTable)+"FormVo.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
 }
 {
     CodeTemplate codeTemplate1=new QueryPageVo();

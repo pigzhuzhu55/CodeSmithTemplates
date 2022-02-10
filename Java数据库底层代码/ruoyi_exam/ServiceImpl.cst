@@ -9,6 +9,7 @@
 package <%=Package%>.<%=Project%>.<%=Module%>.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import <%=Package%>.<%=Project%>.<%=Module%>.entity.<%= GetClassName(SourceTable
 import <%=Package%>.<%=Project%>.<%=Module%>.mapper.<%= GetClassName(SourceTable) %>Mapper;
 import <%=Package%>.<%=Project%>.<%=Module%>.service.<%= GetClassName(SourceTable) %>Service;
 import <%=Package%>.<%=Project%>.<%=Module%>.service.param.<%= GetClassName(SourceTable) %>QueryParam;
+import <%=Package%>.<%=Project%>.<%=Module%>.service.param.form.<%= GetClassName(SourceTable) %>FormVo;
 import <%=Package%>.<%=Project%>.<%=Module%>.service.vo.page.<%= GetClassName(SourceTable) %>QueryPageVo;
 import <%=Package%>.common.mp.service.impl.BaseServiceImpl;
 import <%=Package%>.common.web.vo.Paging;
@@ -39,11 +41,24 @@ public class <%= GetClassName(SourceTable) %>ServiceImpl extends BaseServiceImpl
 
     @Override
     public Paging<<%= GetClassName(SourceTable) %>QueryPageVo> getPageList(<%= GetClassName(SourceTable) %>QueryParam param) throws Exception{
-        Page page = setPageParam(param,OrderItem.desc("create_time"));
+        Page page = setPageParam(param,OrderItem.desc("own_create_time"));
         IPage<<%= GetClassName(SourceTable) %>QueryPageVo> iPage = <%= GetVarName(SourceTable) %>Mapper.getPageList(page,param);
         return new Paging(iPage);
     }
 
+    @Override
+    public Boolean add<%= GetClassName(SourceTable) %>(<%= GetClassName(SourceTable) %>FormVo form) throws Exception {
+        <%= GetClassName(SourceTable) %> entity = new <%= GetClassName(SourceTable) %>();
+        BeanUtils.copyProperties(form,entity);
+        return <%= GetVarName(SourceTable) %>Mapper.insert(entity)>1;
+    }
+
+    @Override
+    public Boolean update<%= GetClassName(SourceTable) %>(<%= GetClassName(SourceTable) %>FormVo form) throws Exception {
+        <%= GetClassName(SourceTable) %> entity = new <%= GetClassName(SourceTable) %>();
+        BeanUtils.copyProperties(form,entity);
+        return <%= GetVarName(SourceTable) %>Mapper.updateById(entity)>1;
+    }
 }
  
 <!-- #include file="script.inc" -->

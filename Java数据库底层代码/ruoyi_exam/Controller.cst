@@ -15,10 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
+import com.luoying.app.common.api.ApiCode;
 import <%=Package%>.<%=Project%>.<%=Module%>.entity.<%= GetClassName(SourceTable)%>;
 import <%=Package%>.<%=Project%>.<%=Module%>.service.<%= GetClassName(SourceTable)%>Service;
 import <%=Package%>.<%=Project%>.<%=Module%>.service.param.<%= GetClassName(SourceTable)%>QueryParam;
 import <%=Package%>.<%=Project%>.<%=Module%>.service.vo.page.<%= GetClassName(SourceTable)%>QueryPageVo;
+import <%=Package%>.<%=Project%>.<%=Module%>.service.param.form.<%= GetClassName(SourceTable)%>FormVo;
 import <%=Package%>.common.web.controller.BaseController;
 import <%=Package%>.common.api.ApiResult;
 import <%=Package%>.common.web.vo.Paging;
@@ -45,8 +47,8 @@ public class <%= GetClassName(SourceTable)%>Controller extends BaseController {
     */
     @PostMapping("/add")
     @ApiOperation("添加<%=SourceTable.Description%>")
-    public ApiResult<Boolean> add<%= GetClassName(SourceTable)%>(@Valid @RequestBody <%= GetClassName(SourceTable)%> <%= GetVarName(SourceTable)%>) throws Exception{
-        boolean flag = <%= GetVarName(SourceTable)%>Service.save(<%= GetVarName(SourceTable)%>);
+    public ApiResult<Boolean> add<%= GetClassName(SourceTable)%>(@Valid @RequestBody <%= GetClassName(SourceTable)%>FormVo form) throws Exception{
+        boolean flag = <%= GetVarName(SourceTable)%>Service.add<%= GetClassName(SourceTable)%>(form);
         return ApiResult.result(flag);
     }
 
@@ -55,8 +57,8 @@ public class <%= GetClassName(SourceTable)%>Controller extends BaseController {
     */
     @PostMapping("/update")
     @ApiOperation("修改<%=SourceTable.Description%>")
-    public ApiResult<Boolean> update<%= GetClassName(SourceTable)%>(@Valid @RequestBody <%= GetClassName(SourceTable)%> <%= GetVarName(SourceTable)%>) throws Exception{
-        boolean flag = <%= GetVarName(SourceTable)%>Service.updateById(<%= GetVarName(SourceTable)%>);
+    public ApiResult<Boolean> update<%= GetClassName(SourceTable)%>(@Valid @RequestBody <%= GetClassName(SourceTable)%>FormVo form) throws Exception{
+        boolean flag = <%= GetVarName(SourceTable)%>Service.update<%= GetClassName(SourceTable)%>(form);
         return ApiResult.result(flag);
     }
 

@@ -10,6 +10,7 @@ package <%=Package%>.<%=Project%>.<%=Module%>.service;
 
 import <%=Package%>.<%=Project%>.<%=Module%>.entity.<%= GetClassName(SourceTable) %>;
 import <%=Package%>.<%=Project%>.<%=Module%>.service.param.<%= GetClassName(SourceTable) %>QueryParam;
+import <%=Package%>.<%=Project%>.<%=Module%>.service.param.form.<%= GetClassName(SourceTable) %>FormVo;
 import <%=Package%>.<%=Project%>.<%=Module%>.service.vo.page.<%= GetClassName(SourceTable) %>QueryPageVo;
 import <%=Package%>.common.mp.service.BaseService;
 import <%=Package%>.common.web.vo.Paging;
@@ -28,6 +29,10 @@ public interface <%= GetClassName(SourceTable) %>Service extends BaseService<<%=
      * @return
      */
     Paging<<%= GetClassName(SourceTable) %>QueryPageVo> getPageList(<%= GetClassName(SourceTable) %>QueryParam param) throws Exception;
+    
+    Boolean add<%= GetClassName(SourceTable) %>(<%= GetClassName(SourceTable) %>FormVo form) throws Exception;
+
+    Boolean update<%= GetClassName(SourceTable) %>(<%= GetClassName(SourceTable) %>FormVo form) throws Exception;
 }
  
 <!-- #include file="script.inc" -->
