@@ -1,0 +1,98 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.<%=Project%>.<%=Module%>.controller;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
+
+import com.luoying.app.common.api.ApiCode;
+import <%=Package%>.<%=Project%>.<%=Module%>.entity.<%= GetClassName(SourceTable)%>;
+import <%=Package%>.<%=Project%>.<%=Module%>.service.<%= GetClassName(SourceTable)%>Service;
+import <%=Package%>.<%=Project%>.<%=Module%>.service.param.<%= GetClassName(SourceTable)%>QueryParam;
+import <%=Package%>.<%=Project%>.<%=Module%>.service.vo.page.<%= GetClassName(SourceTable)%>QueryPageVo;
+import <%=Package%>.<%=Project%>.<%=Module%>.service.param.form.<%= GetClassName(SourceTable)%>FormVo;
+import <%=Package%>.common.web.controller.BaseController;
+import <%=Package%>.common.api.ApiResult;
+import <%=Package%>.common.web.vo.Paging;
+import <%=Package%>.common.web.param.IdParam;
+
+
+/**
+*Name: <%=SourceTable.Description%>前端控制器
+*Author: Caicai
+*Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
+*Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+*/ 
+@Slf4j
+@RestController
+@RequestMapping("/<%= GetVarName(SourceTable)%>")
+@Api(tags = "<%=SourceTable.Description%>API")
+public class <%= GetClassName(SourceTable)%>Controller extends BaseController {
+
+    @Autowired
+    private <%= GetClassName(SourceTable)%>Service <%= GetVarName(SourceTable)%>Service;
+
+    /**
+    * 添加<%=SourceTable.Description%>
+    */
+    @PostMapping("/add")
+    @ApiOperation("添加<%=SourceTable.Description%>")
+    public ApiResult<Boolean> add<%= GetClassName(SourceTable)%>(@Valid @RequestBody <%= GetClassName(SourceTable)%>FormVo form) throws Exception{
+        boolean flag = <%= GetVarName(SourceTable)%>Service.add<%= GetClassName(SourceTable)%>(form);
+        return ApiResult.result(flag);
+    }
+
+    /**
+    * 修改<%=SourceTable.Description%>
+    */
+    @PostMapping("/update")
+    @ApiOperation("修改<%=SourceTable.Description%>")
+    public ApiResult<Boolean> update<%= GetClassName(SourceTable)%>(@Valid @RequestBody <%= GetClassName(SourceTable)%>FormVo form) throws Exception{
+        boolean flag = <%= GetVarName(SourceTable)%>Service.update<%= GetClassName(SourceTable)%>(form);
+        return ApiResult.result(flag);
+    }
+
+    /**
+    * 删除<%=SourceTable.Description%>
+    */
+    @PostMapping("/delete")
+    @ApiOperation("删除<%=SourceTable.Description%>")
+    public ApiResult<Boolean> delete<%= GetClassName(SourceTable)%>(@Valid @RequestBody IdParam idParam) throws Exception{
+        boolean flag = <%= GetVarName(SourceTable)%>Service.removeById(idParam.getId());
+        return ApiResult.result(flag);
+    }
+
+    /**
+    * 获取<%=SourceTable.Description%>
+    */
+    @GetMapping("/info")
+    @ApiOperation("查看<%=SourceTable.Description%>")
+    public ApiResult<<%= GetClassName(SourceTable)%>> get<%= GetClassName(SourceTable)%>(Long id) throws Exception{
+        <%= GetClassName(SourceTable)%> <%= GetVarName(SourceTable)%> = <%= GetVarName(SourceTable)%>Service.getById(id);
+        return ApiResult.ok(<%= GetVarName(SourceTable)%>);
+    }
+
+    /**
+     * <%=SourceTable.Description%>分页列表
+     */
+    @PostMapping("/getPageList")
+    @ApiOperation("<%=SourceTable.Description%>分页列表")
+    public ApiResult<Paging<<%= GetClassName(SourceTable)%>QueryPageVo>> get<%= GetClassName(SourceTable)%>PageList(@Valid @RequestBody(required = false) <%= GetClassName(SourceTable)%>QueryParam <%= GetVarName(SourceTable)%>QueryParam) throws Exception{
+        Paging<<%= GetClassName(SourceTable)%>QueryPageVo> paging = <%= GetVarName(SourceTable)%>Service.getPageList(<%= GetVarName(SourceTable)%>QueryParam);
+        return ApiResult.ok(paging);
+    }
+
+}
+
+ 
+<!-- #include file="script.inc" -->

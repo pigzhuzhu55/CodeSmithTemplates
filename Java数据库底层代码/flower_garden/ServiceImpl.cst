@@ -50,14 +50,14 @@ public class <%= GetClassName(SourceTable) %>ServiceImpl extends BaseServiceImpl
     public Boolean add<%= GetClassName(SourceTable) %>(<%= GetClassName(SourceTable) %>FormVo form) throws Exception {
         <%= GetClassName(SourceTable) %> entity = new <%= GetClassName(SourceTable) %>();
         BeanUtils.copyProperties(form,entity);
-        return <%= GetVarName(SourceTable) %>Mapper.insert(entity)>0;
+        return <%= GetVarName(SourceTable) %>Mapper.insert(entity)>1;
     }
 
     @Override
     public Boolean update<%= GetClassName(SourceTable) %>(<%= GetClassName(SourceTable) %>FormVo form) throws Exception {
         <%= GetClassName(SourceTable) %> entity = new <%= GetClassName(SourceTable) %>();
         BeanUtils.copyProperties(form,entity);
-        return <%= GetVarName(SourceTable) %>Mapper.updateById(entity)>0;
+        return <%= GetVarName(SourceTable) %>Mapper.updateById(entity)>1;
     }
 }
  
