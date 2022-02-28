@@ -16,15 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cly.model.Paging;
+import com.cly.mp.service.impl.BaseServiceImpl;
 
 import <%=Package%>.<%=Project%>.<%=Module%>.entity.<%= GetClassName(SourceTable) %>;
 import <%=Package%>.<%=Project%>.<%=Module%>.mapper.<%= GetClassName(SourceTable) %>Mapper;
 import <%=Package%>.<%=Project%>.<%=Module%>.service.<%= GetClassName(SourceTable) %>Service;
-import <%=Package%>.<%=Project%>.<%=Module%>.service.param.<%= GetClassName(SourceTable) %>QueryParam;
-import <%=Package%>.<%=Project%>.<%=Module%>.service.param.form.<%= GetClassName(SourceTable) %>FormVo;
-import <%=Package%>.<%=Project%>.<%=Module%>.service.vo.page.<%= GetClassName(SourceTable) %>QueryPageVo;
-import <%=Package%>.common.mp.service.impl.BaseServiceImpl;
-import <%=Package%>.common.web.vo.Paging;
+import <%=Package%>.<%=Project%>.<%=Module%>.dto.param.<%= GetClassName(SourceTable) %>QueryParam;
+import <%=Package%>.<%=Project%>.<%=Module%>.dto.param.form.<%= GetClassName(SourceTable) %>FormVo;
+import <%=Package%>.<%=Project%>.<%=Module%>.dto.vo.page.<%= GetClassName(SourceTable) %>QueryPageVo;
 
 /**
  *Name: <%=SourceTable.Description%> 服务实现类
@@ -41,23 +41,23 @@ public class <%= GetClassName(SourceTable) %>ServiceImpl extends BaseServiceImpl
 
     @Override
     public Paging<<%= GetClassName(SourceTable) %>QueryPageVo> getPageList(<%= GetClassName(SourceTable) %>QueryParam param) throws Exception{
-        Page page = setPageParam(param,OrderItem.desc("own_create_time"));
+        Page page = setPageParam(param,OrderItem.desc("<%= SourceTable.Columns[0].Name %>"));
         IPage<<%= GetClassName(SourceTable) %>QueryPageVo> iPage = <%= GetVarName(SourceTable) %>Mapper.getPageList(page,param);
-        return new Paging(iPage);
+        return new Paging(iPage.getTotal(),iPage.getRecords());
     }
 
     @Override
     public Boolean add<%= GetClassName(SourceTable) %>(<%= GetClassName(SourceTable) %>FormVo form) throws Exception {
         <%= GetClassName(SourceTable) %> entity = new <%= GetClassName(SourceTable) %>();
         BeanUtils.copyProperties(form,entity);
-        return <%= GetVarName(SourceTable) %>Mapper.insert(entity)>1;
+        return <%= GetVarName(SourceTable) %>Mapper.insert(entity)>0;
     }
 
     @Override
     public Boolean update<%= GetClassName(SourceTable) %>(<%= GetClassName(SourceTable) %>FormVo form) throws Exception {
         <%= GetClassName(SourceTable) %> entity = new <%= GetClassName(SourceTable) %>();
         BeanUtils.copyProperties(form,entity);
-        return <%= GetVarName(SourceTable) %>Mapper.updateById(entity)>1;
+        return <%= GetVarName(SourceTable) %>Mapper.updateById(entity)>0;
     }
 }
  

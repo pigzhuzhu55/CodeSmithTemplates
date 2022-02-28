@@ -6,24 +6,20 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.<%=Project%>.<%=Module%>.entity;
+package <%=Package%>.<%=Project%>.<%=Module%>.dto.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import java.util.Date;
-import java.math.BigDecimal;
 import java.io.Serializable;
-import lombok.EqualsAndHashCode;
-
-import com.cly.mp.entity.BaseEntity;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
- *Name: <%=SourceTable.Description%> 数据库实体对象
+ *Name: <%=SourceTable.Description%>  查询结果翻页对象
  *Author: Caicai
  *Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
  *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
@@ -59,12 +55,9 @@ ArrayList allList = new ArrayList();
 
 </script>
 @Data
-@EqualsAndHashCode(callSuper = true)
-@TableName("<%= SourceTable.Name%>")
-@ApiModel(value="<%= GetClassName(SourceTable)%>对象", description="<%= SourceTable.Description%>")
-public class <%= GetClassName(SourceTable) %> extends BaseEntity implements Serializable {
+@ApiModel(value="<%= GetClassName(SourceTable)%>QueryVo对象", description="<%= SourceTable.Description%>查询结果信息对象")
+public class <%= GetClassName(SourceTable) %>QueryVo implements Serializable{
 
-    private static final long serialVersionUID = 1L;
 	<%
     for (int i = 0; i < SourceTable.Columns.Count; i++) { 
         ColumnSchema column = SourceTable.Columns[i];
@@ -73,10 +66,9 @@ public class <%= GetClassName(SourceTable) %> extends BaseEntity implements Seri
             continue;
         }
         
-        
         string type = GetCSharpVariableType(column);
         switch(type){
-            case "Integer":case "Long":{
+            case "Integer":case "Long": {
     			 intList.Add(column);
     		}break;
             case "Date": {
@@ -104,7 +96,6 @@ public class <%= GetClassName(SourceTable) %> extends BaseEntity implements Seri
     <% if (!String.IsNullOrEmpty(column.Description)){%>
     @ApiModelProperty(name = "<%= GetCamelCaseName(column.Name) %>", value = "<%= FilterString(column.Description)%>")
     <%}%>
-    @TableId(value = "<%=column.Name%>",type = IdType.AUTO)
     private <%= GetCSharpVariableType(column) %> <%= GetCamelCaseName(column.Name) %>;
     <% if (i < allList.Count - 1) Response.Write("\r\n"); %>
     <%
@@ -117,17 +108,6 @@ public class <%= GetClassName(SourceTable) %> extends BaseEntity implements Seri
     %>
     <% if (!String.IsNullOrEmpty(column.Description)){%>
     @ApiModelProperty(name = "<%= GetCamelCaseName(column.Name) %>", value = "<%= FilterString(column.Description)%>")
-    <%}%>
-    <% if (type=="Date"){%>
-    @JSONField(format=PATTERN_DATETIME)
-    @JsonFormat(shape = JsonFormat.Shape.STRING,timezone = "GMT+8", pattern = PATTERN_DATETIME,locale = "zh_CN")
-    <%}%>
-    <% if (column.Name.IndexOf("own_create")>-1){%>
-    @TableField(value = "<%=column.Name%>",fill = FieldFill.INSERT)
-    <%}else if(column.Name.IndexOf("own_update")>-1){%>
-    @TableField(value = "<%=column.Name%>",fill = FieldFill.UPDATE)
-    <%}else {%>
-    @TableField(value = "<%=column.Name%>")
     <%}%>
     private <%= GetCSharpVariableType(column) %> <%= GetCamelCaseName(column.Name) %>;
     <% if (i < allList.Count - 1) Response.Write("\r\n"); %>

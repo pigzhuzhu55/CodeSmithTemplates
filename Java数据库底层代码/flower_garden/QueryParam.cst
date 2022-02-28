@@ -6,7 +6,7 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.<%=Project%>.<%=Module%>.service.param;
+package <%=Package%>.<%=Project%>.<%=Module%>.dto.param;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,9 +14,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import java.util.Date;
 import java.util.HashMap;
+import java.math.BigDecimal;
 import java.util.Map;
 
-import <%=Package%>.common.web.param.OrderQueryParam;
+import com.cly.model.param.OrderQueryParam;
 
 
 /**

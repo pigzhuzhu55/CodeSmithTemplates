@@ -7,6 +7,7 @@ Description:
 <%@ Register Name="Entity" Template="Entity.cst" MergeProperties="False" ExcludeProperties="" %>
 <%@ Register Name="FormVo" Template="FormVo.cst" MergeProperties="False" ExcludeProperties="" %>
 <%@ Register Name="QueryPageVo" Template="QueryPageVo.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="QueryVo" Template="QueryVo.cst" MergeProperties="False" ExcludeProperties="" %>
 <%@ Register Name="QueryParam" Template="QueryParam.cst" MergeProperties="False" ExcludeProperties="" %>
 <%@ Register Name="Service" Template="Service.cst" MergeProperties="False" ExcludeProperties="" %>
 <%@ Register Name="ServiceImpl" Template="ServiceImpl.cst" MergeProperties="False" ExcludeProperties="" %>
@@ -27,29 +28,35 @@ Description:
 <%
 
 
-bool cover = true;
+bool cover = false;
 {
     CodeTemplate codeTemplate1=new Entity();
     initProps(codeTemplate1);
-    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\common\entity\"+GetClassName(SourceTable)+".java";
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\entity\"+GetClassName(SourceTable)+".java";
     rendJavaFile(codeTemplate1,fileName,true);
 }
 {
     CodeTemplate codeTemplate1=new FormVo();
     initProps(codeTemplate1);
-    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\service\param\form\"+GetClassName(SourceTable)+"FormVo.java";
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\dto\param\form\"+GetClassName(SourceTable)+"FormVo.java";
     rendJavaFile(codeTemplate1,fileName,cover);
 }
 {
     CodeTemplate codeTemplate1=new QueryPageVo();
     initProps(codeTemplate1);
-    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\service\vo\page\"+GetClassName(SourceTable)+"QueryPageVo.java";
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\dto\vo\page\"+GetClassName(SourceTable)+"QueryPageVo.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new QueryVo();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\dto\vo\"+GetClassName(SourceTable)+"QueryVo.java";
     rendJavaFile(codeTemplate1,fileName,cover);
 }
 {
     CodeTemplate codeTemplate1=new QueryParam();
     initProps(codeTemplate1);
-    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\service\param\"+GetClassName(SourceTable)+"QueryParam.java";
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\"+Project+@"\"+Module+@"\dto\param\"+GetClassName(SourceTable)+"QueryParam.java";
     rendJavaFile(codeTemplate1,fileName,cover);
 }
 {
@@ -80,7 +87,7 @@ bool cover = true;
     CodeTemplate codeTemplate1=new MapperXml();
     initProps(codeTemplate1);
     string fileName = OutPutModelDest+@"resources\mapper\"+Module+@"\"+GetClassName(SourceTable)+"Mapper.xml";
-    rendJavaFile(codeTemplate1,fileName,true);
+    rendJavaFile(codeTemplate1,fileName,cover);
 }
 %>
 <script runat="template">

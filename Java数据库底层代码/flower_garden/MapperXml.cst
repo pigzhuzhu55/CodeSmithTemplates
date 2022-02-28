@@ -17,7 +17,7 @@
           %>
     </sql>
 
-    <select id="getPageList" parameterType="<%=Package%>.<%=Project%>.<%=Module%>.service.param.<%= GetClassName(SourceTable) %>QueryParam"  resultType="<%=Package%>.<%=Project%>.<%=Module%>.service.vo.page.<%= GetClassName(SourceTable) %>QueryPageVo">
+    <select id="getPageList" parameterType="<%=Package%>.<%=Project%>.<%=Module%>.dto.param.<%= GetClassName(SourceTable) %>QueryParam"  resultType="<%=Package%>.<%=Project%>.<%=Module%>.dto.vo.page.<%= GetClassName(SourceTable) %>QueryPageVo">
         select <include refid="Base_Column_List"/> from <%=SourceTable.Name%>
         <where>
             <% for (int i = 0; i < SourceTable.Columns.Count; i++) {
