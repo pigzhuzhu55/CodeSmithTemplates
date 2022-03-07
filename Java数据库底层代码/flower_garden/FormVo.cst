@@ -19,7 +19,7 @@ import java.util.Map;
 
 
 /**
- *Name: <%=SourceTable.Description%>  查询结果翻页对象
+ *Name: <%=SourceTable.Description%>  信息修改提交对象
  *Author: Caicai
  *Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
  *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
