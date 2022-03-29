@@ -8,6 +8,8 @@
 <%@ Import Namespace="System.Collections" %>
 package <%=Package%>.<%=Project%>.<%=Module%>.service.vo.page;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -107,6 +109,10 @@ public class <%= GetClassName(SourceTable) %>QueryPageVo implements Serializable
     %>
     <% if (!String.IsNullOrEmpty(column.Description)){%>
     @ApiModelProperty(name = "<%= GetCamelCaseName(column.Name) %>", value = "<%= FilterString(column.Description)%>")
+    <%}%>
+    <% if (type=="Date"){%>
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss",locale = "zh_CN")
     <%}%>
     private <%= GetCSharpVariableType(column) %> <%= GetCamelCaseName(column.Name) %>;
     <% if (i < allList.Count - 1) Response.Write("\r\n"); %>
