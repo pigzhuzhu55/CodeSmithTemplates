@@ -8,6 +8,7 @@
 <%@ Import Namespace="System.Collections" %>
 package <%=Package%>.<%=Project%>.<%=Module%>.entity;
 
+import cn.hutool.core.date.DatePattern;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -118,8 +119,8 @@ public class <%= GetClassName(SourceTable) %> extends BaseEntity implements Seri
     @ApiModelProperty(name = "<%= GetCamelCaseName(column.Name) %>", value = "<%= FilterString(column.Description)%>")
     <%}%>
     <% if (type=="Date"){%>
-    @JSONField(format=PATTERN_DATETIME)
-    @JsonFormat(shape = JsonFormat.Shape.STRING,timezone = "GMT+8", pattern = PATTERN_DATETIME,locale = "zh_CN")
+    @JSONField(format=DatePattern.NORM_DATETIME_PATTERN)
+    @JsonFormat(shape = JsonFormat.Shape.STRING,timezone = "GMT+8", pattern = DatePattern.NORM_DATETIME_PATTERN,locale = "zh_CN")
     <%}%>
     <% if (column.Name.IndexOf("own_create")>-1){%>
     @TableField(value = "<%=column.Name%>",fill = FieldFill.INSERT)
