@@ -27,7 +27,7 @@ Description:
 <%
 
 
-bool cover = true;
+bool cover = false;
 {
     CodeTemplate codeTemplate1=new Entity();
     initProps(codeTemplate1);

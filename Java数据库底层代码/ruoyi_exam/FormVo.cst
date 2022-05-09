@@ -8,6 +8,9 @@
 <%@ Import Namespace="System.Collections" %>
 package <%=Package%>.<%=Project%>.<%=Module%>.service.param.form;
 
+import cn.hutool.core.date.DatePattern;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -116,6 +119,10 @@ public class <%= GetClassName(SourceTable) %>FormVo implements Serializable{
     %>
     <% if (!String.IsNullOrEmpty(column.Description)){%>
     @ApiModelProperty(name = "<%= GetCamelCaseName(column.Name) %>", value = "<%= FilterString(column.Description)%>")
+    <%}%>
+    <% if (type=="Date"){%>
+    @JSONField(format=DatePattern.NORM_DATETIME_PATTERN)
+    @JsonFormat(shape = JsonFormat.Shape.STRING,timezone = "GMT+8", pattern = DatePattern.NORM_DATETIME_PATTERN,locale = "zh_CN")
     <%}%>
     private <%= GetCSharpVariableType(column) %> <%= GetCamelCaseName(column.Name) %>;
     <% if (i < allList.Count - 1) Response.Write("\r\n"); %>
