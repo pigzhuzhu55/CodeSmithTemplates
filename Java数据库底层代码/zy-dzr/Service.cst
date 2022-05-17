@@ -1,0 +1,33 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.service;
+
+import com.cly.model.Paging;
+import com.cly.mp.service.BaseService;
+import <%=Package%>.pojo.dto.form.<%= GetClassName(SourceTable) %>Form;
+import <%=Package%>.pojo.dto.param.<%= GetClassName(SourceTable) %>QueryParam;
+import <%=Package%>.pojo.entity.<%= GetClassName(SourceTable) %>;
+import <%=Package%>.pojo.vo.page.<%= GetClassName(SourceTable) %>PageVo;
+
+/**
+ *Name: <%=SourceTable.Description%> 服务类
+ *Author: Caicai
+ *Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
+ *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+ */ 
+public interface <%= GetClassName(SourceTable) %>Service extends BaseService<<%= GetClassName(SourceTable) %>> {
+
+    Paging<<%= GetClassName(SourceTable) %>PageVo> getPageList(<%= GetClassName(SourceTable) %>QueryParam param) throws Exception;
+    
+    Boolean add<%= GetClassName(SourceTable) %>(<%= GetClassName(SourceTable) %>Form form) throws Exception;
+
+    Boolean update<%= GetClassName(SourceTable) %>(<%= GetClassName(SourceTable) %>Form form) throws Exception;
+}
+ 
+<!-- #include file="script.inc" -->

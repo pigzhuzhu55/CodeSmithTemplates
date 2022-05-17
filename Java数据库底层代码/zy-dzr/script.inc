@@ -1,7 +1,7 @@
 <script runat="template">
-private string _Prefix = "t_,rlt_";
-[Category("Database")]
-[Description("Stroed Procedures Prefix.")]
+private string _Prefix = "tb_";
+[Category("项目设置")]
+[Description("去除表前缀.")]
 public string Prefix
 {
  	get 
@@ -14,45 +14,26 @@ public string Prefix
 	}
 }
 
-private string _Copyright = "Copyright 2020 CAILY";
-[Category("Context")]
-[Description("Your Copyright.")]
-public string Copyright
+private string _package = "com.luoying.app";
+[Category("项目设置")]
+[Description("包名路径.")]
+public string Package
 {
  	get 
 	{
-		return _Copyright;
+		return _package;
 	}
  	set 
 	{
-		_Copyright = value;
+		_package = value;
 	}
 }
 
-public string GetDatabaseName(DatabaseSchema database)
-{
-	string databaseName = database.Name.ToLower();
-	return String.Format("{0}", GetCamelCaseName(databaseName));
-}
-
-
 public string GetClassName(TableSchema table)
 {
-    return TableClass(table);
-}
-
-
-public string TableClass(TableSchema table)
-{
-	string className = table.Name.ToLower();
-    
-    string[] prefixArr = Prefix.Split(',');
-    
-    foreach(string pre in prefixArr){
-	if (className.StartsWith(pre))
-		className = className.Substring(pre.Length);
-    }
-    
+    string className = table.Name;
+	if (className.StartsWith(Prefix))
+		className = className.Substring(Prefix.Length);
 	return String.Format("{0}", GetPascalCaseName(className));
 }
 
@@ -116,29 +97,31 @@ public string GetCSharpVariableType(ColumnSchema column)
 {
 	if (column.Name.EndsWith("TypeCode")) return column.Name;
 	
+    
+    
 	switch (column.DataType)
 	{
 		case DbType.AnsiString: return "String";
 		case DbType.AnsiStringFixedLength: return "String";
 		case DbType.Binary: return "Byte[]";
 		case DbType.Boolean: return "Boolean";
-		case DbType.Byte: return "Byte";
+		case DbType.Byte: return "Integer";
 		case DbType.Currency: return "BigDecimal";
-		case DbType.Date: return "java.util.Date";
-		case DbType.DateTime: return "java.util.Date";
+		case DbType.Date: return "Date";
+		case DbType.DateTime: return "Date";
 		case DbType.Decimal: return "BigDecimal";
 		case DbType.Double: return "Double";
 		case DbType.Guid: return "Guid";
-		case DbType.Int16: return "Short";
+		case DbType.Int16: return "Integer";
 		case DbType.Int32: return "Integer";
 		case DbType.Int64: return "Long";
 		case DbType.Object: return "Object";
-		case DbType.SByte: return "byte";
+		case DbType.SByte: return "Integer";
 		case DbType.Single: return "Double";
 		case DbType.String: return "String";
 		case DbType.StringFixedLength: return "String";
 		case DbType.Time: return "TimeSpan";
-		case DbType.UInt16: return "Short";
+		case DbType.UInt16: return "Integer";
 		case DbType.UInt32: return "Integer";
 		case DbType.UInt64: return "Long";
 		case DbType.VarNumeric: return "BigDecimal";
@@ -153,5 +136,6 @@ public string FilterString(string msg)
 {
     return msg.Replace("\r", "").Replace("\n", "").Replace("\r\n", "");
 }
+
  
 </script>
