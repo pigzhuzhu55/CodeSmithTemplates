@@ -25,15 +25,21 @@
             string type = GetCSharpVariableType(column);%>
             <%if(type=="String"){%>
             <if test="param.<%= GetCamelCaseName(column.Name) %> != null and param.<%= GetCamelCaseName(column.Name) %> != ''">
-            AND <%= column.Name%> like concat('%', #{param.<%= GetCamelCaseName(column.Name) %>}, '%')
+            and <%= column.Name%> like concat('%', #{param.<%= GetCamelCaseName(column.Name) %>}, '%')
 		    </if>
             <%}else if(type=="Integer" || type=="Long"){%>
     		<if test="param.<%= GetCamelCaseName(column.Name) %> != null">
-            AND <%= column.Name%>= #{param.<%= GetCamelCaseName(column.Name) %>}
+            and <%= column.Name%>= #{param.<%= GetCamelCaseName(column.Name) %>}
     		</if>
-            <%}else if(type=="Date"){%>
-            <if test="param.<%= GetCamelCaseName(column.Name) %> !=null ">
-            AND <![CDATA[ <%= column.Name%> = #{param.<%= GetCamelCaseName(column.Name) %>,jdbcType=DATE} ]]>
+            <%}else if(type=="Date"){
+                string dateType = "TIMESTAMP";
+                if(column.DataType== DbType.Date){  dateType="DATE"; }
+            %>
+            <if test="param.<%= GetCamelCaseName(column.Name) %>1 !=null ">
+            and <![CDATA[ <%= column.Name%> >= #{param.<%= GetCamelCaseName(column.Name) %>1,jdbcType=<%=dateType%>} ]]>
+            </if>
+            <if test="param.<%= GetCamelCaseName(column.Name) %>2 !=null ">
+            and <![CDATA[ <%= column.Name%> <= #{param.<%= GetCamelCaseName(column.Name) %>2,jdbcType=<%=dateType%>} ]]>
             </if>
             <%}}%>
 		</where>
