@@ -6,7 +6,7 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.service.impl;
+package <%=Package%>.dbs.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -19,12 +19,12 @@ import com.cly.model.Paging;
 import com.cly.mp.service.impl.BaseServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
 
-import <%=Package%>.service.<%= GetClassName(SourceTable) %>Service;
-import <%=Package%>.pojo.dto.form.<%= GetClassName(SourceTable) %>Form;
-import <%=Package%>.pojo.dto.param.<%= GetClassName(SourceTable) %>QueryParam;
-import <%=Package%>.pojo.entity.<%= GetClassName(SourceTable) %>;
-import <%=Package%>.pojo.vo.page.<%= GetClassName(SourceTable) %>PageVo;
-import <%=Package%>.mapper.<%= GetClassName(SourceTable) %>Mapper;
+import <%=Package%>.dbs.service.<%= GetClassName(SourceTable) %>Service;
+import <%=Package%>.dbs.pojo.dto.form.<%= GetClassName(SourceTable) %>Form;
+import <%=Package%>.dbs.pojo.dto.param.<%= GetClassName(SourceTable) %>QueryParam;
+import <%=Package%>.dbs.pojo.entity.<%= GetClassName(SourceTable) %>;
+import <%=Package%>.dbs.pojo.vo.page.<%= GetClassName(SourceTable) %>PageVo;
+import <%=Package%>.dbs.mapper.<%= GetClassName(SourceTable) %>Mapper;
 
 /**
  *Name: <%=SourceTable.Description%> 服务实现类

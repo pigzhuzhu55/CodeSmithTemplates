@@ -1,5 +1,5 @@
 <script runat="template">
-private string _Prefix = "tb_";
+private string _Prefix = "";
 [Category("项目设置")]
 [Description("去除表前缀.")]
 public string Prefix

@@ -6,14 +6,14 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.service;
+package <%=Package%>.dbs.service;
 
 import com.cly.model.Paging;
 import com.cly.mp.service.BaseService;
-import <%=Package%>.pojo.dto.form.<%= GetClassName(SourceTable) %>Form;
-import <%=Package%>.pojo.dto.param.<%= GetClassName(SourceTable) %>QueryParam;
-import <%=Package%>.pojo.entity.<%= GetClassName(SourceTable) %>;
-import <%=Package%>.pojo.vo.page.<%= GetClassName(SourceTable) %>PageVo;
+import <%=Package%>.dbs.pojo.dto.form.<%= GetClassName(SourceTable) %>Form;
+import <%=Package%>.dbs.pojo.dto.param.<%= GetClassName(SourceTable) %>QueryParam;
+import <%=Package%>.dbs.pojo.entity.<%= GetClassName(SourceTable) %>;
+import <%=Package%>.dbs.pojo.vo.page.<%= GetClassName(SourceTable) %>PageVo;
 
 /**
  *Name: <%=SourceTable.Description%> 服务类

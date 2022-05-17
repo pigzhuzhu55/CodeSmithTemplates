@@ -6,7 +6,7 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.mapper;
+package <%=Package%>.dbs.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -14,9 +14,9 @@ import com.cly.mp.mapper.MyBaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import <%=Package%>.pojo.entity.TbUser;
-import <%=Package%>.pojo.dto.param.TbUserQueryParam;
-import <%=Package%>.pojo.vo.page.TbUserPageVo;
+import <%=Package%>.dbs.pojo.entity.TbUser;
+import <%=Package%>.dbs.pojo.dto.param.TbUserQueryParam;
+import <%=Package%>.dbs.pojo.vo.page.TbUserPageVo;
 
 
 /**

@@ -1,0 +1,124 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+
+<%@ Register Name="Entity" Template="Entity.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="FormDTO" Template="FormDTO.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="PageVo" Template="PageVo.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="QueryParamDTO" Template="QueryParamDTO.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Service" Template="Service.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="ServiceImpl" Template="ServiceImpl.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Controller" Template="Controller.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Mapper" Template="Mapper.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="MapperXml" Template="MapperXml.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="MapperExtendXml" Template="MapperExtendXml.cst" MergeProperties="False" ExcludeProperties="" %>
+
+<%--<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>--%>
+<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Property Name="OutPutModelDest" Type="String" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="System.Text" %>
+<%
+
+    string controllerName = GetClassName(SourceTable); 
+    if (controllerName.StartsWith("Tb"))
+    	controllerName = controllerName.Substring(2);
+
+bool cover = true;
+{
+    CodeTemplate codeTemplate1=new Entity();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\dbs\pojo\entity\"+GetClassName(SourceTable)+".java";
+    rendJavaFile(codeTemplate1,fileName,true);
+}
+{
+    CodeTemplate codeTemplate1=new FormDTO();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\dbs\pojo\dto\form\"+GetClassName(SourceTable)+"Form.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new PageVo();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\dbs\pojo\vo\page\"+GetClassName(SourceTable)+"PageVo.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new QueryParamDTO();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\dbs\pojo\dto\param\"+GetClassName(SourceTable)+"QueryParam.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new Service();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\dbs\service\"+GetClassName(SourceTable)+"Service.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new ServiceImpl();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\dbs\service\impl\"+GetClassName(SourceTable)+"ServiceImpl.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new Controller();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\controller\"+controllerName+"Controller.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new Mapper();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\dbs\mapper\"+GetClassName(SourceTable)+"Mapper.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new MapperXml();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"resources\mapper\"+GetClassName(SourceTable)+"Mapper.xml";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new MapperExtendXml();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"resources\mapper\extend\"+GetClassName(SourceTable)+"MapperExtend.xml";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+%>
+<script runat="template">
+private void initProps(CodeTemplate codeTemplate1){
+    codeTemplate1.SetProperty("SourceTable",SourceTable);
+    codeTemplate1.SetProperty("Package",Package);
+}
+
+
+private void rendJavaFile(CodeTemplate codeTemplate1,string fileName,bool cover){
+    try{
+        codeTemplate1.RenderToFile(fileName,cover);
+        string content=string.Empty;
+        using (var sr = new StreamReader(fileName, Encoding.UTF8))
+        {
+            content= sr.ReadToEnd();
+        }
+
+        using(FileStream fs = new FileStream(fileName, FileMode.Create)){
+            using(StreamWriter sw = new StreamWriter(fs, new System.Text.UTF8Encoding(false))){
+                sw.Write(content);
+                //清空缓冲区
+                sw.Flush();
+            }
+        }
+    }
+    catch{
+    }
+}
+</script>
+<!-- #include file="script.inc" -->
