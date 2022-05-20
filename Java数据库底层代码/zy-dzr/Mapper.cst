@@ -14,9 +14,9 @@ import com.cly.mp.mapper.MyBaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import <%=Package%>.dbs.pojo.entity.TbUser;
-import <%=Package%>.dbs.pojo.dto.param.TbUserQueryParam;
-import <%=Package%>.dbs.pojo.vo.page.TbUserPageVo;
+import <%=Package%>.dbs.pojo.entity.<%= GetClassName(SourceTable)%>;
+import <%=Package%>.dbs.pojo.dto.param.<%= GetClassName(SourceTable)%>QueryParam;
+import <%=Package%>.dbs.pojo.vo.page.<%= GetClassName(SourceTable)%>PageVo;
 
 
 /**
