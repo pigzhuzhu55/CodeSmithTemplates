@@ -28,6 +28,10 @@ public interface <%= GetClassName(SourceTable) %>Service extends BaseService<<%=
     Boolean add<%= GetClassName(SourceTable) %>(<%= GetClassName(SourceTable) %>Form form) throws Exception;
 
     Boolean update<%= GetClassName(SourceTable) %>(<%= GetClassName(SourceTable) %>Form form) throws Exception;
+    
+    Boolean checkNameUnique(<%= GetClassName(SourceTable) %>Form form);
+    
+    Integer selectCount2(<%= GetClassName(SourceTable) %>QueryParam param);
 }
  
 <!-- #include file="script.inc" -->
