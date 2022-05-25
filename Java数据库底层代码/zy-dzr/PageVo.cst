@@ -31,6 +31,7 @@ import java.util.Map;
 //主键类型[目前不支持联合主键]
 ArrayList pkList = new ArrayList();
 ArrayList allList = new ArrayList();
+ArrayList removeName = new ArrayList(){"domain","del_flag"};
 
 </script>
 @Data
@@ -66,7 +67,7 @@ public class <%= GetClassName(SourceTable) %>PageVo implements Serializable{
     for (int i = 0; i < allList.Count; i++) { 
     ColumnSchema column = (ColumnSchema)allList[i];
     string type = GetCSharpVariableType(column);
-    if(column.Name=="domain")
+    if(removeName.Contains(column.Name))
         continue;
     %>
     <% if (!String.IsNullOrEmpty(column.Description)){%>
