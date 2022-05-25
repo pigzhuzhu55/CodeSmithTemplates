@@ -86,7 +86,7 @@ public void WritePrivateName(string colName,string colType){
 }
 //mybaits-plus TableField
 public void WriteMyBatisTableField(string colName){
-     if (colName.IndexOf("create_")==0){
+     if (colName.IndexOf("create_")==0||colName =="domain"){
         Response.Write(string.Format("\t@TableField(value = \"{0}\",fill = FieldFill.INSERT)\r\n",colName));
      }else if(colName.IndexOf("update_")==0){
         Response.Write(string.Format("\t@TableField(value = \"{0}\",fill = FieldFill.UPDATE)\r\n",colName));
