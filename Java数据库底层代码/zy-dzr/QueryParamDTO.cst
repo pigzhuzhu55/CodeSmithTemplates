@@ -28,8 +28,10 @@ import lombok.EqualsAndHashCode;
  *Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
  *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
  */
-@Getter
+@Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ApiModel("<%=SourceTable.Description%>   查询参数对象")
 public class <%= GetClassName(SourceTable) %>QueryParam extends OrderQueryParam {

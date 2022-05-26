@@ -35,6 +35,9 @@ ArrayList removeList = new ArrayList(){"domain","del_flag"};
 
 </script>
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @ApiModel("<%=SourceTable.Description%>   翻页实体对象")
 public class <%= GetClassName(SourceTable) %>PageVo implements Serializable{
 

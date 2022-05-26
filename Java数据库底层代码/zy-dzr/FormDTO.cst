@@ -30,6 +30,9 @@ ArrayList removeList = new ArrayList(){"domain","del_flag","create_by","create_t
  *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
  */ 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @ApiModel("<%=SourceTable.Description%>   表单对象")
 public class <%= GetClassName(SourceTable) %>Form implements Serializable{
 
