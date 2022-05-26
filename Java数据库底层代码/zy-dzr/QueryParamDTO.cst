@@ -30,6 +30,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ApiModel("<%=SourceTable.Description%>   查询参数对象")
 public class <%= GetClassName(SourceTable) %>QueryParam extends OrderQueryParam {
     <%
     for (int i = 0; i < allList.Count; i++) { 

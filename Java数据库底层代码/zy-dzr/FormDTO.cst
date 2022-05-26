@@ -19,7 +19,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 <% Init();  %>
+<script runat="template">
+ArrayList removeList = new ArrayList(){"domain","del_flag","create_by","create_time","update_by","update_time"};
 
+</script>
 /**
  *Name: <%=SourceTable.Description%> 表单对象
  *Author: Caicai
@@ -34,6 +37,8 @@ public class <%= GetClassName(SourceTable) %>Form implements Serializable{
 	<%
     for (int i = 0; i < allList.Count; i++) { 
     ColumnSchema column = (ColumnSchema)allList[i];
+    if(removeList.Contains(column.Name))
+        continue;
     %>
     <% WriteFormField(column);%>
     <% WriteWrap(i);%>
