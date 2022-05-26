@@ -28,9 +28,9 @@ import lombok.EqualsAndHashCode;
  *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
  */ 
 @Data
-@Builder
 @EqualsAndHashCode(callSuper = true)
 @TableName("<%= SourceTable.Name%>")
+@ApiModel("<%=SourceTable.Description%>   数据库对象")
 public class <%= GetClassName(SourceTable) %> extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
