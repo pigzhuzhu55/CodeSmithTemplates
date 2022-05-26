@@ -28,6 +28,7 @@ import lombok.EqualsAndHashCode;
  *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
  */ 
 @Data
+@Builder
 @EqualsAndHashCode(callSuper = true)
 @TableName("<%= SourceTable.Name%>")
 public class <%= GetClassName(SourceTable) %> extends BaseEntity implements Serializable {
