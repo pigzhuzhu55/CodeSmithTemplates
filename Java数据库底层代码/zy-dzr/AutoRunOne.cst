@@ -31,7 +31,7 @@ Description:
     if (controllerName.StartsWith("Tb"))
     	controllerName = controllerName.Substring(2);
 
-bool cover = true;
+bool cover = false;
 {
     CodeTemplate codeTemplate1=new Entity();
     initProps(codeTemplate1);

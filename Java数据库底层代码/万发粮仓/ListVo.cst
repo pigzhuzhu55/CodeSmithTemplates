@@ -6,7 +6,7 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.dbs.pojo.vo.page;
+package <%=Package%>.dbs.pojo.vo.list;
 
 import cn.hutool.core.date.DatePattern;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -21,7 +21,7 @@ import java.util.Map;
 
 
 /**
- *Name: <%=SourceTable.Description%>  查询结果翻页对象
+ *Name: <%=SourceTable.Description%>  列表查询对象
  *Author: Caicai
  *Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
  *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
@@ -36,7 +36,7 @@ ArrayList removeList = new ArrayList(){"domain","del_flag"};
 </script>
 @Data
 @ApiModel("<%=SourceTable.Description%>   翻页实体对象")
-public class <%= GetClassName(SourceTable) %>PageVo implements Serializable{
+public class <%= GetClassName(SourceTable) %>Vo implements Serializable{
 
 	<%
     for (int i = 0; i < SourceTable.Columns.Count; i++) { 

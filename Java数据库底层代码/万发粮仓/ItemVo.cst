@@ -6,22 +6,26 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.dbs.pojo.vo.page;
+package <%=Package%>.dbs.pojo.vo.item;
 
+import <%=Package%>.dbs.pojo.entity.TbUser;
+import <%=Package%>.dbs.support.BaseWrapper;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DatePattern;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 /**
- *Name: <%=SourceTable.Description%>  查询结果翻页对象
+ *Name: <%=SourceTable.Description%>  单个查询对象
  *Author: Caicai
  *Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
  *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
@@ -31,12 +35,15 @@ import java.util.Map;
 //主键类型[目前不支持联合主键]
 ArrayList pkList = new ArrayList();
 ArrayList allList = new ArrayList();
-ArrayList removeList = new ArrayList(){"domain","del_flag"};
+ArrayList removeName = new ArrayList(){"domain","del_flag"};
 
 </script>
 @Data
-@ApiModel("<%=SourceTable.Description%>   翻页实体对象")
-public class <%= GetClassName(SourceTable) %>PageVo implements Serializable{
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@ApiModel("<%=SourceTable.Description%>   单个查询实体对象")
+public class <%= GetClassName(SourceTable) %>Vo implements Serializable{
 
 	<%
     for (int i = 0; i < SourceTable.Columns.Count; i++) { 
@@ -67,7 +74,7 @@ public class <%= GetClassName(SourceTable) %>PageVo implements Serializable{
     for (int i = 0; i < allList.Count; i++) { 
     ColumnSchema column = (ColumnSchema)allList[i];
     string type = GetCSharpVariableType(column);
-    if(removeList.Contains(column.Name))
+    if(removeName.Contains(column.Name))
         continue;
     %>
     <% if (!String.IsNullOrEmpty(column.Description)){%>
@@ -82,6 +89,18 @@ public class <%= GetClassName(SourceTable) %>PageVo implements Serializable{
     <%
     }
     %>
+    
+    public static class Wrapper extends BaseWrapper<<%= GetClassName(SourceTable) %>, <%= GetClassName(SourceTable) %>Vo> {
+
+        public static Wrapper builder(){
+            return new Wrapper();
+        }
+
+        protected <%= GetClassName(SourceTable) %>Vo conver(<%= GetClassName(SourceTable) %> item) {
+            <%= GetClassName(SourceTable) %>Vo vo = Objects.requireNonNull(BeanUtil.copyProperties(item, <%= GetClassName(SourceTable) %>Vo.class));
+            return vo;
+        }
+    }
 }
  
 <!-- #include file="script.inc" -->
