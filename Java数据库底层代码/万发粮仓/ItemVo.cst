@@ -8,7 +8,7 @@
 <%@ Import Namespace="System.Collections" %>
 package <%=Package%>.dbs.pojo.vo.item;
 
-import <%=Package%>.dbs.pojo.entity.TbUser;
+import <%=Package%>.dbs.pojo.entity.<%= GetClassName(SourceTable) %>;
 import <%=Package%>.dbs.support.BaseWrapper;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DatePattern;
@@ -43,7 +43,7 @@ ArrayList removeName = new ArrayList(){"domain","del_flag"};
 @AllArgsConstructor
 @NoArgsConstructor
 @ApiModel("<%=SourceTable.Description%>   单个查询实体对象")
-public class <%= GetClassName(SourceTable) %>Vo implements Serializable{
+public class <%= GetClassName(SourceTable) %>ItemVo implements Serializable{
 
 	<%
     for (int i = 0; i < SourceTable.Columns.Count; i++) { 
@@ -90,14 +90,14 @@ public class <%= GetClassName(SourceTable) %>Vo implements Serializable{
     }
     %>
     
-    public static class Wrapper extends BaseWrapper<<%= GetClassName(SourceTable) %>, <%= GetClassName(SourceTable) %>Vo> {
+    public static class Wrapper extends BaseWrapper<<%= GetClassName(SourceTable) %>, <%= GetClassName(SourceTable) %>ItemVo> {
 
         public static Wrapper builder(){
             return new Wrapper();
         }
 
-        protected <%= GetClassName(SourceTable) %>Vo conver(<%= GetClassName(SourceTable) %> item) {
-            <%= GetClassName(SourceTable) %>Vo vo = Objects.requireNonNull(BeanUtil.copyProperties(item, <%= GetClassName(SourceTable) %>Vo.class));
+        protected <%= GetClassName(SourceTable) %>ItemVo conver(<%= GetClassName(SourceTable) %> item) {
+            <%= GetClassName(SourceTable) %>ItemVo vo = Objects.requireNonNull(BeanUtil.copyProperties(item, <%= GetClassName(SourceTable) %>ItemVo.class));
             return vo;
         }
     }
