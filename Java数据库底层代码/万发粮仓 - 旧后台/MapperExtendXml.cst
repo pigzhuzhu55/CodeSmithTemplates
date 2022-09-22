@@ -1,0 +1,16 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="<%=Package%>.dbs.mapper.<%= GetClassName(SourceTable) %>Mapper">
+    
+    
+    
+</mapper>
+<!-- #include file="script.inc" -->

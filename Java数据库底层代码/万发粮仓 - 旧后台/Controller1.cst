@@ -1,0 +1,161 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.small.controller;;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
+
+import com.cly.model.ApiResult;
+import com.cly.model.Paging;
+import com.cly.model.param.IdParam;
+import com.cly.web.controller.BaseController;
+
+import <%=Package%>.dbs.pojo.entity.<%= GetClassName(SourceTable)%>;
+import <%=Package%>.dbs.service.<%= GetClassName(SourceTable)%>Service;
+import <%=Package%>.dbs.pojo.vo.page.<%= GetClassName(SourceTable)%>PageVo;
+import <%=Package%>.dbs.pojo.dto.form.<%= GetClassName(SourceTable)%>FormDto;
+import <%=Package%>.dbs.pojo.dto.param.<%= GetClassName(SourceTable)%>ParamDto;
+
+<%
+    string routerName = GetVarName(SourceTable);
+    string controllerName = GetClassName(SourceTable); 
+    if (routerName.StartsWith("tb"))
+    	routerName = GetCamelCaseName(routerName.Substring(2));
+    if (controllerName.StartsWith("Tb"))
+    	controllerName = controllerName.Substring(2);
+
+%>
+
+<script runat="template">
+public class MyCompare : System.Collections.IComparer
+{
+    public int Compare(object x, object y)
+    {
+        string a = ((ColumnSchema)x).Name;
+        string b = ((ColumnSchema)y).Name;
+        return a.CompareTo(b);
+    }
+}
+
+MyCompare myCompare=new MyCompare();
+//生成属性的时候，id总是在前面，后面依次是类型为Integer的类型，最后面是日期类型，剩下的按照字母排序放到中间。
+
+//Integer的类型
+ArrayList intList = new ArrayList();
+//中间
+ArrayList normalList = new ArrayList();
+//日期类型
+ArrayList dateList = new ArrayList();
+
+
+ArrayList allList = new ArrayList();
+
+
+</script>
+<%
+    for (int i = 0; i < SourceTable.Columns.Count; i++) { 
+        ColumnSchema column = SourceTable.Columns[i];
+        string type = GetCSharpVariableType(column);
+        switch(type){
+            case "Integer": {
+    			 intList.Add(column);
+    		}break;
+            case "Date": {
+    			 dateList.Add(column);
+    		}break;
+            default:
+    		{
+    			 normalList.Add(column);
+    		}break;
+        }
+    }
+    intList.Sort(myCompare);
+    dateList.Sort(myCompare);
+    normalList.Sort(myCompare);
+    allList.AddRange(intList);
+    allList.AddRange(normalList);
+    allList.AddRange(dateList);
+    %>
+
+/**
+*Name: <%=SourceTable.Description%>前端控制器
+*Author: Caicai
+*Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
+*Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+*/ 
+@Slf4j
+@RestController
+@RequestMapping("/<%= routerName%>")
+@Api(tags = "<%=SourceTable.Description%>API")
+@Validated
+public class <%= controllerName%>Controller extends BaseController {
+
+    @Autowired
+    private <%= GetClassName(SourceTable)%>Service <%= GetVarName(SourceTable)%>Service;
+
+       /**
+     * <%=SourceTable.Description%>分页列表
+     */
+    @PostMapping("/getPageList")
+    @ApiOperation("<%=SourceTable.Description%>分页列表")
+    public ApiResult<Paging<<%= GetClassName(SourceTable)%>PageVo>> get<%= GetClassName(SourceTable)%>PageList(@Valid @RequestBody(required = false) <%= GetClassName(SourceTable)%>ParamDto param) throws Exception{
+        
+        StringBuilder whereSql = new StringBuilder();
+        //条件准备
+        <%
+        for (int i = 0; i < intList.Count; i++) { 
+        ColumnSchema column = (ColumnSchema)intList[i];
+        %>
+        if(param.get<%= GetPascalCaseName(column.Name) %>()!=null){
+            whereSql.append(String.format(" and %s=%s",<%= GetClassName(SourceTable)%>.$.<%= GetCamelCaseName(column.Name) %>,param.get<%= GetPascalCaseName(column.Name) %>()));
+        }
+        <%}%>
+        
+        <%
+        for (int i = 0; i < normalList.Count; i++) { 
+        ColumnSchema column = (ColumnSchema)normalList[i];
+        string type = GetCSharpVariableType(column);
+        if(type!="String")
+            continue;
+        %>
+        if(StrUtil.isNotBlank(param.get<%= GetPascalCaseName(column.Name) %>())){
+            whereSql.append(String.format(" and %s like '%s'",<%= GetClassName(SourceTable)%>.$.<%= GetCamelCaseName(column.Name) %>,param.get<%= GetPascalCaseName(column.Name) %>()));
+        }
+        <%}%>
+        
+        
+        <%
+        for (int i = 0; i < dateList.Count; i++) { 
+        ColumnSchema column = (ColumnSchema)dateList[i];
+        %>
+        if(StrUtil.isNotBlank(param.get<%= GetPascalCaseName(column.Name) %>Rangle())){
+            String[] tmpStr = param.get<%= GetPascalCaseName(column.Name) %>Rangle().split("~");
+            if(tmpStr.length>0){
+                whereSql.append(String.format(" and %s >= '%s'",InTb.$.<%= GetCamelCaseName(column.Name) %>,tmpStr[0]));
+            }
+            if(tmpStr.length>1){
+                whereSql.append(String.format(" and %s <= '%s'",InTb.$.<%= GetCamelCaseName(column.Name) %>,tmpStr[1]));
+            }
+        }
+        <%}%>
+        
+        Page<<%= GetClassName(SourceTable) %>> retPage =  <%= GetVarName(SourceTable) %>Service.page(PaginationContext.getMpPage(),queryWrapper);
+
+        return ReturnJsonUtil.ok("获取成功", retPage);
+    }
+
+}
+
+ 
+<!-- #include file="script.inc" -->

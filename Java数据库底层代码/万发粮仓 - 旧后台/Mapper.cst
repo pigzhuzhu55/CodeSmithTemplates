@@ -1,0 +1,40 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.dbs.mapper;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cly.mp.mapper.MyBaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import <%=Package%>.dbs.pojo.entity.<%= GetClassName(SourceTable)%>;
+import <%=Package%>.dbs.pojo.dto.form.<%= GetClassName(SourceTable)%>FormDto;
+import <%=Package%>.dbs.pojo.dto.param.<%= GetClassName(SourceTable)%>ParamDto;
+import <%=Package%>.dbs.pojo.vo.page.<%= GetClassName(SourceTable)%>PageVo;
+
+
+/**
+ *Name: <%=SourceTable.Description%> Mapper接口
+ *Author: Caicai
+ *Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
+ *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+ */ 
+@Repository
+public interface <%= GetClassName(SourceTable) %>Mapper extends MyBaseMapper<<%= GetClassName(SourceTable) %>> {
+
+    IPage<<%= GetClassName(SourceTable) %>PageVo> getPageList(@Param("page") Page page, @Param("param") <%= GetClassName(SourceTable) %>ParamDto param);
+
+    Integer checkNameUnique(@Param("form") <%= GetClassName(SourceTable) %>FormDto form);
+    
+    Integer selectCount2(@Param("param") <%= GetClassName(SourceTable) %>ParamDto param);
+}
+
+ 
+<!-- #include file="script.inc" -->
