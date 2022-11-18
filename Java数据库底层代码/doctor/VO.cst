@@ -1,0 +1,40 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+package cn.prodoctors.core.vo;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import java.io.Serializable;
+
+ /**
+*Name: <%=SourceTable.Name%>
+*Author: Caicai
+*Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
+*Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+*/ 
+@Data
+public class <%= GetClassName(SourceTable) %>VO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+	<% for (int i = 0; i < SourceTable.Columns.Count; i++) { 
+    string columnName = GetCamelCaseName(SourceTable.Columns[i].Name);
+    bool isPk = SourceTable.Columns[i].IsPrimaryKeyMember;
+    if (isPk||columnName=="isDeleted"||columnName=="userIdCreate"||columnName=="userIdUpdate"||columnName=="userNameCreate"||columnName=="userNameUpdate"||columnName=="timeCreate"||columnName=="timeUpdate"){
+        continue;}
+    else{
+    if (!String.IsNullOrEmpty(SourceTable.Columns[i].Description)){%>
+    @ApiModelProperty(name = "<%= GetCamelCaseName(SourceTable.Columns[i].Name) %>", value = "<%= FilterString(SourceTable.Columns[i].Description)%>")
+    <%}%>
+    <%if(SourceTable.Columns[i].DataType==DbType.Date||SourceTable.Columns[i].DataType==DbType.DateTime){%>
+    <%}%>
+    private <%= GetCSharpVariableType(SourceTable.Columns[i]) %> <%= GetCamelCaseName(SourceTable.Columns[i].Name) %>;
+    <% if (i < SourceTable.Columns.Count - 1) Response.Write("\r\n"); %>
+    <%}}%>
+}
+ 
+<!-- #include file="script.inc" -->

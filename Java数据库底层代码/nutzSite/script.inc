@@ -1,0 +1,174 @@
+<script runat="template">
+private string _Prefix = "cms_,rlt_";
+[Category("Database")]
+[Description("Stroed Procedures Prefix.")]
+public string Prefix
+{
+ 	get 
+	{
+		return _Prefix;
+	}
+ 	set 
+	{
+		_Prefix = value;
+	}
+}
+
+private string _Copyright = "Copyright 2020 CAILY";
+[Category("Context")]
+[Description("Your Copyright.")]
+public string Copyright
+{
+ 	get 
+	{
+		return _Copyright;
+	}
+ 	set 
+	{
+		_Copyright = value;
+	}
+}
+
+public string GetDatabaseName(DatabaseSchema database)
+{
+	string databaseName = database.Name.ToLower();
+	return String.Format("{0}", GetCamelCaseName(databaseName));
+}
+
+
+public string GetClassName(TableSchema table)
+{
+    return TableClass(table);
+}
+
+
+public string TableClass(TableSchema table)
+{
+	string className = table.Name.ToLower();
+    
+    string[] prefixArr = Prefix.Split(',');
+    
+    foreach(string pre in prefixArr){
+	if (className.StartsWith(pre))
+		className = className.Substring(pre.Length);
+    }
+    
+	return String.Format("{0}", GetPascalCaseName(className));
+}
+
+public string GetVarName(TableSchema table)
+{
+	string className = table.Name.ToLower();
+	if (className.StartsWith(Prefix))
+		className = className.Substring(Prefix.Length);
+	return String.Format("{0}", GetCamelCaseName(className));
+}
+
+public string GetPascalCaseName(string value)
+{
+	string result = value.Substring(0, 1).ToUpper() + value.Substring(1);
+	switch(result)
+	{
+		case "Operator":
+		case "Class":
+		 result += "_p";
+		 break;
+	}
+	return FormatCamelStr(result);
+}
+
+public string GetCamelCaseName(string value)
+{
+	string result = value.Substring(0, 1).ToLower() + value.Substring(1);
+	switch(result)
+	{
+		case "Operator":
+		case "Class":
+		 result += "_p";
+		 break;
+	}
+	return FormatCamelStr(result);
+}
+
+/// <summary>
+/// 生成骆驼字符串
+/// </summary>
+/// <param name="str"></param>
+/// <returns></returns>
+public string FormatCamelStr(string str){
+    string retStr = String.Empty;
+    bool isFit = false;
+    foreach(char ar in str)
+    {
+        string ars = ar.ToString();
+        if(ars.Equals("_"))
+        {
+            isFit = true;
+            continue;
+        }
+        retStr+=isFit?ars.ToUpper():ars;
+        isFit = false;
+    }
+    return retStr;
+}
+
+public string GetCSharpVariableType(ColumnSchema column)
+{
+	if (column.Name.EndsWith("TypeCode")) return column.Name;
+	
+	switch (column.DataType)
+	{
+		case DbType.AnsiString: return "String";
+		case DbType.AnsiStringFixedLength: return "String";
+		case DbType.Binary: return "Byte[]";
+		case DbType.Boolean: return "Boolean";
+		case DbType.Byte: return "Byte";
+		case DbType.Currency: return "BigDecimal";
+		case DbType.Date: return "java.util.Date";
+		case DbType.DateTime: return "java.util.Date";
+		case DbType.Decimal: return "BigDecimal";
+		case DbType.Double: return "Double";
+		case DbType.Guid: return "Guid";
+		case DbType.Int16: return "Short";
+		case DbType.Int32: return "Integer";
+		case DbType.Int64: return "Long";
+		case DbType.Object: return "Object";
+		case DbType.SByte: return "byte";
+		case DbType.Single: return "Double";
+		case DbType.String: return "String";
+		case DbType.StringFixedLength: return "String";
+		case DbType.Time: return "TimeSpan";
+		case DbType.UInt16: return "Short";
+		case DbType.UInt32: return "Integer";
+		case DbType.UInt64: return "Long";
+		case DbType.VarNumeric: return "BigDecimal";
+		default:
+		{
+			return "__UNKNOWN__" + column.NativeType;
+		}
+	}
+}
+
+public bool GetIsOverride(ColumnSchema column)
+{
+	String columnName = GetCamelCaseName(column.Name);
+	
+	switch (columnName)
+	{
+		case "createBy": 
+		case "createTime": 
+		case "updateBy": 
+		case "updateTime": return true;
+		default:
+		{
+			return false;
+		}
+	}
+}
+
+public string FilterString(string msg)
+{
+    return msg.Replace("\r", "").Replace("\n", "").Replace("\r\n", "");
+}
+ 
+</script>

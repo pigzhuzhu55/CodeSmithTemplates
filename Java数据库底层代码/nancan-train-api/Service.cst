@@ -1,0 +1,29 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceDatabase" Type="SchemaExplorer.DatabaseSchema" Category="Context" Description="" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Property Name="Namespace" Type="String" Default="org.cai.inspection"%>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+/**
+*Name: <%=SourceTable.Name%>
+*Author: Caicai
+*Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
+*Description: <%= Copyright %>
+*/ 
+package <%=Namespace%>.service;
+
+import <%=Namespace%>.model.po.<%= GetClassName(SourceTable) %>;
+import <%=Namespace%>.mapper.<%= GetDatabaseName(SourceDatabase)%>.<%= GetClassName(SourceTable) %>Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class <%= GetClassName(SourceTable) %>Service extends BaseService<<%= GetClassName(SourceTable) %>,Integer> {
+    @Autowired
+    private <%= GetClassName(SourceTable) %>Mapper <%=GetVarName(SourceTable)%>Mapper;
+
+
+}
+<!-- #include file="script.inc" -->
