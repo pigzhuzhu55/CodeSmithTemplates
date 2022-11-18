@@ -1,0 +1,194 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.small.controller;;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
+
+import com.cly.model.ApiResult;
+import com.cly.model.Paging;
+import com.cly.model.param.IdParam;
+import com.cly.web.controller.BaseController;
+
+import <%=Package%>.dbs.pojo.entity.<%= GetClassName(SourceTable)%>;
+import <%=Package%>.dbs.service.<%= GetClassName(SourceTable)%>Service;
+import <%=Package%>.dbs.pojo.vo.page.<%= GetClassName(SourceTable)%>PageVo;
+import <%=Package%>.dbs.pojo.dto.form.<%= GetClassName(SourceTable)%>FormDto;
+import <%=Package%>.dbs.pojo.dto.param.<%= GetClassName(SourceTable)%>ParamDto;
+
+<%
+    string routerName = GetVarName(SourceTable);
+    string controllerName = GetClassName(SourceTable); 
+    if (routerName.StartsWith("tb"))
+    	routerName = GetCamelCaseName(routerName.Substring(2));
+    if (controllerName.StartsWith("Tb"))
+    	controllerName = controllerName.Substring(2);
+
+%>
+
+<script runat="template">
+public class MyCompare : System.Collections.IComparer
+{
+    public int Compare(object x, object y)
+    {
+        string a = ((ColumnSchema)x).Name;
+        string b = ((ColumnSchema)y).Name;
+        return a.CompareTo(b);
+    }
+}
+
+MyCompare myCompare=new MyCompare();
+//生成属性的时候，id总是在前面，后面依次是类型为Integer的类型，最后面是日期类型，剩下的按照字母排序放到中间。
+
+//Integer的类型
+ArrayList intList = new ArrayList();
+//中间
+ArrayList normalList = new ArrayList();
+//日期类型
+ArrayList dateList = new ArrayList();
+
+
+ArrayList allList = new ArrayList();
+
+
+</script>
+<%
+    for (int i = 0; i < SourceTable.Columns.Count; i++) { 
+        ColumnSchema column = SourceTable.Columns[i];
+        string type = GetCSharpVariableType(column);
+        switch(type){
+            case "Integer": {
+    			 intList.Add(column);
+    		}break;
+            case "Date": {
+    			 dateList.Add(column);
+    		}break;
+            default:
+    		{
+    			 normalList.Add(column);
+    		}break;
+        }
+    }
+    intList.Sort(myCompare);
+    dateList.Sort(myCompare);
+    normalList.Sort(myCompare);
+    allList.AddRange(intList);
+    allList.AddRange(normalList);
+    allList.AddRange(dateList);
+    %>
+
+/**
+*Name: <%=SourceTable.Description%>前端控制器
+*Author: Caicai
+*Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
+*Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+*/ 
+@Slf4j
+@RestController
+@RequestMapping("/<%= routerName%>")
+@Api(tags = "<%=SourceTable.Description%>API")
+@Validated
+public class <%= controllerName%>Controller extends BaseController {
+
+    @Autowired
+    private <%= GetClassName(SourceTable)%>Service <%= GetVarName(SourceTable)%>Service;
+
+   @ApiOperation("列表查询接口")
+    @ApiImplicitParams({
+        <%for (int i = 0; i < allList.Count; i++) { 
+        ColumnSchema column = (ColumnSchema)allList[i];
+        string type = GetCSharpVariableType(column);%>
+        <%if(type=="String"){%>
+        @ApiImplicitParam(name = "<%= GetCamelCaseName(column.Name) %>", value = "<%= FilterString(column.Description)%>", paramType ="query", required = false),
+        <%}else if(type=="Integer"){%>
+        @ApiImplicitParam(name = "<%= GetCamelCaseName(column.Name) %>", value = "<%= FilterString(column.Description)%>", dataType = "int", paramType ="query", required = false),
+        <%}else if(type=="Date"){%>
+        @ApiImplicitParam(name = "<%= GetCamelCaseName(column.Name) %>Rangle", value = "<%= FilterString(column.Description)%>,取范围按~隔开【eg:2021-01-01~2021-02-01】", paramType = "query", required = false),
+        <%}}%>
+        @ApiImplicitParam(name = "pageNum", value = "第几页", defaultValue = "1", paramType = "query", dataType = "int", required = true),
+        @ApiImplicitParam(name = "pageSize", value = "每页长度", defaultValue = "10", paramType = "query", dataType = "int", required = true),
+    })
+    @GetMapping(value = "/list", produces = "application/json")
+    public ResponseData<Page<<%= GetClassName(SourceTable) %>>> list(
+        <%for (int i = 0; i < allList.Count; i++) { 
+        ColumnSchema column = (ColumnSchema)allList[i];
+        string type = GetCSharpVariableType(column);%>
+        <%if(type=="String"){%>
+        String <%= GetCamelCaseName(column.Name) %>,
+        <%}else if(type=="Integer"){%>
+        Integer <%= GetCamelCaseName(column.Name) %>,
+        <%}else if(type=="Date"){%>
+        String <%= GetCamelCaseName(column.Name) %>Rangle,
+        <%}}%>
+        Integer pageNum, Integer pageSize
+    ) {
+        
+        LambdaQueryWrapper<<%= GetClassName(SourceTable) %>> queryWrapper = Condition.<<%= GetClassName(SourceTable) %>>getQueryWrapper().lambda();
+        //条件准备
+        <%
+        for (int i = 0; i < intList.Count; i++) { 
+        ColumnSchema column = (ColumnSchema)intList[i];
+        %>
+        if(<%= GetCamelCaseName(column.Name) %>!=null){
+            queryWrapper.eq(<%= GetClassName(SourceTable) %>::get<%= GetPascalCaseName(column.Name)%>,<%= GetCamelCaseName(column.Name) %>);
+        }
+        <%}%>
+        
+        <%
+        for (int i = 0; i < normalList.Count; i++) { 
+        ColumnSchema column = (ColumnSchema)normalList[i];
+        string type = GetCSharpVariableType(column);
+        if(type!="String")
+            continue;
+        %>
+        if(<%= GetCamelCaseName(column.Name) %>!=null){
+            queryWrapper.like(<%= GetClassName(SourceTable) %>::get<%= GetPascalCaseName(column.Name)%>,<%= GetCamelCaseName(column.Name) %>);
+        }
+        <%}%>
+        
+        
+        <%
+        for (int i = 0; i < dateList.Count; i++) { 
+        ColumnSchema column = (ColumnSchema)dateList[i];
+        %>
+        if(!StringUtils.isEmpty(<%= GetCamelCaseName(column.Name) %>Rangle)){
+            Date selectDateRangle1 = null;
+            Date selectDateRangle2 = null;
+            String[] tmpStr = <%= GetCamelCaseName(column.Name) %>Rangle.split("~");
+            if (!StringUtils.isEmpty(tmpStr[0].trim())) {
+                selectDateRangle1 = DateUtil.parseDateFormat(tmpStr[0].trim(),DateUtil.PATTERN_DATE);
+            }
+            if (tmpStr.length > 1 && !StringUtils.isEmpty(tmpStr[1].trim())) {
+                selectDateRangle2 = DateUtil.parseDateFormat(tmpStr[1].trim(),DateUtil.PATTERN_DATE);
+            }
+            
+            if(selectDateRangle1!=null){
+                queryWrapper.ge(<%= GetClassName(SourceTable) %>::get<%= GetPascalCaseName(column.Name)%>,selectDateRangle1);
+            }
+
+            if(selectDateRangle2!=null){
+                queryWrapper.le(<%= GetClassName(SourceTable) %>::get<%= GetPascalCaseName(column.Name)%>,selectDateRangle2);
+            }
+        }
+        <%}%>
+        
+        Page<<%= GetClassName(SourceTable) %>> retPage =  <%= GetVarName(SourceTable) %>Service.page(PaginationContext.getMpPage(),queryWrapper);
+
+        return ReturnJsonUtil.ok("获取成功", retPage);
+    }
+
+}
+
+ 
+<!-- #include file="script.inc" -->

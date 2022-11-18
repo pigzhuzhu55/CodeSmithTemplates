@@ -4,13 +4,13 @@ Author:
 Description: 
 --%>
 
-<%@ Register Name="Entity" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\doctor\Bean.cst" MergeProperties="False" ExcludeProperties="" %>
-<%@ Register Name="Service" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\doctor\Service.cst" MergeProperties="False" ExcludeProperties="" %>
-<%@ Register Name="Mapper" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\doctor\Mapper.cst" MergeProperties="False" ExcludeProperties="" %>
-<%@ Register Name="ServiceImpl" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\doctor\ServiceImpl.cst" MergeProperties="False" ExcludeProperties="" %>
-<%@ Register Name="Controller" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\doctor\Controller.cst" MergeProperties="False" ExcludeProperties="" %>
-<%@ Register Name="DTO" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\doctor\DTO.cst" MergeProperties="False" ExcludeProperties="" %>
-<%@ Register Name="VO" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\Templates\IQEQ\Java数据库底层代码\doctor\VO.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Entity" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\IQEQ\Java数据库底层代码\doctor\Bean.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Service" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\IQEQ\Java数据库底层代码\doctor\Service.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Mapper" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\IQEQ\Java数据库底层代码\doctor\Mapper.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="ServiceImpl" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\IQEQ\Java数据库底层代码\doctor\ServiceImpl.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Controller" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\IQEQ\Java数据库底层代码\doctor\Controller.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="DTO" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\IQEQ\Java数据库底层代码\doctor\DTO.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="VO" Template="D:\Program Files (x86)\CodeSmith\v6.5\Templates\IQEQ\Java数据库底层代码\doctor\VO.cst" MergeProperties="False" ExcludeProperties="" %>
 
 <%--<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>--%>
 <%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>

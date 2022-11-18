@@ -1,0 +1,51 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.dbs.pojo.entity;
+
+import cn.hutool.core.date.DatePattern;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.baomidou.mybatisplus.annotation.*;
+import com.cly.mp.entity.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.*;
+
+import java.util.Date;
+import java.io.Serializable;
+<% Init();  %>
+
+/**
+ *Name: <%=SourceTable.Description%> 数据库实体对象
+ *Author: Caicai
+ *Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
+ *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+ */ 
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@TableName("<%= SourceTable.Name%>")
+@ApiModel("<%=SourceTable.Description%>   数据库对象")
+public class <%= GetClassName(SourceTable) %> extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    
+	<%
+    for (int i = 0; i < allList.Count; i++) { 
+    ColumnSchema column = (ColumnSchema)allList[i];
+    %>
+    <% WriteEntityField(column);%>
+    <% WriteWrap(i);%>
+    <%}%>
+}
+ 
+<!-- #include file="script.inc" -->
+<!-- #include file="script2.inc" -->

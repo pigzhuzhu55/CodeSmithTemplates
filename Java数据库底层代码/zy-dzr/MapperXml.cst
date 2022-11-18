@@ -1,0 +1,90 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+<%
+    string routerName = GetVarName(SourceTable);
+    if (routerName.StartsWith("tb"))
+    	routerName = GetCamelCaseName(routerName.Substring(2));
+
+%>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="<%=Package%>.dbs.mapper.<%= GetClassName(SourceTable) %>Mapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+           <% for (int i = 0; i < SourceTable.Columns.Count; i++) {
+           ColumnSchema column = SourceTable.Columns[i];%><%= column.Name%><%if(i!=SourceTable.Columns.Count-1){%>,<%} }
+          %>
+    </sql>
+
+    <select id="getPageList" parameterType="<%=Package%>.dbs.pojo.dto.param.<%= GetClassName(SourceTable) %>QueryParam"  resultType="<%=Package%>.dbs.pojo.vo.page.<%= GetClassName(SourceTable) %>PageVo">
+        select <include refid="Base_Column_List"/> from <%=SourceTable.Name%>
+        <where>
+            <% for (int i = 0; i < SourceTable.Columns.Count; i++) {
+             ColumnSchema column = SourceTable.Columns[i];
+            string type = GetCSharpVariableType(column);%>
+            <%if(type=="String"){%>
+            <if test="param.<%= GetCamelCaseName(column.Name) %> != null and param.<%= GetCamelCaseName(column.Name) %> != ''">
+            and <%= column.Name%> like concat('%', #{param.<%= GetCamelCaseName(column.Name) %>}, '%')
+		    </if>
+            <%}else if(type=="Integer" || type=="Long"){%>
+    		<if test="param.<%= GetCamelCaseName(column.Name) %> != null">
+            and <%= column.Name%>= #{param.<%= GetCamelCaseName(column.Name) %>}
+    		</if>
+            <%}else if(type=="Date"){
+                string dateType = "TIMESTAMP";
+                if(column.DataType== DbType.Date){  dateType="DATE"; }
+            %>
+            <if test="param.<%= GetCamelCaseName(column.Name) %>1 !=null ">
+            and <![CDATA[ <%= column.Name%> >= #{param.<%= GetCamelCaseName(column.Name) %>1,jdbcType=<%=dateType%>} ]]>
+            </if>
+            <if test="param.<%= GetCamelCaseName(column.Name) %>2 !=null ">
+            and <![CDATA[ <%= column.Name%> <= #{param.<%= GetCamelCaseName(column.Name) %>2,jdbcType=<%=dateType%>} ]]>
+            </if>
+            <%}}%>
+		</where>
+    </select>
+    
+    <select id="checkNameUnique" parameterType="<%=Package%>.dbs.pojo.dto.form.<%= GetClassName(SourceTable) %>Form"  resultType="Integer">
+        select count(1) from <%=SourceTable.Name%> where <%=routerName%>_name=#{form.<%=routerName%>Name}
+        <if test="form.id != null">
+            and id != #{form.id}
+        </if>
+        limit 1
+    </select>
+    
+    <select id="selectCount2" parameterType="<%=Package%>.dbs.pojo.dto.param.<%= GetClassName(SourceTable) %>QueryParam"  resultType="Integer">
+        select count(1) from <%=SourceTable.Name%>
+        <where>
+            <% for (int i = 0; i < SourceTable.Columns.Count; i++) {
+             ColumnSchema column = SourceTable.Columns[i];
+            string type = GetCSharpVariableType(column);%>
+            <%if(type=="String"){%>
+            <if test="param.<%= GetCamelCaseName(column.Name) %> != null and param.<%= GetCamelCaseName(column.Name) %> != ''">
+            and <%= column.Name%> like concat('%', #{param.<%= GetCamelCaseName(column.Name) %>}, '%')
+		    </if>
+            <%}else if(type=="Integer" || type=="Long"){%>
+    		<if test="param.<%= GetCamelCaseName(column.Name) %> != null">
+            and <%= column.Name%>= #{param.<%= GetCamelCaseName(column.Name) %>}
+    		</if>
+            <%}else if(type=="Date"){
+                string dateType = "TIMESTAMP";
+                if(column.DataType== DbType.Date){  dateType="DATE"; }
+            %>
+            <if test="param.<%= GetCamelCaseName(column.Name) %>1 !=null ">
+            and <![CDATA[ <%= column.Name%> >= #{param.<%= GetCamelCaseName(column.Name) %>1,jdbcType=<%=dateType%>} ]]>
+            </if>
+            <if test="param.<%= GetCamelCaseName(column.Name) %>2 !=null ">
+            and <![CDATA[ <%= column.Name%> <= #{param.<%= GetCamelCaseName(column.Name) %>2,jdbcType=<%=dateType%>} ]]>
+            </if>
+            <%}}%>
+		</where>
+    </select>
+</mapper>
+<!-- #include file="script.inc" -->

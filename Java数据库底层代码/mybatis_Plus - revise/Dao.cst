@@ -6,10 +6,10 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.dao;
+package <%=Package%>.dbs.dao;
 
-import <%=Package%>.entity.<%= GetClassName(SourceTable) %>;
-import <%=Package%>.dao.mapper.<%= GetClassName(SourceTable) %>Mapper;
+import <%=Package%>.dbs.entity.<%= GetClassName(SourceTable) %>;
+import <%=Package%>.dbs.dao.mapper.<%= GetClassName(SourceTable) %>Mapper;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -20,6 +20,12 @@ import org.springframework.stereotype.Repository;
 */ 
 @Repository
 public class <%= GetClassName(SourceTable) %>Dao extends IqeqServiceImpl<<%= GetClassName(SourceTable) %>Mapper, <%= GetClassName(SourceTable) %>> {
+
+    private final <%= GetClassName(SourceTable) %>Mapper <%= GetVarName(SourceTable) %>Mapper;
+
+    public <%= GetClassName(SourceTable) %>Dao(<%= GetClassName(SourceTable) %>Mapper <%= GetVarName(SourceTable) %>Mapper) {
+        this.<%= GetVarName(SourceTable) %>Mapper = <%= GetVarName(SourceTable) %>Mapper;
+    }
 
 }
 

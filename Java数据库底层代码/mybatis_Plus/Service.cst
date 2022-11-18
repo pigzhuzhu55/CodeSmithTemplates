@@ -6,11 +6,9 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.dao;
+package <%=Package%>.service;
 
 import <%=Package%>.entity.<%= GetClassName(SourceTable) %>;
-import <%=Package%>.dao.mapper.<%= GetClassName(SourceTable) %>Mapper;
-import org.springframework.stereotype.Repository;
 
 /**
 *Name: <%=SourceTable.Name%>
@@ -18,10 +16,9 @@ import org.springframework.stereotype.Repository;
 *Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
 *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
 */ 
-@Repository
-public class <%= GetClassName(SourceTable) %>Dao extends IqeqServiceImpl<<%= GetClassName(SourceTable) %>Mapper, <%= GetClassName(SourceTable) %>> {
+public interface <%= GetClassName(SourceTable) %>Service extends BaseService<<%= GetClassName(SourceTable) %>> {
 
+  
 }
-
  
 <!-- #include file="script.inc" -->

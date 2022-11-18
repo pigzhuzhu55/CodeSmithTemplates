@@ -6,11 +6,11 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.dao;
+package <%=Package%>.dao.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import <%=Package%>.entity.<%= GetClassName(SourceTable) %>;
-import <%=Package%>.dao.mapper.<%= GetClassName(SourceTable) %>Mapper;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 /**
 *Name: <%=SourceTable.Name%>
@@ -18,8 +18,8 @@ import org.springframework.stereotype.Repository;
 *Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
 *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
 */ 
-@Repository
-public class <%= GetClassName(SourceTable) %>Dao extends IqeqServiceImpl<<%= GetClassName(SourceTable) %>Mapper, <%= GetClassName(SourceTable) %>> {
+@Component("<%= GetVarName(SourceTable) %>Mapper")
+public interface <%= GetClassName(SourceTable) %>Mapper extends BaseMapper<<%= GetClassName(SourceTable) %>> {
 
 }
 

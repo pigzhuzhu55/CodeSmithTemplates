@@ -6,25 +6,26 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.entity;
+package <%=Package%>.<%=Project%>.<%=Module%>.dto.param;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.cly.tfxgj.dbs.entity.base.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.iqeq.common.utils.DateUtil;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.io.Serializable;
+import lombok.EqualsAndHashCode;
 import java.util.Date;
+import java.util.HashMap;
+import java.math.BigDecimal;
+import java.util.Map;
+
+import com.cly.model.param.OrderQueryParam;
+
 
 /**
-*Name: <%=SourceTable.Name%>
-*Author: Caicai
-*Date: <%= DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") %>
-*Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
-*/ 
+ *Name: <%=SourceTable.Description%>  查询参数对象
+ *Author: Caicai
+ *Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
+ *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+ */ 
 
 <script runat="template">
 public class MyCompare : System.Collections.IComparer
@@ -47,6 +48,8 @@ ArrayList normalList = new ArrayList();
 //日期类型
 ArrayList dateList = new ArrayList();
 
+//主键类型[目前不支持联合主键]
+ArrayList pkList = new ArrayList();
 
 ArrayList allList = new ArrayList();
 
@@ -54,25 +57,21 @@ ArrayList allList = new ArrayList();
 
 </script>
 @Data
-public class <%= GetClassName(SourceTable) %> extends BaseEntity implements Serializable {
+@EqualsAndHashCode(callSuper = true)
+@ApiModel(value="<%= GetClassName(SourceTable)%>QueryParam对象", description="<%= SourceTable.Description%>查询参数对象")
+public class <%= GetClassName(SourceTable) %>QueryParam extends OrderQueryParam {
 
-    private static final long serialVersionUID = 1L;
 	<%
     for (int i = 0; i < SourceTable.Columns.Count; i++) { 
         ColumnSchema column = SourceTable.Columns[i];
-        if(i==0 || column.Name.ToLower()=="create_user"||
-            column.Name.ToLower()=="create_time"||
-            column.Name.ToLower()=="update_user"||
-            column.Name.ToLower()=="update_time"||
-            column.Name.ToLower()=="status"||
-            column.Name.ToLower()=="is_deleted"
-            ){
-             continue;
+        if(i==0){
+            pkList.Add(column);
+            continue;
         }
         
         string type = GetCSharpVariableType(column);
         switch(type){
-            case "Integer": {
+            case "Integer":case "Long": {
     			 intList.Add(column);
     		}break;
             case "Date": {
@@ -93,16 +92,25 @@ public class <%= GetClassName(SourceTable) %> extends BaseEntity implements Seri
     %>
     
     <%
+    for (int i = 0; i < pkList.Count; i++) { 
+    ColumnSchema column = (ColumnSchema)pkList[i];
+    string type = GetCSharpVariableType(column);
+    %>
+    <% if (!String.IsNullOrEmpty(column.Description)){%>
+    @ApiModelProperty(name = "<%= GetCamelCaseName(column.Name) %>", value = "<%= FilterString(column.Description)%>")
+    <%}%>
+    private <%= GetCSharpVariableType(column) %> <%= GetCamelCaseName(column.Name) %>;
+    <% if (i < allList.Count - 1) Response.Write("\r\n"); %>
+    <%
+    }
+    %>
+    <%
     for (int i = 0; i < allList.Count; i++) { 
     ColumnSchema column = (ColumnSchema)allList[i];
     string type = GetCSharpVariableType(column);
     %>
     <% if (!String.IsNullOrEmpty(column.Description)){%>
     @ApiModelProperty(name = "<%= GetCamelCaseName(column.Name) %>", value = "<%= FilterString(column.Description)%>")
-    <%}%>
-    <% if (type=="Date"){%>
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(shape = JsonFormat.Shape.STRING,timezone = "GMT+8", pattern = DateUtil.PATTERN_DATETIME,locale = "zh_CN")
     <%}%>
     private <%= GetCSharpVariableType(column) %> <%= GetCamelCaseName(column.Name) %>;
     <% if (i < allList.Count - 1) Response.Write("\r\n"); %>

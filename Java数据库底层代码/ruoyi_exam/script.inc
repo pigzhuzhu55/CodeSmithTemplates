@@ -1,7 +1,7 @@
 <script runat="template">
-private string _Prefix = "t_";
-[Category("Database")]
-[Description("Stroed Procedures Prefix.")]
+private string _Prefix = "tb_";
+[Category("项目设置")]
+[Description("去除表前缀.")]
 public string Prefix
 {
  	get 
@@ -14,9 +14,9 @@ public string Prefix
 	}
 }
 
-private string _package = "com.cly.tfxgj.dbs";
-[Category("Database")]
-[Description("包名路径")]
+private string _package = "com.luoying.app";
+[Category("项目设置")]
+[Description("包名路径.")]
 public string Package
 {
  	get 
@@ -29,15 +29,39 @@ public string Package
 	}
 }
 
-public string GetClassName(TableSchema table)
+private string _project = "modular";
+[Category("项目设置")]
+[Description("项目名称.")]
+public string Project
 {
-    return TableClass(table);
+ 	get 
+	{
+		return _project;
+	}
+ 	set 
+	{
+		_project = value;
+	}
 }
 
-
-public string TableClass(TableSchema table)
+private string _module = "member";
+[Category("项目设置")]
+[Description("模块路径.")]
+public string Module
 {
-	string className = table.Name;
+ 	get 
+	{
+		return _module;
+	}
+ 	set 
+	{
+		_module = value;
+	}
+}
+
+public string GetClassName(TableSchema table)
+{
+    string className = table.Name;
 	if (className.StartsWith(Prefix))
 		className = className.Substring(Prefix.Length);
 	return String.Format("{0}", GetPascalCaseName(className));

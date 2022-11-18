@@ -1,0 +1,108 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.controller;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
+
+import com.cly.model.ApiResult;
+import com.cly.model.Paging;
+import com.cly.model.param.IdParam;
+import com.cly.web.controller.BaseController;
+
+import <%=Package%>.dbs.pojo.entity.<%= GetClassName(SourceTable)%>;
+import <%=Package%>.dbs.service.<%= GetClassName(SourceTable)%>Service;
+import <%=Package%>.dbs.pojo.vo.page.<%= GetClassName(SourceTable)%>PageVo;
+import <%=Package%>.dbs.pojo.dto.form.<%= GetClassName(SourceTable)%>Form;
+import <%=Package%>.dbs.pojo.dto.param.<%= GetClassName(SourceTable)%>QueryParam;
+
+<%
+    string routerName = GetVarName(SourceTable);
+    string controllerName = GetClassName(SourceTable); 
+    if (routerName.StartsWith("tb"))
+    	routerName = GetCamelCaseName(routerName.Substring(2));
+    if (controllerName.StartsWith("Tb"))
+    	controllerName = controllerName.Substring(2);
+
+%>
+/**
+*Name: <%=SourceTable.Description%>前端控制器
+*Author: Caicai
+*Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
+*Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+*/ 
+@Slf4j
+@RestController
+@RequestMapping("/<%= routerName%>")
+@Api(tags = "<%=SourceTable.Description%>API")
+@Validated
+public class <%= controllerName%>Controller extends BaseController {
+
+    @Autowired
+    private <%= GetClassName(SourceTable)%>Service <%= GetVarName(SourceTable)%>Service;
+
+    /**
+    * 添加<%=SourceTable.Description%>
+    */
+    @PostMapping("/add")
+    @ApiOperation("添加<%=SourceTable.Description%>　TODO")
+    public ApiResult<Boolean> add<%= GetClassName(SourceTable)%>(@Valid @RequestBody <%= GetClassName(SourceTable)%>Form form) throws Exception{
+        boolean flag = <%= GetVarName(SourceTable)%>Service.add<%= GetClassName(SourceTable)%>(form);
+        return ApiResult.result(flag);
+    }
+
+    /**
+    * 修改<%=SourceTable.Description%>
+    */
+    @PostMapping("/update")
+    @ApiOperation("修改<%=SourceTable.Description%>　TODO")
+    public ApiResult<Boolean> update<%= GetClassName(SourceTable)%>(@Valid @RequestBody <%= GetClassName(SourceTable)%>Form form) throws Exception{
+        boolean flag = <%= GetVarName(SourceTable)%>Service.update<%= GetClassName(SourceTable)%>(form);
+        return ApiResult.result(flag);
+    }
+
+    /**
+    * 删除<%=SourceTable.Description%>
+    */
+    @PostMapping("/delete")
+    @ApiOperation("删除<%=SourceTable.Description%>　TODO")
+    public ApiResult<Boolean> delete<%= GetClassName(SourceTable)%>(@Valid @RequestBody IdParam idParam) throws Exception{
+        boolean flag = <%= GetVarName(SourceTable)%>Service.removeById(idParam.getId());
+        return ApiResult.result(flag);
+    }
+
+    /**
+    * 获取<%=SourceTable.Description%>
+    */
+    @GetMapping("/info")
+    @ApiOperation("查看<%=SourceTable.Description%>　TODO")
+    public ApiResult<<%= GetClassName(SourceTable)%>> get<%= GetClassName(SourceTable)%>(Long id) throws Exception{
+        <%= GetClassName(SourceTable)%> <%= GetVarName(SourceTable)%> = <%= GetVarName(SourceTable)%>Service.getById(id);
+        return ApiResult.ok(<%= GetVarName(SourceTable)%>);
+    }
+
+    /**
+     * <%=SourceTable.Description%>分页列表
+     */
+    @PostMapping("/getPageList")
+    @ApiOperation("<%=SourceTable.Description%>分页列表　TODO")
+    public ApiResult<Paging<<%= GetClassName(SourceTable)%>PageVo>> get<%= GetClassName(SourceTable)%>PageList(@Valid @RequestBody(required = false) <%= GetClassName(SourceTable)%>QueryParam <%= GetVarName(SourceTable)%>QueryParam) throws Exception{
+        Paging<<%= GetClassName(SourceTable)%>PageVo> paging = <%= GetVarName(SourceTable)%>Service.getPageList(<%= GetVarName(SourceTable)%>QueryParam);
+        return ApiResult.ok(paging);
+    }
+
+}
+
+ 
+<!-- #include file="script.inc" -->

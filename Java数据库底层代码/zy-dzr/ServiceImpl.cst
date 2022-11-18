@@ -1,0 +1,79 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.dbs.service.impl;
+
+import com.cly.utils.AssertUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cly.model.Paging;
+import com.cly.mp.service.impl.BaseServiceImpl;
+import org.springframework.transaction.annotation.Transactional;
+
+import <%=Package%>.dbs.service.<%= GetClassName(SourceTable) %>Service;
+import <%=Package%>.dbs.pojo.dto.form.<%= GetClassName(SourceTable) %>Form;
+import <%=Package%>.dbs.pojo.dto.param.<%= GetClassName(SourceTable) %>QueryParam;
+import <%=Package%>.dbs.pojo.entity.<%= GetClassName(SourceTable) %>;
+import <%=Package%>.dbs.pojo.vo.page.<%= GetClassName(SourceTable) %>PageVo;
+import <%=Package%>.dbs.mapper.<%= GetClassName(SourceTable) %>Mapper;
+
+/**
+ *Name: <%=SourceTable.Description%> 服务实现类
+ *Author: Caicai
+ *Date: <%= DateTime.Now.ToString("yyyy-MM-dd") %>
+ *Description: <%= String.Format("Copyright {0} CCai", DateTime.Now.ToString("yyyy")) %>
+ */ 
+@Slf4j
+@Service("<%= GetVarName(SourceTable) %>Service")
+public class <%= GetClassName(SourceTable) %>ServiceImpl extends BaseServiceImpl<<%= GetClassName(SourceTable) %>Mapper, <%= GetClassName(SourceTable) %>> implements <%= GetClassName(SourceTable) %>Service {
+
+    @Autowired
+    private <%= GetClassName(SourceTable) %>Mapper <%= GetVarName(SourceTable) %>Mapper;
+
+    @Override
+    public Paging<<%= GetClassName(SourceTable) %>PageVo> getPageList(<%= GetClassName(SourceTable) %>QueryParam param) throws Exception{
+        Page page = setPageParam(param,OrderItem.desc("create_time"));
+        IPage<<%= GetClassName(SourceTable) %>PageVo> iPage = <%= GetVarName(SourceTable) %>Mapper.getPageList(page,param);
+        return new Paging(iPage.getTotal(),iPage.getRecords());
+    }
+
+    @Override
+    public Boolean add<%= GetClassName(SourceTable) %>(<%= GetClassName(SourceTable) %>Form form) throws Exception {
+        AssertUtil.isTrue(checkNameUnique(form),"名称重复");
+        <%= GetClassName(SourceTable) %> entity = new <%= GetClassName(SourceTable) %>();
+        BeanUtils.copyProperties(form,entity);
+        return <%= GetVarName(SourceTable) %>Mapper.insert(entity)>0;
+    }
+
+    @Override
+    public Boolean update<%= GetClassName(SourceTable) %>(<%= GetClassName(SourceTable) %>Form form) throws Exception {
+        AssertUtil.isTrue(checkNameUnique(form),"名称重复");
+        <%= GetClassName(SourceTable) %> entity = new <%= GetClassName(SourceTable) %>();
+        BeanUtils.copyProperties(form,entity);
+        return <%= GetVarName(SourceTable) %>Mapper.updateById(entity)>0;
+    }
+    
+    @Override
+    public Boolean checkNameUnique(<%= GetClassName(SourceTable) %>Form form)
+    {
+       Integer cnt = <%= GetVarName(SourceTable) %>Mapper.checkNameUnique(form);
+       return cnt.equals(0);
+    }
+    
+    @Override
+    public Integer selectCount2(<%= GetClassName(SourceTable) %>QueryParam param) {
+        return <%= GetVarName(SourceTable) %>Mapper.selectCount2(param);
+    }
+}
+ 
+<!-- #include file="script.inc" -->
