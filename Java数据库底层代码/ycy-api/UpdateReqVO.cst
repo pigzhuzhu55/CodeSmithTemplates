@@ -1,0 +1,39 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.controller.<%=Project%>.<%=Module%>.vo;
+
+import <%=Package%>.controller.<%=Project%>.<%=Module%>.vo.base.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>BaseVO;
+import cn.hutool.core.date.DatePattern;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.*;
+import java.math.BigDecimal;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+<% Init();  %>
+<script runat="template">
+
+</script>
+
+@ApiModel(" APP - <%=SourceTable.Description%> 更新 Request VO")
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>UpdateReqVO extends <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>BaseVO {
+
+	
+}
+ 
+<!-- #include file="script.inc" -->
+<!-- #include file="script2.inc" -->
