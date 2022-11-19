@@ -6,36 +6,24 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.controller.<%=Project%>.<%=Module%>.vo;
+package <%=Package%>.controller.<%=Project%>.<%=Module%>.vo.list;
 
-import <%=Package%>.controller.<%=Project%>.<%=Module%>.vo.base.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>BaseVO;
-import cn.hutool.core.date.DatePattern;
-import com.alibaba.fastjson.annotation.JSONField;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import java.math.BigDecimal;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 <% Init();  %>
 <script runat="template">
-ArrayList displayNames = new ArrayList(){"id"};
+ArrayList removeNames = new ArrayList(){"id","salt","create_by","create_time","update_by","update_time","del_flag"};
 </script>
 
-@ApiModel(" <%=Project%> - <%=SourceTable.Description%> 更新 Request VO")
+@ApiModel(" <%=Project%> - <%=SourceTable.Description%> 列表 Request VO")
 @Data
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
-public class <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>UpdateReqVO extends <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>BaseVO {
+public class <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListReqVO {
 
 	<%
     for (int i = 0; i < allList.Count; i++) { 
     ColumnSchema column = (ColumnSchema)allList[i];
-    if(!displayNames.Contains(column.Name))
+    if(removeNames.Contains(column.Name))
         continue;
     %>
     <% WriteFormField(column);%>

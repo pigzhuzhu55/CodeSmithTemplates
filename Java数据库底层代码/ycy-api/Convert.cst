@@ -1,0 +1,41 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.convert;
+
+import bnmlx.ycy.api.controller.app.user.vo.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>CreateReqVO;
+import bnmlx.ycy.api.controller.app.user.vo.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO;
+import bnmlx.ycy.api.controller.app.user.vo.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>UpdateReqVO;
+import bnmlx.ycy.api.dal.dataobject.<%= GetClassName(SourceTable) %>DO;
+import io.gitee.cly2012.model.ApiPageResult;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
+
+import java.util.List;
+<script runat="template">
+
+</script>
+
+
+@Mapper
+public interface <%= GetClassName(SourceTable) %>Convert {
+    <%= GetClassName(SourceTable) %>Convert INSTANCE = Mappers.getMapper(<%= GetClassName(SourceTable) %>Convert.class);
+
+    <%= GetClassName(SourceTable) %>DO convert(<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>CreateReqVO bean);
+
+    <%= GetClassName(SourceTable) %>DO convert(<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>UpdateReqVO bean);
+
+    <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO convert(<%= GetClassName(SourceTable) %>DO bean);
+
+    List<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO> convertList(List<<%= GetClassName(SourceTable) %>DO> list);
+
+    ApiPageResult<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO> convertPage(ApiPageResult<<%= GetClassName(SourceTable) %>DO> page);
+}
+ 
+<!-- #include file="script.inc" -->
+<!-- #include file="script2.inc" -->
