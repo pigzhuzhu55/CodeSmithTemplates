@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 <% Init();  %>
 <script runat="template">
-ArrayList removeNames = new ArrayList(){"id","salt","create_by","create_time","update_by","update_time","del_flag"};
+ArrayList removeNames = new ArrayList(){"id","salt","password","create_by","create_time","update_by","update_time","del_flag"};
 </script>
 /**
 * <%=SourceTable.Description%> Base VO，提供给添加、修改、详细的子 VO 使用

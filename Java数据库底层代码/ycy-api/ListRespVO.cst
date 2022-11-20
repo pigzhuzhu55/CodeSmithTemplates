@@ -13,7 +13,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 <% Init();  %>
 <script runat="template">
-ArrayList removeNames = new ArrayList(){"id","salt","create_by","create_time","update_by","update_time","del_flag"};
+ArrayList removeNames = new ArrayList(){"id","salt","password","create_by","create_time","update_by","update_time","del_flag"};
 </script>
 
 @ApiModel(" <%=Project%> - <%=SourceTable.Description%> 列表 Response VO")

@@ -8,13 +8,17 @@
 <%@ Import Namespace="System.Collections" %>
 package <%=Package%>.controller.<%=Project%>.<%=Module%>.vo.page;
 
+import cn.hutool.core.date.DatePattern;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.gitee.cly2012.pojo.PageParam;
+import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.gitee.cly2012.pojo.PageParam;
 import lombok.*;
 <% Init();  %>
 <script runat="template">
-ArrayList removeNames = new ArrayList(){"id","salt","create_by","create_time","update_by","update_time","del_flag"};
+ArrayList removeNames = new ArrayList(){"salt","password"};
 </script>
 
 @ApiModel(" <%=Project%> - <%=SourceTable.Description%> 分页 Request VO")
@@ -29,7 +33,7 @@ public class <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>Page
     if(removeNames.Contains(column.Name))
         continue;
     %>
-    <% WriteFormField(column);%>
+    <% WriteQueryParamField(column);%>
     <% WriteWrap(i);%>
     <%}%>
 }

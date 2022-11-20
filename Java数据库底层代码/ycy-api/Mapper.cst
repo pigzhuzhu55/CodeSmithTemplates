@@ -1,0 +1,70 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.dal.mapper;
+
+import bnmlx.ycy.api.controller.app.user.vo.list.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListReqVO;
+import bnmlx.ycy.api.controller.app.user.vo.page.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageReqVO;
+import bnmlx.ycy.api.dal.dataobject.<%= GetClassName(SourceTable) %>DO;
+import io.gitee.cly2012.mybatis.core.mapper.MyBaseMapper;
+import io.gitee.cly2012.mybatis.core.query.LambdaQueryWrapperX;
+import io.gitee.cly2012.pojo.ApiPageResult;
+import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
+
+<% Init();  %>
+<script runat="template">
+ArrayList removeNames = new ArrayList(){"salt","password"};
+</script>
+
+@Mapper
+public interface <%= GetClassName(SourceTable) %>Mapper extends MyBaseMapper<<%= GetClassName(SourceTable) %>DO> {
+
+    default List<<%= GetClassName(SourceTable) %>DO> selectList(<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListReqVO listReqVO) {
+        return selectList(new LambdaQueryWrapperX<UserDO>()
+            	<%
+                for (int i = 0; i < allList.Count; i++) { 
+                ColumnSchema column = (ColumnSchema)allList[i];
+                if(removeNames.Contains(column.Name))
+                    continue;
+                string type = GetCSharpVariableType(column);
+                %>
+                <%if(type=="String"){%>
+                .likeIfPresent(<%= GetClassName(SourceTable) %>DO::get<%=GetPascalCaseName(column.Name)%>, listReqVO.get<%=GetPascalCaseName(column.Name)%>())
+                <%}else if(type=="Integer" || type=="Long"){%>
+                .eqIfPresent(<%= GetClassName(SourceTable) %>DO::get<%=GetPascalCaseName(column.Name)%>, listReqVO.get<%=GetPascalCaseName(column.Name)%>())
+                <%}else if(type=="Date"){%>
+                .betweenIfPresent(<%= GetClassName(SourceTable) %>DO::get<%=GetPascalCaseName(column.Name)%>, listReqVO.get<%=GetPascalCaseName(column.Name)%>1(), listReqVO.get<%=GetPascalCaseName(column.Name)%>2())
+                <%}}%>
+                .orderByDesc(<%= GetClassName(SourceTable) %>DO::getId));
+    }
+    
+    default ApiPageResult<<%= GetClassName(SourceTable) %>DO> selectPage(<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageReqVO pageReqVO) {
+        return selectPage(pageReqVO, new LambdaQueryWrapperX<UserDO>()
+            	<%
+                for (int i = 0; i < allList.Count; i++) { 
+                ColumnSchema column = (ColumnSchema)allList[i];
+                if(removeNames.Contains(column.Name))
+                    continue;
+                string type = GetCSharpVariableType(column);
+                %>
+                <%if(type=="String"){%>
+                .likeIfPresent(<%= GetClassName(SourceTable) %>DO::get<%=GetPascalCaseName(column.Name)%>, pageReqVO.get<%=GetPascalCaseName(column.Name)%>())
+                <%}else if(type=="Integer" || type=="Long"){%>
+                .eqIfPresent(<%= GetClassName(SourceTable) %>DO::get<%=GetPascalCaseName(column.Name)%>, pageReqVO.get<%=GetPascalCaseName(column.Name)%>())
+                <%}else if(type=="Date"){%>
+                .betweenIfPresent(<%= GetClassName(SourceTable) %>DO::get<%=GetPascalCaseName(column.Name)%>, pageReqVO.get<%=GetPascalCaseName(column.Name)%>1(), pageReqVO.get<%=GetPascalCaseName(column.Name)%>2())
+                <%}}%>
+                .orderByDesc(<%= GetClassName(SourceTable) %>DO::getId));
+    }
+}
+
+ 
+<!-- #include file="script.inc" -->
+<!-- #include file="script2.inc" -->

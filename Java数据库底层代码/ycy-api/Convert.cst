@@ -8,11 +8,11 @@
 <%@ Import Namespace="System.Collections" %>
 package <%=Package%>.convert;
 
-import bnmlx.ycy.api.controller.app.user.vo.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>CreateReqVO;
-import bnmlx.ycy.api.controller.app.user.vo.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO;
-import bnmlx.ycy.api.controller.app.user.vo.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>UpdateReqVO;
+import bnmlx.ycy.api.controller.<%=Project%>.<%=Module%>.vo.*;
+import bnmlx.ycy.api.controller.<%=Project%>.<%=Module%>.vo.list.*;
+import bnmlx.ycy.api.controller.<%=Project%>.<%=Module%>.vo.page.*;
 import bnmlx.ycy.api.dal.dataobject.<%= GetClassName(SourceTable) %>DO;
-import io.gitee.cly2012.model.ApiPageResult;
+import io.gitee.cly2012.pojo.ApiPageResult;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -32,9 +32,11 @@ public interface <%= GetClassName(SourceTable) %>Convert {
 
     <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO convert(<%= GetClassName(SourceTable) %>DO bean);
 
-    List<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO> convertList(List<<%= GetClassName(SourceTable) %>DO> list);
+    List<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO> convert(List<<%= GetClassName(SourceTable) %>DO> list);
+    
+    List<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListRespVO> convertList(List<<%= GetClassName(SourceTable) %>DO> list);
 
-    ApiPageResult<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO> convertPage(ApiPageResult<<%= GetClassName(SourceTable) %>DO> page);
+    ApiPageResult<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageRespVO> convertPage(ApiPageResult<<%= GetClassName(SourceTable) %>DO> page);
 }
  
 <!-- #include file="script.inc" -->

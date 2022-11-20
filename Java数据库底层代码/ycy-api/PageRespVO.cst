@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 <% Init();  %>
 <script runat="template">
-ArrayList displayNames = new ArrayList(){"id","create_by","create_time","update_by","update_time","del_flag"};
+ArrayList removeNames = new ArrayList(){"salt","password"};
 </script>
 
 @ApiModel(" <%=Project%> - <%=SourceTable.Description%> 分页 Response VO")
