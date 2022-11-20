@@ -6,7 +6,7 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.controller.<%=Project%>.<%=Module%>.vo.list;
+package <%=Package%>.controller.<%=Project%>.<%=GetVarName(SourceTable)%>.vo.list;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

@@ -8,9 +8,9 @@
 <%@ Import Namespace="System.Collections" %>
 package <%=Package%>.dal.mapper;
 
-import bnmlx.ycy.api.controller.app.user.vo.list.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListReqVO;
-import bnmlx.ycy.api.controller.app.user.vo.page.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageReqVO;
-import bnmlx.ycy.api.dal.dataobject.<%= GetClassName(SourceTable) %>DO;
+import <%=Package%>.controller.app.user.vo.list.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListReqVO;
+import <%=Package%>.controller.app.user.vo.page.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageReqVO;
+import <%=Package%>.dal.dataobject.<%= GetClassName(SourceTable) %>DO;
 import io.gitee.cly2012.mybatis.core.mapper.MyBaseMapper;
 import io.gitee.cly2012.mybatis.core.query.LambdaQueryWrapperX;
 import io.gitee.cly2012.pojo.ApiPageResult;

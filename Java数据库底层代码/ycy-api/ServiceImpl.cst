@@ -1,0 +1,77 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.service.impl;
+
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>CreateReqVO;
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO;
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>UpdateReqVO;
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.list.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListReqVO;
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.list.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListRespVO;
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.page.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageReqVO;
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.page.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageRespVO;
+import <%=Package%>.dal.dataobject.<%= GetClassName(SourceTable) %>DO;
+import <%=Package%>.convert.<%= GetClassName(SourceTable) %>Convert;
+import <%=Package%>.dal.mapper.<%= GetClassName(SourceTable) %>Mapper;
+import <%=Package%>.service.<%= GetClassName(SourceTable) %>Service;
+import io.gitee.cly2012.mybatis.service.impl.BaseServiceImpl;
+import io.gitee.cly2012.pojo.ApiPageResult;
+import io.gitee.cly2012.utils.AssertUtil;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+import java.util.List;
+
+@Service("<%= GetVarName(SourceTable) %>Service")
+public class <%= GetClassName(SourceTable) %>ServiceImpl extends BaseServiceImpl<<%= GetClassName(SourceTable) %>Mapper, <%= GetClassName(SourceTable) %>DO> implements <%= GetClassName(SourceTable) %>Service {
+
+    @Resource
+    private <%= GetClassName(SourceTable) %>Mapper <%= GetVarName(SourceTable) %>Mapper;
+    
+    @Override
+    public Long create<%= GetClassName(SourceTable) %>(@Valid <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>CreateReqVO createReqVO) {
+        <%= GetClassName(SourceTable) %>DO <%= GetVarName(SourceTable) %> = <%= GetClassName(SourceTable) %>Convert.INSTANCE.convert(createReqVO);
+        <%= GetVarName(SourceTable) %>Mapper.insert(<%= GetVarName(SourceTable) %>);
+        return <%= GetVarName(SourceTable) %>.getId();
+    }
+
+    @Override
+    public void delete<%= GetClassName(SourceTable) %>(Long id) {
+        int cnt = <%= GetVarName(SourceTable) %>Mapper.deleteById(id);
+        AssertUtil.isTrue(cnt>0,"删除失败");
+    }
+
+    @Override
+    public void update<%= GetClassName(SourceTable) %>(@Valid <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>UpdateReqVO updateReqVO) {
+        <%= GetClassName(SourceTable) %>DO <%= GetVarName(SourceTable) %> = <%= GetClassName(SourceTable) %>Convert.INSTANCE.convert(updateReqVO);
+        int cnt = <%= GetVarName(SourceTable) %>Mapper.updateById(<%= GetVarName(SourceTable) %>);
+        AssertUtil.isTrue(cnt>0,"更新失败");
+    }
+
+    @Override
+    public <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO get<%= GetClassName(SourceTable) %>(Long id) {
+        <%= GetClassName(SourceTable) %>DO <%= GetVarName(SourceTable) %> = <%= GetVarName(SourceTable) %>Mapper.selectById(id);
+        AssertUtil.notNull(<%= GetVarName(SourceTable) %>,"用户不存在");
+        return <%= GetClassName(SourceTable) %>Convert.INSTANCE.convert(<%= GetVarName(SourceTable) %>);
+    }
+
+    @Override
+    public List<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListRespVO> get<%= GetClassName(SourceTable) %>List(@Valid <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListReqVO listReqVO) {
+        List<<%= GetClassName(SourceTable) %>DO> list = <%= GetVarName(SourceTable) %>Mapper.selectList(listReqVO);
+        return <%= GetClassName(SourceTable) %>Convert.INSTANCE.convertList(list);
+    }
+
+    @Override
+    public ApiPageResult<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageRespVO> get<%= GetClassName(SourceTable) %>Page(@Valid <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageReqVO pageReqVO) {
+        ApiPageResult<<%= GetClassName(SourceTable) %>DO> list = <%= GetVarName(SourceTable) %>Mapper.selectPage(pageReqVO);
+        return <%= GetClassName(SourceTable) %>Convert.INSTANCE.convertPage(list);
+    }
+}
+ 
+<!-- #include file="script.inc" -->

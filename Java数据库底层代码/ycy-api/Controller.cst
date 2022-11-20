@@ -1,0 +1,83 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>;
+
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.*;
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.list.*;
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.page.*;
+import <%=Package%>.service.<%= GetClassName(SourceTable) %>Service;
+import io.gitee.cly2012.pojo.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+import java.util.List;
+
+@Api(tags = "APP - 用户")
+@RestController
+@RequestM<%=Project%>ing("/<%=Project%>/<%= GetVarName(SourceTable)%>")
+@Validated
+@Slf4j
+public class <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>Controller extends ApiController {
+
+    @Resource
+    private <%= GetClassName(SourceTable) %>Service <%= GetVarName(SourceTable) %>Service;
+
+    @PostMapping("/create")
+    @ApiOperation("创建")
+    public ApiResult<Long> create<%= GetClassName(SourceTable) %>(@Valid @RequestBody <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>CreateReqVO createReqVO) {
+        return ok(<%= GetVarName(SourceTable) %>Service.create<%= GetClassName(SourceTable) %>(createReqVO));
+    }
+
+    @DeleteMapping("/delete")
+    @ApiOperation("删除")
+    @ApiImplicitParam(name = "id", value = "编号", required = true, dataTypeClass = Long.class)
+    public ApiResult<Boolean> delete<%= GetClassName(SourceTable) %>(@RequestParam("id") Long id) {
+        <%= GetVarName(SourceTable) %>Service.delete<%= GetClassName(SourceTable) %>(id);
+        return ok(true);
+    }
+
+    @PutMapping("/update")
+    @ApiOperation("更新")
+    public ApiResult<Boolean> update<%= GetClassName(SourceTable) %>(@Valid @RequestBody <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>UpdateReqVO updateReqVO) {
+        <%= GetVarName(SourceTable) %>Service.update<%= GetClassName(SourceTable) %>(updateReqVO);
+        return ok(true);
+    }
+
+    @GetMapping("/get")
+    @ApiOperation("获取")
+    @ApiImplicitParam(name = "id", value = "编号", required = true, example = "1024", dataTypeClass = Long.class)
+    public ApiResult<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO> getCategory(@RequestParam("id") Long id) {
+        <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO <%= GetVarName(SourceTable) %> = <%= GetVarName(SourceTable) %>Service.get<%= GetClassName(SourceTable) %>(id);
+        return ok(<%= GetVarName(SourceTable) %>);
+    }
+
+    @GetMapping("/list")
+    @ApiOperation("列表")
+    public ApiResult<List<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListRespVO>> get<%= GetClassName(SourceTable) %>List(@Valid <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListReqVO listReqVO) {
+        List<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListRespVO> list = <%= GetVarName(SourceTable) %>Service.get<%= GetClassName(SourceTable) %>List(listReqVO);
+        return ok(list);
+    }
+
+    @GetMapping("/page")
+    @ApiOperation("翻页")
+    public ApiResult<ApiPageResult<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageRespVO>> getOrderPage(@Valid <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageReqVO pageVO) {
+        ApiPageResult<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageRespVO> page = <%= GetVarName(SourceTable) %>Service.get<%= GetClassName(SourceTable) %>Page(pageVO);
+        return ok(page);
+    }
+
+}
+
+ 
+<!-- #include file="script.inc" -->

@@ -1,0 +1,41 @@
+﻿<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="System.Collections" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections" %>
+package <%=Package%>.service;
+
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>CreateReqVO;
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO;
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>UpdateReqVO;
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.list.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListReqVO;
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.list.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListRespVO;
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.page.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageReqVO;
+import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.page.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageRespVO;
+import <%=Package%>.dal.dataobject.<%= GetClassName(SourceTable) %>DO;
+import io.gitee.cly2012.mybatis.service.BaseService;
+import io.gitee.cly2012.pojo.ApiPageResult;
+
+import javax.validation.Valid;
+import java.util.List;
+
+public interface <%= GetClassName(SourceTable) %>Service extends BaseService<<%= GetClassName(SourceTable) %>DO> {
+
+    //添加
+    Long create<%= GetClassName(SourceTable) %>(@Valid App<%= GetClassName(SourceTable) %>CreateReqVO createReqVO);
+    //删除
+    void delete<%= GetClassName(SourceTable) %>(Long id);
+    //修改
+    void update<%= GetClassName(SourceTable) %>(@Valid App<%= GetClassName(SourceTable) %>UpdateReqVO updateReqVO);
+    //查询
+    App<%= GetClassName(SourceTable) %>RespVO get<%= GetClassName(SourceTable) %>(Long id);
+    //简单列表
+    List<App<%= GetClassName(SourceTable) %>ListRespVO> get<%= GetClassName(SourceTable) %>List(@Valid App<%= GetClassName(SourceTable) %>ListReqVO listReqVO);
+    //翻页
+    ApiPageResult<App<%= GetClassName(SourceTable) %>PageRespVO> get<%= GetClassName(SourceTable) %>Page(@Valid App<%= GetClassName(SourceTable) %>PageReqVO pageReqVO);
+}
+ 
+<!-- #include file="script.inc" -->

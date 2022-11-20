@@ -44,21 +44,6 @@ public string Project
 	}
 }
 
-private string _module = "";
-[Category("项目设置")]
-[Description("模块路径.")]
-public string Module
-{
- 	get 
-	{
-		return _module;
-	}
- 	set 
-	{
-		_module = value;
-	}
-}
-
 public string GetClassName(TableSchema table)
 {
     string className = table.Name;

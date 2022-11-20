@@ -8,10 +8,10 @@
 <%@ Import Namespace="System.Collections" %>
 package <%=Package%>.convert;
 
-import bnmlx.ycy.api.controller.<%=Project%>.<%=Module%>.vo.*;
-import bnmlx.ycy.api.controller.<%=Project%>.<%=Module%>.vo.list.*;
-import bnmlx.ycy.api.controller.<%=Project%>.<%=Module%>.vo.page.*;
-import bnmlx.ycy.api.dal.dataobject.<%= GetClassName(SourceTable) %>DO;
+import <%=Package%>.controller.<%=Project%>.<%=GetVarName(SourceTable)%>.vo.*;
+import <%=Package%>.controller.<%=Project%>.<%=GetVarName(SourceTable)%>.vo.list.*;
+import <%=Package%>.controller.<%=Project%>.<%=GetVarName(SourceTable)%>.vo.page.*;
+import <%=Package%>.dal.dataobject.<%= GetClassName(SourceTable) %>DO;
 import io.gitee.cly2012.pojo.ApiPageResult;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

@@ -1,0 +1,172 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+
+<%@ Register Name="DO" Template="DO.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="BaseVO" Template="BaseVO.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Convert1" Template="Convert.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Mapper" Template="Mapper.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="MapperXml" Template="MapperXml.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="MapperExtendXml" Template="MapperExtendXml.cst" MergeProperties="False" ExcludeProperties="" %>
+
+<%@ Register Name="CreateReqVO" Template="CreateReqVO.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="UpdateReqVO" Template="UpdateReqVO.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="RespVO" Template="RespVO.cst" MergeProperties="False" ExcludeProperties="" %>
+
+<%@ Register Name="PageReqVO" Template="PageReqVO.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="PageRespVO" Template="PageRespVO.cst" MergeProperties="False" ExcludeProperties="" %>
+
+<%@ Register Name="ListReqVO" Template="ListReqVO.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="ListRespVO" Template="ListRespVO.cst" MergeProperties="False" ExcludeProperties="" %>
+
+<%@ Register Name="Service" Template="Service.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="ServiceImpl" Template="ServiceImpl.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Controller" Template="Controller.cst" MergeProperties="False" ExcludeProperties="" %>
+
+<%--<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." ResponseEncoding="utf-8" %>--%>
+<%@ Template Language="C#" TargetLanguage="Java" Encoding="UTF-8" ResponseEncoding="UTF-8"%>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Property Name="OutPutModelDest" Type="String" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="System.Text" %>
+<%
+
+bool cover = true;
+{
+    CodeTemplate codeTemplate1=new DO();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\dal\dataobject\"+GetClassName(SourceTable)+"DO.java";
+    rendJavaFile(codeTemplate1,fileName,true);
+}
+{
+    CodeTemplate codeTemplate1=new BaseVO();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\controller\"+Project+@"\"+GetVarName(SourceTable)+@"\vo\base\"+GetPascalCaseName(Project)+GetClassName(SourceTable)+"BaseVO.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new Convert1();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\convert\"+GetClassName(SourceTable)+"Convert.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new Mapper();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\dal\mapper\"+GetClassName(SourceTable)+"Mapper.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new MapperXml();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"resources\mapper\"+GetClassName(SourceTable)+"Mapper.xml";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new MapperExtendXml();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"resources\mapper\extend\"+GetClassName(SourceTable)+"MapperExtend.xml";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+
+{
+    CodeTemplate codeTemplate1=new CreateReqVO();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\controller\"+Project+@"\"+GetVarName(SourceTable)+@"\vo\"+GetPascalCaseName(Project)+GetClassName(SourceTable)+"CreateReqVO.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new UpdateReqVO();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\controller\"+Project+@"\"+GetVarName(SourceTable)+@"\vo\"+GetPascalCaseName(Project)+GetClassName(SourceTable)+"UpdateReqVO.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new RespVO();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\controller\"+Project+@"\"+GetVarName(SourceTable)+@"\vo\"+GetPascalCaseName(Project)+GetClassName(SourceTable)+"RespVO.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+
+{
+    CodeTemplate codeTemplate1=new PageReqVO();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\controller\"+Project+@"\"+GetVarName(SourceTable)+@"\vo\page\"+GetPascalCaseName(Project)+GetClassName(SourceTable)+"PageReqVO.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new PageRespVO();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\controller\"+Project+@"\"+GetVarName(SourceTable)+@"\vo\page\"+GetPascalCaseName(Project)+GetClassName(SourceTable)+"PageRespVO.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+
+{
+    CodeTemplate codeTemplate1=new ListReqVO();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\controller\"+Project+@"\"+GetVarName(SourceTable)+@"\vo\list\"+GetPascalCaseName(Project)+GetClassName(SourceTable)+"ListReqVO.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new ListRespVO();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\controller\"+Project+@"\"+GetVarName(SourceTable)+@"\vo\list\"+GetPascalCaseName(Project)+GetClassName(SourceTable)+"ListRespVO.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+
+{
+    CodeTemplate codeTemplate1=new Service();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\service\"+GetClassName(SourceTable)+"Service.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new ServiceImpl();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\service\impl\"+GetClassName(SourceTable)+"ServiceImpl.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+{
+    CodeTemplate codeTemplate1=new Controller();
+    initProps(codeTemplate1);
+    string fileName = OutPutModelDest+@"java\"+Package.Replace(".",@"\")+@"\controller\"+Project+@"\"+GetVarName(SourceTable)+@"\"+GetPascalCaseName(Project)+GetClassName(SourceTable)+"Controller.java";
+    rendJavaFile(codeTemplate1,fileName,cover);
+}
+%>
+<script runat="template">
+private void initProps(CodeTemplate codeTemplate1){
+    codeTemplate1.SetProperty("SourceTable",SourceTable);
+    codeTemplate1.SetProperty("Package",Package);
+    codeTemplate1.SetProperty("Prefix",Prefix);
+    codeTemplate1.SetProperty("Project",Project);
+}
+
+
+private void rendJavaFile(CodeTemplate codeTemplate1,string fileName,bool cover){
+    try{
+        codeTemplate1.RenderToFile(fileName,cover);
+        string content=string.Empty;
+        using (var sr = new StreamReader(fileName, Encoding.UTF8))
+        {
+            content= sr.ReadToEnd();
+        }
+
+        using(FileStream fs = new FileStream(fileName, FileMode.Create)){
+            using(StreamWriter sw = new StreamWriter(fs, new System.Text.UTF8Encoding(false))){
+                sw.Write(content);
+                //清空缓冲区
+                sw.Flush();
+            }
+        }
+    }
+    catch{
+    }
+}
+</script>
+<!-- #include file="script.inc" -->

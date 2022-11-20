@@ -6,9 +6,9 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.controller.<%=Project%>.<%=Module%>.vo;
+package <%=Package%>.controller.<%=Project%>.<%=GetVarName(SourceTable)%>.vo;
 
-import <%=Package%>.controller.<%=Project%>.<%=Module%>.vo.base.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>BaseVO;
+import <%=Package%>.controller.<%=Project%>.<%=GetVarName(SourceTable)%>.vo.base.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>BaseVO;
 import cn.hutool.core.date.DatePattern;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonFormat;

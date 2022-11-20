@@ -6,7 +6,7 @@
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections" %>
-package <%=Package%>.controller.<%=Project%>.<%=Module%>.vo.page;
+package <%=Package%>.controller.<%=Project%>.<%=GetVarName(SourceTable)%>.vo.page;
 
 import cn.hutool.core.date.DatePattern;
 import com.alibaba.fastjson.annotation.JSONField;
