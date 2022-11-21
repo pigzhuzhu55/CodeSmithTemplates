@@ -8,8 +8,8 @@
 <%@ Import Namespace="System.Collections" %>
 package <%=Package%>.dal.mapper;
 
-import <%=Package%>.controller.app.user.vo.list.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListReqVO;
-import <%=Package%>.controller.app.user.vo.page.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageReqVO;
+import <%=Package%>.controller.<%=Project%>.<%=GetVarName(SourceTable)%>.vo.list.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListReqVO;
+import <%=Package%>.controller.<%=Project%>.<%=GetVarName(SourceTable)%>.vo.page.<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageReqVO;
 import <%=Package%>.dal.dataobject.<%= GetClassName(SourceTable) %>DO;
 import io.gitee.cly2012.mybatis.core.mapper.MyBaseMapper;
 import io.gitee.cly2012.mybatis.core.query.LambdaQueryWrapperX;
@@ -27,7 +27,7 @@ ArrayList removeNames = new ArrayList(){"salt","password"};
 public interface <%= GetClassName(SourceTable) %>Mapper extends MyBaseMapper<<%= GetClassName(SourceTable) %>DO> {
 
     default List<<%= GetClassName(SourceTable) %>DO> selectList(<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>ListReqVO listReqVO) {
-        return selectList(new LambdaQueryWrapperX<UserDO>()
+        return selectList(new LambdaQueryWrapperX<<%= GetClassName(SourceTable) %>DO>()
             	<%
                 for (int i = 0; i < allList.Count; i++) { 
                 ColumnSchema column = (ColumnSchema)allList[i];
@@ -46,7 +46,7 @@ public interface <%= GetClassName(SourceTable) %>Mapper extends MyBaseMapper<<%=
     }
     
     default ApiPageResult<<%= GetClassName(SourceTable) %>DO> selectPage(<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageReqVO pageReqVO) {
-        return selectPage(pageReqVO, new LambdaQueryWrapperX<UserDO>()
+        return selectPage(pageReqVO, new LambdaQueryWrapperX<<%= GetClassName(SourceTable) %>DO>()
             	<%
                 for (int i = 0; i < allList.Count; i++) { 
                 ColumnSchema column = (ColumnSchema)allList[i];
