@@ -37,7 +37,7 @@ Description:
 <%@ Import Namespace="System.Text" %>
 <%
 
-bool cover = false;
+bool cover = true;
 {
     CodeTemplate codeTemplate1=new DO();
     initProps(codeTemplate1);

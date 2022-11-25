@@ -20,7 +20,7 @@ import <%=Package%>.convert.<%= GetClassName(SourceTable) %>Convert;
 import <%=Package%>.dal.mapper.<%= GetClassName(SourceTable) %>Mapper;
 import <%=Package%>.service.<%= GetClassName(SourceTable) %>Service;
 import io.gitee.cly2012.mybatis.service.impl.BaseServiceImpl;
-import io.gitee.cly2012.pojo.ApiPageResult;
+import io.gitee.cly2012.pojo.*;
 import io.gitee.cly2012.utils.AssertUtil;
 import org.springframework.stereotype.Service;
 
@@ -42,8 +42,8 @@ public class <%= GetClassName(SourceTable) %>ServiceImpl extends BaseServiceImpl
     }
 
     @Override
-    public void delete<%= GetClassName(SourceTable) %>(Long id) {
-        int cnt = <%= GetVarName(SourceTable) %>Mapper.deleteById(id);
+    public void delete<%= GetClassName(SourceTable) %>(BaseIdsReq idsReq) {
+        int cnt = <%= GetVarName(SourceTable) %>Mapper.deleteBatchIds(idsReq.getIds());
         AssertUtil.isTrue(cnt>0,"删除失败");
     }
 

@@ -13,6 +13,7 @@ import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.lis
 import <%=Package%>.controller.<%=Project%>.<%= GetVarName(SourceTable)%>.vo.page.*;
 import <%=Package%>.service.<%= GetClassName(SourceTable) %>Service;
 import io.gitee.cly2012.pojo.*;
+import io.gitee.cly2012.utils.AssertUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -24,9 +25,9 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 
-@Api(tags = "APP - <%=SourceTable.Description%> 模块")
+@Api(tags = "<%=GetPascalCaseName(Project)%> - <%=SourceTable.Description%> 模块")
 @RestController
-@RequestM<%=Project%>ing("/<%=Project%>/<%= GetVarName(SourceTable)%>")
+@RequestMapping("/<%=Project%>/<%= GetVarName(SourceTable)%>")
 @Validated
 @Slf4j
 public class <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>Controller extends ApiController {
@@ -39,16 +40,16 @@ public class <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>Cont
     public ApiResult<Long> create<%= GetClassName(SourceTable) %>(@Valid @RequestBody <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>CreateReqVO createReqVO) {
         return ok(<%= GetVarName(SourceTable) %>Service.create<%= GetClassName(SourceTable) %>(createReqVO));
     }
-
-    @DeleteMapping("/delete")
+    
+    @PostMapping("/delete")
     @ApiOperation("删除")
-    @ApiImplicitParam(name = "id", value = "编号", required = true, dataTypeClass = Long.class)
-    public ApiResult<Boolean> delete<%= GetClassName(SourceTable) %>(@RequestParam("id") Long id) {
-        <%= GetVarName(SourceTable) %>Service.delete<%= GetClassName(SourceTable) %>(id);
+    public ApiResult<Boolean> delete<%= GetClassName(SourceTable) %>(@RequestBody BaseIdsReq idsReq) {
+        AssertUtil.notEmpty(idsReq.getIds(),"请至少选择一项");
+        <%= GetVarName(SourceTable) %>Service.delete<%= GetClassName(SourceTable) %>(idsReq);
         return ok(true);
     }
 
-    @PutMapping("/update")
+    @PostMapping("/update")
     @ApiOperation("更新")
     public ApiResult<Boolean> update<%= GetClassName(SourceTable) %>(@Valid @RequestBody <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>UpdateReqVO updateReqVO) {
         <%= GetVarName(SourceTable) %>Service.update<%= GetClassName(SourceTable) %>(updateReqVO);
@@ -58,7 +59,7 @@ public class <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>Cont
     @GetMapping("/get")
     @ApiOperation("获取")
     @ApiImplicitParam(name = "id", value = "编号", required = true, example = "1024", dataTypeClass = Long.class)
-    public ApiResult<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO> getCategory(@RequestParam("id") Long id) {
+    public ApiResult<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO> get<%= GetClassName(SourceTable) %>(@RequestParam("id") Long id) {
         <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>RespVO <%= GetVarName(SourceTable) %> = <%= GetVarName(SourceTable) %>Service.get<%= GetClassName(SourceTable) %>(id);
         return ok(<%= GetVarName(SourceTable) %>);
     }
@@ -72,7 +73,7 @@ public class <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>Cont
 
     @GetMapping("/page")
     @ApiOperation("翻页")
-    public ApiResult<ApiPageResult<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageRespVO>> getOrderPage(@Valid <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageReqVO pageVO) {
+    public ApiResult<ApiPageResult<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageRespVO>> get<%= GetClassName(SourceTable) %>Page(@Valid <%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageReqVO pageVO) {
         ApiPageResult<<%=GetPascalCaseName(Project)%><%= GetClassName(SourceTable) %>PageRespVO> page = <%= GetVarName(SourceTable) %>Service.get<%= GetClassName(SourceTable) %>Page(pageVO);
         return ok(page);
     }
